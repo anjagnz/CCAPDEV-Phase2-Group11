@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>LabMate - Sign In</title>
+        
+        <meta charset = "UTF-8">
+        <meta name = "viewport" content = "width=device-width, initial-scale=1.0">
+
+        <style>
+
+            @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+            :root {
+                --primary-color: #23c686;
+                --secondary-color: #1d3853;
+                --background-color: #fbfcf6;
+            
+                --primary-font-fam: 'Roboto';
+                --secondary-font-fam: 'DM Sans';
+                --font-size: 14px;
+                --text-color: #1b1b1b;
+            }
+            
+
+            body{
+                background: #23c686;
+                margin: 0;
+                padding: 0;
+                font-family: var(--primary-font-fam);
+                font-size: var(--font-size);
+            }
+
+            body::before{
+                content: "";
+                position: fixed;
+                width: 100%;
+                height: 100%;
+                background-size: cover;
+                background-position: center;
+                background-repeat: no-repeat;
+                background-image: url(https://th.bing.com/th/id/R.73f1030694af1b2470f55af5e6f982b8?rik=x82eMD4V%2f1dN9w&riu=http%3a%2f%2fdefendernetwork.com%2fwp-content%2fuploads%2f2017%2f03%2fmaxresdefault-21.jpg&ehk=4hwH6aUD14vfeIisEiwb8IKTnMbWiSN%2blavNIBY5S2o%3d&risl=&pid=ImgRaw&r=0);
+                opacity: 0.05;
+                z-index: -1;
+            }
+
+            #container {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+            }
+
+            #signin {
+                display: flex;
+                height: 450px;
+                width: 650px;
+                padding: 30px;
+                background-color: #FBFCF6;
+                border: none;
+                border-radius: 20px;
+                overflow: hidden;
+            }
+
+            #signin .left-column {
+                width: 50%;
+            }
+
+            #signin .right-column {
+                width: 50%;
+                display: flex;
+                flex-direction: column;
+                justify-content: top;
+                align-items: center;
+            }
+
+            #signin img {
+                width: auto;
+                height: 80%;
+            }
+
+            .inputWrapper label {
+                display: block;
+            }
+        </style>
+    </head>
+    <body>
+       <div id="container">
+            <div id="signin">
+                <div class="left-column">
+                    <h1>Account Sign-in</h1>
+                    <div class="inputWrapper">
+                        <label for="email">DLSU Email Address</label>
+                        <input type="email" id="email">
+                    </div>
+                    <div class="inputWrapper">
+                        <label for="password">Password</label>
+                        <input type="password" id="password">
+                    </div>
+                    <div class="inputWrapper">
+                        <label>
+                            <input type="checkbox" title="Remember me">
+                            Remember me
+                        </label>
+                    </div>
+                    <button type="button">Sign In</button>
+                </div>
+
+                <div class="right-column">
+                    <img src="img/sign-in-graphic.png">
+                    <div style="margin-top: 20px">Don't have an account?  <a href="signup.html">Create an account. </a></div>
+                </div>
+            </div>
+       </div>
+    </body>
+</html>
