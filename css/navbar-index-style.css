@@ -1,0 +1,132 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+
+:root {
+    --primary-color: #23c686;
+    --secondary-color: #1d3853;
+    --background-color: #fbfcf6;;
+
+    --primary-font-fam: 'Roboto';
+    --secondary-font-fam: 'DM Sans';
+    --font-size: 16px;
+    --text-color: #1b1b1b;
+}
+
+/* minor reference: https://www.youtube.com/watch?v=GdrbE-s5DgQ */
+
+* {
+    margin: 0;
+    padding: 0;
+    font-family: var(--primary-font-fam);
+}
+
+body {
+    height: 100vh;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-size: var(--font-size);
+}
+
+header {
+    position: relative;
+    padding: 0 2rem;
+}
+
+.navbar {
+    width: 100%;
+    height: 70px;
+    max-width: 1920px;
+    min-width: 600px;
+    
+    margin: 0 auto;
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.navbar li {
+    list-style: none;
+}
+
+.navbar a{
+    text-decoration: none;
+    color: var(--background-color);
+    font-weight: 500;
+    margin-left: 25px;
+    margin-right: 25px;
+}
+
+.navbar a:hover {
+    color: var(--secondary-color)
+}
+
+.navbar #labmate-logo {
+    color: var(--background-color);   
+    font-family: var(--secondary-font-fam);
+    font-weight: 700;
+    font-size: 32px;
+}
+
+.navbar .nav-links {
+    display: flex;
+    gap: 2rem;
+}
+
+.navbar #selected {
+    border-bottom-width: 3px;
+    border-bottom-color: var(--background-color);
+    border-bottom-style: solid;
+    padding-bottom: 5px;
+    pointer-events: none;
+}
+
+.navbar .nav-links a:hover {
+    border-bottom-width: 3px;
+    border-bottom-color: var(--secondary-color);
+    border-bottom-style: solid;
+    padding-bottom: 5px;
+    transition: border-bottom-width 0.1s ease;
+}
+
+.navbar .action-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    outline: none;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.navbar #signin-btn {
+    background-color: var(--secondary-color);
+    color: var(--background-color)
+}
+
+.navbar #signup-btn {
+    background-color: var(--background-color);
+    color: var(--secondary-color);
+}
+
+.navbar img {
+    width: 40px;
+    border-radius: 50%;
+}
+
+.navbar img:hover {
+    scale: 1.05;
+    box-shadow: 0 4px rgba(0, 0, 0, 0.2);
+}
+
+/* make navbar responsive */
+
+@media  (max-width: 900px) {
+    .navbar a {
+        margin-right: 0;
+        margin-left: 0;
+    }
+}
+
