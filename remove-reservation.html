@@ -1,55 +1,72 @@
 <!DOCTYPE html>
 <html>
+    <head>
+        <title>Pop-up Modal Box</title>
+        <link rel="stylesheet" href="css/navbar-style.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />   
+        <link rel="stylesheet" href="css/remove-reservation.css">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pop-up Modal Box</title>
-    <link rel="stylesheet" href="css/remove-reservation.css">
+        <!-- Imported Fonts-->
+        <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    </head>
 
-    <!-- Imported Fonts-->
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <body>
+        <!-- ADD HTML PAGES TO APPROPRIATE href="#" FIELDS -->
+        <header>
+            <div class="navbar">
+                <div class="logo">
+                    <label id="labmate-logo">Lab<span style="color:#1d3853;">Mate</span></label>
+                </div>
+
+                <!-- ADD id="selected" TO ACTIVE WEB PAGE -->
+                <ul class="nav-links">
+                    <li><a href="index.html" id="selected" title="Home Page">Home</a></li>
+                    <li><a href="#" title="View Laboratories">Laboratories</a></li>
+                    <li><a href="#" title="Check Reservations">Reservations</a></li>
+                </ul>
+
+                <div class="nav-profile">
+                    <a href="#"><img src="img/default-profile.png" title="View Profile" alt="Profile Image"></a>
+                </div>
+            </div>
+        </header>
+
+        <div class="container">
+            <div class="popup" id="popup">
+                <img src="img/message_icon.png" class="icon"/>
+                <p class="message">Are you sure you want to remove this reservation? </br>
+                    This action cannot be undone.
+                </p>
+                
+                <div class="btn-wrapper">
+                    <button type="cancel" class="btn1" onclick="cancel()">Cancel</button>
+                </div>
     
-</head>
-
-<body>
-    <div class="container">
-        <div class="popup" id="popup">
-            <img src="img/message_icon.png" class="icon"/>
-            <p class="message">Are you sure you want to remove this reservation? </br>
-                This action cannot be undone.
-            </p>
-            
-            <div class="btn-wrapper">
-                <button type="cancel" class="btn1" onclick="cancel()">Cancel</button>
+                <div class="btn-wrapper">
+                    <button type="confirm" class="btn2" onclick="confirm()">Confirm</button>
+                </div>
+    
             </div>
-
-            <div class="btn-wrapper">
-                <button type="confirm" class="btn2" onclick="confirm()">Confirm</button>
+            <div class="btn-wrapper2">
+                <button type="remove" class="btn3" onclick="openPopup()">Remove Reservation</button>
             </div>
-
         </div>
-        <div class="btn-wrapper2">
-            <button type="remove" class="btn3" onclick="openPopup()">Remove Reservation</button>
-        </div>
-    </div>
-
-    <script>
-        let popup = document.getElementById("popup")
-
-        function openPopup(){
-            popup.classList.add("open-popup");
-        }
-
-        function confirm(){
-            popup.classList.remove("open-popup");
-        }
-
-        function cancel(){
-            popup.classList.remove("open-popup");
-        }
-    </script>
-</body>
-
+    
+        <script>
+            let popup = document.getElementById("popup")
+    
+            function openPopup(){
+                popup.classList.add("open-popup");
+            }
+    
+            function confirm(){
+                popup.classList.remove("open-popup");
+            }
+    
+            function cancel(){
+                popup.classList.remove("open-popup");
+            }
+        </script>
+    </body>
 </html>
