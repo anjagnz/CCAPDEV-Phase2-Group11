@@ -16,6 +16,7 @@
                 background: #23c686;
                 margin: 0;
                 padding: 0;
+                overflow: hidden;
             }
 
             body::before{
@@ -26,7 +27,7 @@
                 background-size: cover;
                 background-position: center;
                 background-repeat: no-repeat;
-                background-image: url(https://th.bing.com/th/id/R.73f1030694af1b2470f55af5e6f982b8?rik=x82eMD4V%2f1dN9w&riu=http%3a%2f%2fdefendernetwork.com%2fwp-content%2fuploads%2f2017%2f03%2fmaxresdefault-21.jpg&ehk=4hwH6aUD14vfeIisEiwb8IKTnMbWiSN%2blavNIBY5S2o%3d&risl=&pid=ImgRaw&r=0);
+                background-image: url(https://th.bing.com/th/id/R.73f1030694af1b2470f55af5e6f982b8?rik=x82eMD4V%2f1dN9w&riu=http%3a%2f%2fdefendernetwork.com%2fwp-content%2fuploads%2f2017%2f03%2fmaxresdefault-21.jpg&ehk=4hwH6aUD14vfeIisEiwb8IKTnMbWiSN%2blavNIBY5S2o%3d&risl=&pid=ImgRaw&r=0.png);
                 opacity: 0.05;
                 z-index: -1;
             }
@@ -37,21 +38,6 @@
                 align-content: center;
                 padding-top: 5px;
                 padding-bottom: 5px;
-            }
-
-            #lab{
-                font-family: 'DM Sans';
-                font-weight: 700;
-                font-size: 32px;
-                color: #FFFFFF;
-                padding-left: 40px;
-            }
-
-            #mate{
-                font-family: 'DM Sans';
-                font-weight: 700;
-                font-size: 32px;
-                color: #1d3853;
             }
 
             .frame{
@@ -70,8 +56,7 @@
                 font-weight: 600;
                 font-size: 50px;
                 color: #FFFFFF;
-                padding-top: 70px;
-                padding-bottom: 70px;
+                padding: 200px 0 40px 0;
             }
 
             .description{
@@ -121,22 +106,74 @@
                 padding: 10px;
                 margin-left: 25px;
             }
+
+            .header, .description {
+                transition: transform .3s ease-in-out;
+                animation: ease-anim 2s;
+            }
+            
+            .header:hover, .description:hover {
+                transform: translateY(-10px);
+                
+            }
+
+            @keyframes ease-anim {
+                from {opacity: 0; }
+                to {opacity: 1; }
+            }
+
+            
         </style>
+
+        <script src ="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            /* adds outline design on active page in navigation bar */
+            $(document).ready(function() {
+                var includes = $('[data-include]');
+                $.each(includes, function() {
+                    var file = 'views/' + $(this).data('include') + '.html';
+                    $(this).load(file, function() {
+                        var page = window.location.pathname.split("/").pop();
+
+                        /* TODO: add laboratories, reservation here */
+                        if (page.includes("index.html")) {
+                            document.getElementById("nav-home").classList.add("selected");
+                        }
+                    });
+                });
+            });
+            
+        </script>
     </head>
     <body>
-        <nav>
-            <label id = "lab">Lab</label><label id = "mate">Mate</label>
-        </nav>
+
+        <!-- try -->
+        <div data-include="navbar-signedout"></div>
+
         <div class = "frame">
             <span class = "header">Fulfill your every computer need.</span>
 
             <span class = "description">Reserve laboratory seats and foster productivity and collaboration through technology.</span>
 
             <div class = "button-frame">
-                <button id = "button-1">Create an Account</button>
+                <button id = "button-1" type="button">Create an Account</button>
 
-                <button id = "button-2">View our Laboratories</button>
+                <button id = "button-2" type="button">View our Laboratories</button>
             </div>
         </div>
+
     </body>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            document.addEventListener("DOMContentLoaded", function() {
+                console.log(window.location.pathname);
+                if (window.location.pathname.endsWith("index.html")) {
+                    document.getElementById("nav-home").classList.add("selected");
+                } 
+            });
+        });
+        
+    </script>
+
 </html>

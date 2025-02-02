@@ -1,4 +1,26 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+
+        <!-- ADD HTML PAGES TO APPROPRIATE href="#" FIELDS -->
+        <header>
+            <div class="navbar">
+                <div class="logo">
+                    <label id="labmate-logo">Lab<span style="color:#1d3853;">Mate</span></label>
+                </div>
+
+                <!-- ADD id="selected" TO ACTIVE WEB PAGE -->
+                <ul class="nav-links">
+                    <li><a href="index.html" id="nav-home" title="Home Page">Home</a></li>
+                    <li><a href="#" id="nav-lab" title="View Laboratories">Laboratories</a></li>
+                    <li><a href="#" id="nav-reserve" title="Check Reservations">Reservations</a></li>
+                </ul>
+
+                <div class="nav-profile">
+                    <a href="#"><img src="img/default-profile.png" title="View Profile" alt="Profile Image"></a>
+                </div>
+            </div>
+        </header>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 
 
@@ -19,6 +41,13 @@
     margin: 0;
     padding: 0;
     font-family: var(--primary-font-fam);
+}
+
+body {
+    height: 100vh;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-size: var(--font-size);
 }
 
 header {
@@ -125,3 +154,4 @@ header {
     }
 }
 
+</style>

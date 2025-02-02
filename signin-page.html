@@ -18,7 +18,6 @@
             
                 --primary-font-fam: 'Roboto';
                 --secondary-font-fam: 'DM Sans';
-                --font-size: 14px;
                 --text-color: #1b1b1b;
             }
             
@@ -28,7 +27,9 @@
                 margin: 0;
                 padding: 0;
                 font-family: var(--primary-font-fam);
-                font-size: var(--font-size);
+                height: 100vh;
+                overflow: hidden;
+
             }
 
             body::before{
@@ -39,7 +40,7 @@
                 background-size: cover;
                 background-position: center;
                 background-repeat: no-repeat;
-                background-image: url(https://th.bing.com/th/id/R.73f1030694af1b2470f55af5e6f982b8?rik=x82eMD4V%2f1dN9w&riu=http%3a%2f%2fdefendernetwork.com%2fwp-content%2fuploads%2f2017%2f03%2fmaxresdefault-21.jpg&ehk=4hwH6aUD14vfeIisEiwb8IKTnMbWiSN%2blavNIBY5S2o%3d&risl=&pid=ImgRaw&r=0);
+                background-image: url('img/bg-image1.jpg');
                 opacity: 0.05;
                 z-index: -1;
             }
@@ -59,16 +60,15 @@
 
             #signin {
                 display: flex;
-                height: 450px;
+                height: 400px;
                 width: 650px;
-                padding: 20px 40px;
+                padding: 30px 40px;
                 background-color: #FBFCF6;
                 border: none;
                 border-radius: 20px;
-                overflow: hidden;
             }
 
-            #signin .left-column {
+            #signin .left-column, #signin .right-column {
                 width: 50%;
             }
 
@@ -91,18 +91,51 @@
 
             #signin img {
                 width: auto;
-                height: 80%;
+                height: 90%;
                 -webkit-user-drag: none;
             }
 
+            .inputWrapper {
+                margin-top: 10px;
+            }
             .inputWrapper label {
                 display: block;
-                
+                margin: 5px 0;
+            }
+
+            #signin #signin-btn {
+                padding: 0.5rem 1rem;
+                border: none;
+                outline: none;
+                border-radius: 20px;
+                font-size: 1rem;
+                font-weight: bold;
+                cursor: pointer;
+                background-color: var(--secondary-color);
+                color: var(--background-color)    
+            }
+
+            #email, #password {
+                height: 1.5rem;
+                border-radius: 10px;
+                border-color: var(--text-color);
+                padding: 0 5px;
+            }
+
+            @media (max-height: 600px) {
+                #container {
+                    overflow: scroll;
+                }
             }
         </style>
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     </head>
     <body>
-       <div id="container">
+        
+        <script id = "navigation" src = "js/navbar-signedout.js"></script>
+
+        <div id="container">
             <div id="signin">
                 <div class="left-column">
                     <h1>Account Sign-in</h1>
@@ -116,18 +149,22 @@
                     </div>
                     <div class="inputWrapper">
                         <label>
-                            <input type="checkbox" title="Remember me">
+                            <input type="checkbox" title="Checking this box will let this website to remember your account for 3 weeks.">
                             Remember me
                         </label>
                     </div>
-                    <button type="button">Sign In</button>
+                    
+                    <button id="signin-btn" type="button">Sign In</button>
                 </div>
 
                 <div class="right-column">
                     <img src="img/sign-in-graphic.png">
-                    <div style="margin-top: 20px">Don't have an account?  <a href="signup.html">Create an account. </a></div>
+                    <div style="margin-top: 10px">Don't have an account?  <a href="signup-page.html">Create an account. </a></div>
                 </div>
             </div>
-       </div>
+        </div>
+
+        
+        
     </body>
 </html>

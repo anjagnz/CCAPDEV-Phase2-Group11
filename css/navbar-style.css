@@ -21,13 +21,6 @@
     font-family: var(--primary-font-fam);
 }
 
-body {
-    height: 100vh;
-    background-color: var(--background-color);
-    color: var(--text-color);
-    font-size: var(--font-size);
-}
-
 header {
     position: relative;
     padding: 0 2rem;
@@ -77,7 +70,7 @@ header {
     gap: 2rem;
 }
 
-.navbar #selected {
+.navbar .selected {
     border-bottom-width: 3px;
     border-bottom-color: var(--background-color);
     border-bottom-style: solid;
