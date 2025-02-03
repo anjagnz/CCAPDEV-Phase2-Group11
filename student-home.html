@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>LabMate - Home</title>
+
+        <meta charset = "UTF-8">
+        <meta name = "viewport" content = "width=device-width, initial-scale = 1.0">
+        
+        <style>
+
+            :root {
+                --primary-color: #23c686;
+                --secondary-color: #1d3853;
+                --background-color: #fbfcf6;
+            
+                --primary-font-fam: 'Roboto';
+                --secondary-font-fam: 'DM Sans';
+                --text-color: #1b1b1b;
+            }
+
+            body{
+                background-color: var(--background-color);
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+            }
+
+            .frame{
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                max-width: 1920px;
+                max-height: 1080px;
+            }
+
+            .header{
+                position: relative;
+                text-align: center;
+                font-family: var(--secondary-font-fam);
+                font-weight: 600;
+                font-size: 35px;
+                color: var(--secondary-color);
+                padding: 80px 100px 50px 100px;
+            }
+
+            .box-frame{
+                position: relative;
+                align-items: center;
+                display: flex;
+                flex-direction: row;
+                gap: 25px;
+                height: 50vh;
+            }
+
+            .box{
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                background-color: var(--secondary-color);
+                border: none;
+                border-radius: 25px;
+                padding: 40px 40px 40px 40px;
+                transition: all 0.3s ease;
+            }
+
+            .fa-solid{
+                position: relative;
+                color: var(--background-color);
+                font-size: 50px;
+                padding-bottom: 10px;
+            }
+
+            .fa-regular{
+                position: relative;
+                color: var(--background-color);
+                font-size: 50px;
+                padding-bottom: 10px;
+            }
+
+            .box-header{
+                color: var(--background-color);
+                font-family: var(--secondary-font-fam);
+                font-size: 20px;
+                padding-bottom: 15px;
+            }
+
+            .box-description{
+                color: var(--background-color);
+                font-family: var(--primary-font-fam);
+                font-size: 15px;
+                font-weight: 200;
+                padding-bottom: 20px;
+                opacity: 0.8;
+            }
+
+            .box-button{
+                width: 150px;
+                background-color: var(--background-color);
+                color: var(--secondary-color);
+                font-family: var(--primary-font-fam);
+                font-size: 15px;
+                font-weight: 500;
+                border: none;
+                border-radius: 10px;
+                padding: 10px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+            }
+
+            .box-button:hover{
+                transform: scale(1.05);
+            }
+
+            .box:hover{
+                transform:scale(1.05);
+            }
+
+        </style>
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://kit.fontawesome.com/f8fd180dda.js" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <script id = "navigation" src = "js/navbar-signedin.js"></script>
+
+        <div class = "frame">
+            <span class = "header">What would you like to do next, (first-name) (last-name)?</span>
+
+            <div class = "box-frame">
+                <div class = "box">
+                    <i class="fa-solid fa-computer"></i>
+                    <span class = "box-header">Laboratories</span>
+                    <span class = "box-description">View the laboratories’ slot availability, and create your own reservations.</span>
+                    <button class = "box-button" type="button">Reserve a Slot</button>
+                </div>
+                <div class = "box">
+                    <i class="fa-regular fa-calendar"></i>
+                    <span class = "box-header">Reservations</span>
+                    <span class = "box-description">View your upcoming reservations and edit them however you may like.</span>
+                    <button class = "box-button" type="button">See Reservations</button>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
