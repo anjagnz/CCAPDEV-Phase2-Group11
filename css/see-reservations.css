@@ -41,14 +41,15 @@ td{
     margin-top: 8px;
 }
 
+
 .reservations{
     height: 65vh;
+    width: 60%;
     overflow: scroll;
     border-radius: 30px;
     outline: 2px solid black;
-    margin-left: 100px;
-    margin-right: 100px;
     justify-content: center;
+    margin: auto;
     background-color: #ffffff;
 }
 
