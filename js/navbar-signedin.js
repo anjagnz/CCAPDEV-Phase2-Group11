@@ -1,4 +1,4 @@
-fetch('navbar-signedin.html')
+fetch('js/navbar-signedin.html')
 .then(response => response.text())
 .then(data => {
     let oldElement = document.querySelector("script#navigation");
