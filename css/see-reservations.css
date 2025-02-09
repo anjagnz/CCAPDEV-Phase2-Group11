@@ -1,0 +1,71 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden;
+    background-color: #fbfcf6;
+}
+
+h1{
+    font-family: 'DM Sans';
+    font-size: 25px;
+    display: flex;
+    justify-content: center;
+    padding: 25px;
+}
+
+table{
+    width: 100%;
+}
+
+th{
+    padding: 20px 20px 10px 20px;
+
+}
+
+td{
+    text-align: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    
+}
+
+.select-btn{
+    width: 25px;
+    height: 25px;
+    border-radius: 15px;
+    margin-top: 8px;
+}
+
+.reservations{
+    height: 65vh;
+    overflow: scroll;
+    border-radius: 30px;
+    outline: 2px solid black;
+    margin-left: 100px;
+    margin-right: 100px;
+    justify-content: center;
+    background-color: #ffffff;
+}
+
+.remove-btn-wrapper{
+    display: flex;    
+    justify-content: center;
+    margin-top: 38px;
+}
+
+.remove-btn{
+    padding: 10px 60px;
+    background: #1d3853;
+    color: #fbfcf6;
+    border: 0;
+    outline: none;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 500;
+    border-radius: 30px;
+}
