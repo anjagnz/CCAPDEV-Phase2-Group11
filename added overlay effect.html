@@ -5,8 +5,7 @@
     <link rel="stylesheet" href="css/see-reservations.css">
     <link rel="stylesheet" href="css/pop-up.css">
 
-
-    <!-- Imported Fonts-->
+    <!-- Imported Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
@@ -22,7 +21,7 @@
                     <th>Laboratory Room</th>
                     <th>Reservation Date</th>
                     <th>Time Slot</th>
-                    <th ></th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -40,47 +39,50 @@
                     <td>2:00 PM - 4:00 PM</td>
                     <td style="text-align: left;"><img src="img/reservation-details.jpeg" style="height: 25px; cursor: pointer;"></td>
                 </tr>
-                
             </tbody>
         </table>
     </div>
 
-
     <div class="remove-btn-wrapper">
-        <button type="remove" class="remove-btn" onclick="openPopup()">Remove Reservation</button>
+        <button type="button" class="remove-btn" onclick="openPopup()">Remove Reservation</button>
     </div>
+
+    <div id="overlay" class="overlay"></div>
 
     <div class="container">
         <div class="popup" id="popup" style="margin-top: 20px">
             <img src="img/message_icon.png" class="icon"/>
-            <p class="message">Are you sure you want to remove this reservation? </br>
+            <p class="message">Are you sure you want to remove this reservation? <br>
                 This action cannot be undone.
             </p>
             
             <div class="btn-wrapper">
-                <button type="cancel" class="btn1" onclick="cancel()">Cancel</button>
+                <button type="button" class="btn1" onclick="cancel()">Cancel</button>
             </div>
-
+            
             <div class="btn-wrapper">
-                <button type="confirm" class="btn2" onclick="confirm()">Confirm</button>
+                <button type="button" class="btn2" onclick="confirm()">Confirm</button>
             </div>
-
         </div>
-    </div>
+    </div> 
 
     <script>
-        let popup = document.getElementById("popup")
+        let popup = document.getElementById("popup");
+        let overlay = document.getElementById("overlay");
 
-        function openPopup(){
+        function openPopup() {
             popup.classList.add("open-removal");
+            overlay.style.display = "block"; 
         }
 
-        function confirm(){
+        function confirm() {
             popup.classList.remove("open-removal");
+            overlay.style.display = "none"; 
         }
 
-        function cancel(){
+        function cancel() {
             popup.classList.remove("open-removal");
+            overlay.style.display = "none"; 
         }
     </script>
 </body>
