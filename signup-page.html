@@ -45,9 +45,8 @@
                 z-index: -1;
             }
 
-            h1 {
+            h1,h2 {
                 color: var(--secondary-color);
-                font-size: 35px;
                 font-family: var(--secondary-font-fam);
             }
 
@@ -68,7 +67,7 @@
                 border-radius: 20px;
             }
 
-            .input-field {
+            .column {
                 display: flex;
                 justify-content: space-between;
             }
@@ -83,7 +82,7 @@
             }
 
             .inputWrapper {
-                margin-top: 10px;
+                margin-top: 20px;
             }
             .inputWrapper label {
                 display: block;
@@ -120,55 +119,121 @@
                 border-color: var(--text-color);
                 padding: 0 5px;
             }
+
+            input {
+
+            }
         </style>
 
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            /* adds outline design on active page in navigation bar */
+            $(document).ready(function() {
+                $.getScript("js/navbar.js");
+            });
+        </script>
     </head>
     <body>
         
-        <script id = "navigation" src = "js/navbar-signedout.js"></script>
+        <div data-include="navbar-signedout"></div>
 
         <div id="container">
             <div id="signup">
-                <h1>Account Sign Up </h1>
-                <div class="input-field">
+                <h1 style="font-size: 35px">Account Sign Up </h1>
+                <div class="column">
                     <div class="left-column">   
                         <div class="inputWrapper">
                             <label for="first-name">First Name</label>
                             <input type="text" id="first-name" class="text-field">
                         </div>
-                        <div class="inputWrapper">
-                            <label for="first-name">DLSU Email Address</label>
-                            <input type="email" id="email" class="text-field">
-                        </div>
-                        <div class="inputWrapper">
-                            <label for="first-name">Password</label>
-                            <input type="text" id="first-name" class="text-field">
-                        </div>
-                        <div class="inputWrapper">
-                            <label for="first-name">Confirm Password</label>
-                            <input type="text" id="first-name" class="text-field">
-                        </div>
-                        <div class="inputWrapper">
-                            <label for="first-name">First Name</label>
-                            <input type="text" id="first-name" class="text-field">
-                        </div>
                         
-                        <button id="signup-btn" type="button">Create Account</button>
+                        
                     </div>
                     <div class="right-column">
                         <div class="inputWrapper">
                             <label for="last-name">Last Name</label>
                             <input type="text" id="last-name" class="text-field">
                         </div>
-                        <div style="margin-top: 10px">Already have an account?  <a href="signin-page.html">Sign in. </a></div>
                     </div>
                 </div>
-                
+                <div>
+                    <div class="inputWrapper">
+                        <label for="first-name">DLSU Email Address</label>
+                        <input type="email" id="email" class="text-field" style="width: 98%">
+                    </div>
+                </div>
+                <div class="column">
+                    <div class="left-column">
+                        <div class="inputWrapper">
+                            <label for="first-name">New Password</label>
+                            <input type="text" id="password" class="text-field">
+                        </div>
+                    </div>
+                    <div class="right-column">
+                        <div class="inputWrapper">
+                            <label for="first-name">Confirm Password</label>
+                            <input type="text" id="confirm-password" class="text-field">
+                        </div>
+                    </div>
+                </div>
+
+                <br>
+
+                <div>
+                    <h2 style="margin-top:20px">Please select an account type</h2>
+                    <span style="font-size:.9rem; font-style: italic;">Your account type cannot be changed after account creation.</span>
+                    
+                    <div class="column" id="radio-type">
+                        <div class="left-column">
+                            <div class="inputWrapper">
+                                <input type="radio" name="acc-type" value="student">I am registering <b>as a student.</b>
+                            </div>
+
+                        </div>
+                        <div class="right-column">
+                            <div class="inputWrapper">
+                                <input type="radio" name="acc-type" value="faculty">I am registering <b>as a faculty member.</b> 
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="column" id="faculty">
+                        
+                        <div class="left-column">
+                            <div class="inputWrapper">
+                                <span style="font-size:.9rem; font-style: italic;">
+                                    Please enter your faculty code for verification. 
+                                    For assistance, contact an IT administrator. (for demo: i-am-faculty)    
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="right-column">
+                            <div class="inputWrapper">
+                                <label for="first-name">Faculty Code</label>
+                                <input type="text" id="faculty-code" class="text-field">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- <div style="margin-top: 10px">Already have an account?  <a href="signin-page.html">Sign in instead. </a></div> -->
             </div>
         </div>
 
-        
+        <script>
+            /* display faculty code form if radio value = 'faculty' */
+            $(document).ready(function() {
+                $("input[name='acc-type']").change(function() {
+                    if ($(this).val() === 'faculty') {
+                        $('#faculty').show();
+                    } else {
+                        $('#faculty').hide();
+                    }
+                });
+
+                $('#faculty').hide();
+            });
+        </script>
         
     </body>
 </html>

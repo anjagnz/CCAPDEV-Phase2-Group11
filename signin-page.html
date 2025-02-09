@@ -130,10 +130,16 @@
         </style>
 
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            /* adds outline design on active page in navigation bar */
+            $(document).ready(function() {
+                $.getScript("js/navbar.js");
+            });
+        </script>
     </head>
     <body>
         
-        <script id = "navigation" src = "js/navbar-signedout.js"></script>
+        <div data-include="navbar-signedout"></div>
 
         <div id="container">
             <div id="signin">
@@ -154,7 +160,7 @@
                         </label>
                     </div>
                     
-                    <button id="signin-btn" type="button">Sign In</button>
+                    <button id="signin-btn" type="button" onclick="location.href='student-home.html'">Sign In</button>
                 </div>
 
                 <div class="right-column">

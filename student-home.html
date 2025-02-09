@@ -122,9 +122,13 @@
 
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://kit.fontawesome.com/f8fd180dda.js" crossorigin="anonymous"></script>
+        <script>
+            /* adds outline design on active page in navigation bar */
+            $(document).ready(function() {$.getScript("js/navbar.js");});
+        </script>
     </head>
     <body>
-        <script id = "navigation" src = "js/navbar-signedin.js"></script>
+        <div data-include="navbar-signedin"></div>
 
         <div class = "frame">
             <span class = "header">What would you like to do next, (first-name) (last-name)?</span>

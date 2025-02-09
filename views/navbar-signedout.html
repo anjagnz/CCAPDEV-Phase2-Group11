@@ -1,24 +1,23 @@
+<!DOCTYPE html>
+<!-- ADD HTML PAGES TO APPROPRIATE href="#" FIELDS -->
+<header id="nav-header">
+    <div class="navbar">
+        <div class="logo">
+            <label id="labmate-logo">Lab<span style="color:#1d3853;">Mate</span></label>
+        </div>
 
-        <!-- ADD HTML PAGES TO APPROPRIATE href="#" FIELDS -->
-        <header>
-            <div class="navbar">
-                <div class="logo">
-                    <label id="labmate-logo">Lab<span style="color:#1d3853;">Mate</span></label>
-                </div>
+        <!-- ADD id="active" TO ACTIVE WEB PAGE -->
+        <ul class="nav-links">
+            <li><a href="index.html" id="nav-home" title="Home Page">Home</a></li>
+            <li><a href="#" id="nav-lab" title="View Laboratories">Laboratories</a></li>
+        </ul>
 
-                <!-- ADD id="selected" TO ACTIVE WEB PAGE -->
-                <ul class="nav-links">
-                    <li><a href="index.html" id="nav-home" title="Home Page">Home</a></li>
-                    <li><a href="#" id="nav-lab" title="View Laboratories">Laboratories</a></li>
-                </ul>
-
-                <div class="nav-btns">
-                    <a href="signup-page.html" id="signup-btn" class="action-btn">Sign Up</a>
-                    <a href="signin-page.html" id="signin-btn" class="action-btn">Sign In</a>
-                </div>
-            </div>
-
-        </header>
+        <div class="nav-btns">
+            <a href="signup-page.html" id="signup-btn" class="action-btn">Sign Up</a>
+            <a href="signin-page.html" id="signin-btn" class="action-btn">Sign In</a>
+        </div>
+    </div>
+</header>
 
 <style>
     @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
@@ -27,7 +26,8 @@
     :root {
         --primary-color: #23c686;
         --secondary-color: #1d3853;
-        --background-color: #fbfcf6;;
+        --background-color: #fbfcf6;
+        ;
 
         --primary-font-fam: 'Roboto';
         --secondary-font-fam: 'DM Sans';
@@ -46,8 +46,13 @@
     header {
         position: relative;
         padding: 0 2rem;
-        background: var(--primary-color); 
+        background: var(--primary-color);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .index-header {
+        background: none;
+        box-shadow: none;
     }
 
     .navbar {
@@ -55,7 +60,7 @@
         height: 70px;
         max-width: 1920px;
         min-width: 600px;
-        
+
         margin: 0 auto;
         padding: 0;
 
@@ -68,7 +73,7 @@
         list-style: none;
     }
 
-    .navbar a{
+    .navbar a {
         text-decoration: none;
         color: var(--background-color);
         font-weight: 500;
@@ -81,7 +86,7 @@
     }
 
     .navbar #labmate-logo {
-        color: var(--background-color);   
+        color: var(--background-color);
         font-family: var(--secondary-font-fam);
         font-weight: 700;
         font-size: 32px;
@@ -92,7 +97,7 @@
         gap: 2rem;
     }
 
-    .navbar .selected {
+    .navbar .active {
         border-bottom-width: 3px;
         border-bottom-color: var(--background-color);
         border-bottom-style: solid;
@@ -140,7 +145,7 @@
 
     /* make navbar responsive */
 
-    @media  (max-width: 900px) {
+    @media (max-width: 900px) {
         .navbar a {
             margin-right: 0;
             margin-left: 0;

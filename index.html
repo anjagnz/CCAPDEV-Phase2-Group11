@@ -90,6 +90,7 @@
                 color: #1d3853;
                 padding: 10px;
                 margin-right: 25px;
+                cursor: pointer;
             }
 
             #button-2{
@@ -105,6 +106,7 @@
                 color: #FBFCF6;
                 padding: 10px;
                 margin-left: 25px;
+                cursor: pointer;
             }
 
             .header, .description {
@@ -128,26 +130,11 @@
         <script src ="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script>
             /* adds outline design on active page in navigation bar */
-            $(document).ready(function() {
-                var includes = $('[data-include]');
-                $.each(includes, function() {
-                    var file = 'views/' + $(this).data('include') + '.html';
-                    $(this).load(file, function() {
-                        var page = window.location.pathname.split("/").pop();
-
-                        /* TODO: add laboratories, reservation here */
-                        if (page.includes("index.html")) {
-                            document.getElementById("nav-home").classList.add("selected");
-                        }
-                    });
-                });
-            });
-            
+            $(document).ready(function() {$.getScript("js/navbar.js");});
         </script>
     </head>
     <body>
 
-        <!-- try -->
         <div data-include="navbar-signedout"></div>
 
         <div class = "frame">
@@ -156,24 +143,11 @@
             <span class = "description">Reserve laboratory seats and foster productivity and collaboration through technology.</span>
 
             <div class = "button-frame">
-                <button id = "button-1" type="button">Create an Account</button>
+                <button id="button-1" onclick="location.href='signup-page.html'">Create an Account</button>
 
-                <button id = "button-2" type="button">View our Laboratories</button>
+                <button id = "button-2" onclick="location.href='#'">View our Laboratories</button>
             </div>
         </div>
 
     </body>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function(){
-            document.addEventListener("DOMContentLoaded", function() {
-                console.log(window.location.pathname);
-                if (window.location.pathname.endsWith("index.html")) {
-                    document.getElementById("nav-home").classList.add("selected");
-                } 
-            });
-        });
-        
-    </script>
-
 </html>
