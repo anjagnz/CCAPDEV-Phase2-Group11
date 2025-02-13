@@ -45,23 +45,12 @@ body{
     z-index: 10; 
 }
 
-.open-visibility{
+.open-popup{
     visibility: visible;
     top: 50%;
     transform: translate(-50%, -50%) scale(1);
 }
 
-.open-confirmation{
-    visibility: visible;
-    top: 50%;
-    transform: translate(-50%, -50%) scale(1);
-}
-
-.open-removal{
-    visibility: visible;
-    top: 50%;
-    transform: translate(-50%, -50%) scale(1);
-}
 
 .icon{
     height: 200px;
@@ -119,4 +108,3 @@ body{
     display: inline-block;
     padding: 600px 0px 0px 0px;
 }
-
