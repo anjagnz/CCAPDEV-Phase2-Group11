@@ -17,6 +17,8 @@
                 case 'student-home.html':
                     document.getElementById("nav-home").classList.add("active");
                     break;
+                case 'see-reservations.html':
+                    document.getElementById("nav-reserve").classList.add("active");
                 default:
                     break;
             }
