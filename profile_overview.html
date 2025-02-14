@@ -1,0 +1,85 @@
+<!-- views/profile-overview.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LabMate - Profile Overview</title>
+    <link rel="stylesheet" href="css/profile-pages.css">
+    <link rel="stylesheet" href="css/navbar-style.css">
+    
+    <!-- Imported Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;600;700;900&display=swap" rel="stylesheet">
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <!-- Upper Tab -->
+    <div class="upper-tab">
+        <div class="labmate-logo">
+            <img src="img/LabMate.svg" alt="LabMate Logo">
+        </div>
+        <div class="greet-container">
+            <span class="page-title">Profile Overview</span>
+            <div class="greeting">
+                <span>Hello!</span>
+                <span class="lastname">LastName!</span>
+            </div>
+        </div>
+        <div class="profile-picture">
+            <img src="img/default-profile.png" alt="Profile Picture">
+        </div>
+    </div>
+
+    <!-- Side Tab -->
+    <div class="side-tab">
+        <div class="menu-item">
+            <img src="img/Home.svg" alt="Dashboard Icon" class="icon">
+            <span>Dashboard</span>
+        </div>
+        <div class="menu-item">
+            <img src="img/desktop.svg" alt="Lab Check Icon" class="icon">
+            <span>Lab Check</span>
+        </div>
+        <div class="menu-item active-tab">
+            <img src="img/settings.svg" alt="Settings Icon" class="icon">
+            <span>Settings</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="information-container">
+        <div class="profile-section">
+            <div class="profile-picture-small">
+                <img src="img/default-profile.png" alt="Profile Picture">
+            </div>
+            <div class="name-section">
+                <h1>Last Name, First Name</h1>
+            </div>
+        </div>
+        
+        <div class="details">
+            <div class="detail-row">
+                <span class="label">Email:</span>
+                <span class="value">LastName_FirstName@dlsu.edu.ph</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="label">Department:</span>
+                <span class="value">DepartmentName</span>
+            </div>
+            
+            <div class="biography-section">
+                <h2>Biography</h2>
+                <p class="biography-text">
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+                </p>
+            </div>
+        </div>
+
+        <div class="button-container">
+            <button class="delete-btn">DELETE ACCOUNT</button>
+            <button class="logout-btn">LOGOUT</button>
+        </div>
+    </div>
+</body>
+</html>
