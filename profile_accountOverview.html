@@ -6,38 +6,29 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LabMate - Account Overview</title>
     <link rel="stylesheet" href="css/profile_pages.css">
-    
+    <link rel="stylesheet" href="css/theme-style.css">
+    <link rel="stylesheet" href="css/navbar-style.css">
+
     <!-- Imported Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        /* adds outline design on active page in navigation bar */
+        $(document).ready(function() {$.getScript("js/navbar.js");});
+    </script>
 </head>
+
 <body>
-    <!-- Upper Tab -->
-    <header class="upper-tab">
-        <div class="logo-container">
-            <img src="img/LabMate.svg" alt="LabMate Logo" class="logo">
-        </div>
-        <div class="header-content">
-            <h1 class="page-title">Account Overview</h1>
-            <div class="user-greeting">
-                <span>Hello </span>
-                <span class="user-name">Shonagon!</span>
-            </div>
-        </div>
-        <div class="profile-picture-header">
-            <img src="img/default-profile.png" alt="Profile Picture">
-        </div>
-    </header>
+    <div data-include="navbar-signedin"></div>
 
     <!-- Side Navigation -->
     <nav class="side-nav">
         <div class="nav-item active">
             <img src="img/Home.svg" alt="Dashboard" class="nav-icon">
             <a href="profile_accountOverview.html"><span>Dashboard</span></a>
-        </div>
-        <div class="nav-item">
-            <img src="img/desktop.svg" alt="Lab Check" class="nav-icon">
-            <a href="student-home.html"><span>Lab Check</span></a>
         </div>
         <div class="nav-item">
             <img src="img/settings.svg" alt="Settings" class="nav-icon">
@@ -53,8 +44,8 @@
                 <h2>Upcoming Laboratory</h2>
                 <div class="card-content">
                     <div class="info-row">
-                        <span>&lt;04/25/2025&gt;</span>
-                        <span>&lt;LSH 204&gt;</span>
+                        <span>2025-02-18,</span>
+                        <span>GK404B</span>
                     </div>
                 </div>
             </div>
@@ -63,7 +54,7 @@
                 <h2>Total Reserved</h2>
                 <div class="card-content">
                     <img src="img/desktop.svg" alt="Computer Icon" class="desktop-icon">
-                    <span class="count">&lt;32&gt;</span>
+                    <span class="count">1</span>
                 </div>
             </div>
         </div>
@@ -75,36 +66,21 @@
                 <table class="reservations-table">
                     <thead>
                         <tr>
-                            <th>Reservation ID</th>
+                            <th>Laboratory</th>
                             <th>Date</th>
-                            <th>Room</th>
-                            <th>Slot</th>
+                            <th>Time</th>
+                            <th>Seat</th>
                             <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td>&lt;01&gt;</td>
-                            <td>&lt;02/14/2025&gt;</td>
-                            <td>&lt;Gokongwei&gt;</td>
-                            <td>&lt;101b&gt;</td>
-                            <td>&lt;Pending&gt;</td>
-                            <td><button class="cancel-btn">CANCEL</button></td>
-                        </tr>
-                        <tr>
-                            <td>&lt;02&gt;</td>
-                            <td>&lt;03/04/2025&gt;</td>
-                            <td>&lt;Andrew&gt;</td>
-                            <td>&lt;A24&gt;</td>
-                            <td>&lt;Declined&gt;</td>
-                        </tr>
-                        <tr>
-                            <td>&lt;03&gt;</td>
-                            <td>&lt;04/25/2025&gt;</td>
-                            <td>&lt;La Salle Hall&gt;</td>
-                            <td>&lt;204&gt;</td>
-                            <td>&lt;Accepted&gt;</td>
+                            <td>GK404B</td>
+                            <td>2025-02-18</td>
+                            <td>9:30 A.M. -10:00 A.M.</td>
+                            <td>3</td>
+                            <td>Upcoming</td>
                             <td><button class="cancel-btn">CANCEL</button></td>
                         </tr>
                     </tbody>

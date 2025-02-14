@@ -5,15 +5,23 @@
         <title>LabMate - Laboratories</title>
         <meta charset = "UTF-8">
         <meta name = "viewport" content = "width=device-width, initial-scale = 1.0">
+        <link rel="stylesheet" href="css/pop-up.css">
         <link rel="stylesheet" href="css/theme-style.css">
         <link rel="stylesheet" href="css/navbar-style.css">
-        <link rel="stylesheet" href="css/pop-up.css">
         
         <style>
-    
+            :root {
+                --primary-color: #23c686;
+                --secondary-color: #1d3853;
+                --background-color: #fbfcf6;
+            
+                --primary-font-fam: 'Roboto';
+                --secondary-font-fam: 'DM Sans';
+                --text-color: #1b1b1b;
+            }
 
             body{
-                background-color: var(--off-white);
+                background-color: var(--background-color);
                 margin: 0;
                 padding: 0;
             }
@@ -28,10 +36,10 @@
             .header{
                 position: relative;
                 text-align: center;
-                font-family: var(--secondary-font-family);
+                font-family: var(--secondary-font-fam);
                 font-weight: 600;
                 font-size: 35px;
-                color: var(--dark-blue);
+                color: var(--secondary-color);
                 padding: 80px 100px 50px 100px;
             }
 
@@ -45,8 +53,8 @@
             }
 
             .dropdown-header, #chart-header{
-                color: var(--dark-blue);
-                font-family: var(--secondary-font-family);
+                color: var(--secondary-color);
+                font-family: var(--secondary-font-fam);
                 font-size: 15px;
                 font-weight: 500;
                 padding-bottom: 10px;
@@ -59,10 +67,10 @@
                 -webkit-appearance: none;
                 background: url(img/arrow-down.png) no-repeat 99% center, #FFFFFF;
                 background-size: 20px;
-                border: 1px solid var(--dark-blue);
+                border: 1px solid var(--secondary-color);
                 border-radius: 8px;
-                color: var(--dark-blue);
-                font-family: var(--primary-font-family);
+                color: var(--secondary-color);
+                font-family: var(--primary-font-fam);
                 padding: 8px 500px 8px 15px;
                 color: rgba(29, 56, 83, 0.8);
             }
@@ -76,10 +84,10 @@
                 width: 1000px;
                 overflow-x: auto;
                 background: #FFFFFF;
-                border: 1px solid var(--dark-blue);
+                border: 1px solid var(--secondary-color);
                 border-radius: 8px;
-                color: var(--dark-blue);
-                font-family: var(--primary-font-family);
+                color: var(--secondary-color);
+                font-family: var(--primary-font-fam);
                 margin-bottom: 10px;
             }
 
@@ -130,6 +138,14 @@
                 cursor: pointer;
             }
 
+            .your-seat{
+                height: 50px;
+                width: 50px;
+                background: #23c686;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+            }
             #seats{
                 background: none;
                 font-weight: 500;
@@ -143,7 +159,7 @@
             }
 
             .legend-text{
-                color: var(--dark-blue);
+                color: var(--secondary-color);
                 font-size: 14px;
                 padding-left: 8px;
                 padding-right: 24px;
@@ -179,9 +195,9 @@
 
             #reserve-button{
                 width: 150px;
-                background-color: var(--dark-blue);
-                color: var(--off-white);
-                font-family: var(--primary-font-family);
+                background-color: var(--secondary-color);
+                color: var(--background-color);
+                font-family: var(--primary-font-fam);
                 font-size: 15px;
                 font-weight: 500;
                 border: none;
@@ -210,7 +226,7 @@
                 height: 120px;
                 display: flex;
                 flex-direction: column;
-                border: 1px solid var(--dark-blue);
+                border: 1px solid var(--secondary-color);
                 align-items: center;
                 justify-content: center;
                 border-radius: 8px;
@@ -218,8 +234,8 @@
 
             .popup-header{
                 font-size: 14px;
-                font-family: var(--primary-font-family);
-                color: var(--dark-blue);
+                font-family: var(--primary-font-fam);
+                color: var(--secondary-color);
                 font-weight: 500;
                 margin: 10px 0px 10px 0px;
             }
@@ -232,8 +248,8 @@
 
             .user-name{
                 font-size: 13px;
-                font-family: var(--primary-font-family);
-                color: var(--dark-blue);
+                font-family: var(--primary-font-fam);
+                color: var(--secondary-color);
                 margin: 5px 0px 10px 0px;
             }
 
@@ -243,8 +259,8 @@
             }
         </style>
 
-        <script src ="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <!-- add navigation bar and interactivity  -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
         <script>
             /* adds outline design on active page in navigation bar */
             $(document).ready(function() {$.getScript("js/navbar.js");});
@@ -252,7 +268,6 @@
     </head>
 
     <body>
-        <!-- insert navigation bar for signed in view -->
         <div data-include="navbar-signedin"></div>
 
         <div class = "frame">
@@ -263,11 +278,11 @@
 
                 <select name = "labs" id = "labs">
                     <option value = "" disabled selected>Select a Laboratory</option>
-                    <option value = "lab1">Gokongwei Laboratory</option>
-                    <option value = "lab2">Andrew Gonzales Laboratory</option>
-                    <option value = "lab3">Yuchengco Laboratory</option>
-                    <option value = "lab4">Velasco Laboratory</option>
-                    <option value = "lab5">St. Miguel Laboratory</option>
+                    <option value = "lab1">GK101A</option>
+                    <option value = "lab2">GK203B</option>
+                    <option value = "lab3">GK404B</option>
+                    <option value = "lab4">AG1706</option>
+                    <option value = "lab5">AG1904</option>
                 </select>
             </div>
 
@@ -290,40 +305,40 @@
             <div class = "popup2" id = "popup-frame-1">
                 <div class = "popup-box">
                     <span class = "popup-header">8:30 AM - 9:00 AM</span>
-                    <img class = "user-img" src = "img/demo_data/kousaka.jpg"></img>
-                    <span class = "user-name"><a href="demo_data/profile_visit_char1.html" style="color: var(--secondary-color); text-decoration: none;">Kousaka, Honoka</a></span>
+                    <img class = "user-img" src = "img/default-profile.png" onclick="location.href='demo_profile1.html'"></img>
+                    <span class = "user-name">Anja Gonzales</span>
                 </div>
             </div>
-            
+
             <div class = "popup2" id = "popup-frame-2">
                 <div class = "popup-box">
                     <span class = "popup-header">10:00 AM - 11:00 AM</span>
-                    <img class = "user-img" src = "img/demo_data/sonoda.jpg"></img>
-                    <span class = "user-name"><a href="demo_data/profile_visit_char2.html" style="color: var(--secondary-color); text-decoration: none;">Sonoda, Umi</a></span>
+                    <img class = "user-img" src = "img/default-profile.png" onclick="location.href='demo_profile2.html'"></img>
+                    <span class = "user-name">Liana Ho</span>
                 </div>
             </div>
-            
+
             <div class = "popup2" id = "popup-frame-3">
                 <div class = "popup-box">
                     <span class = "popup-header">9:30 AM - 10:00 AM</span>
-                    <img class = "user-img" src = "img/demo_data/kotori.jpg"></img>
-                    <span class = "user-name"><a href="demo_data/profile_visit_char3.html" style="color: var(--secondary-color); text-decoration: none;">Minami, Kotori</a></span>
+                    <img class = "user-img" src = "img/default-profile.png"></img>
+                    <span class = "user-name">Anonymous User</span>
                 </div>
             </div>
-            
+
             <div class = "popup2" id = "popup-frame-4">
                 <div class = "popup-box">
                     <span class = "popup-header">10:30 AM - 12:00 PM</span>
-                    <img class = "user-img" src = "img/demo_data/ayase.jpg"></img>
-                    <span class = "user-name"><a href="demo_data/profile_visit_char4.html" style="color: var(--secondary-color); text-decoration: none;">Ayase, Eli</a></span>
+                    <img class = "user-img" src = "img/default-profile.png" onclick="location.href='demo_profile3.html'"></img>
+                    <span class = "user-name">Angelo Rocha</span>
                 </div>
             </div>
-            
+
             <div class = "popup2" id = "popup-frame-5">
                 <div class = "popup-box">
                     <span class = "popup-header">7:30 AM - 8:00 AM</span>
-                    <img class = "user-img" src = "img/demo_data/nozomi.jpg"></img>
-                    <span class = "user-name"><a href="demo_data/profile_visit_char5.html" style="color: var(--secondary-color); text-decoration: none;">Tojo, Nozomi</a></span>
+                    <img class = "user-img" src = "img/default-profile.png" onclick="location.href='demo_profile4.html'"></img>
+                    <span class = "user-name">Grass Capote</span>
                 </div>
             </div>
 
@@ -381,7 +396,7 @@
                                     <td><button class = "clickable-seat"></button></td>
                                     <td><button class = "clickable-seat"></button></td>
                                     <td><button class = "clickable-seat"></button></td>
-                                    <td><button class = "taken-seat" onclick = "togglePopup('popup-frame-3')"></button></td>
+                                    <td><button class = "your-seat" onclick = "togglePopup('popup-frame-3')"></button></td>
                                     <td><button class = "clickable-seat"></button></td>
                                     <td><button class = "clickable-seat"></button></td>
                                     <td><button class = "clickable-seat"></button></td>
@@ -478,7 +493,20 @@
 
         </div>
 
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            $(document).ready(function(){
+                document.addEventListener("DOMContentLoaded", function() {
+                    console.log(window.location.pathname);
+                    if (window.location.pathname.endsWith("student-laboratories.html")) {
+                        document.getElementById("nav-lab").classList.add("selected");
+                    } 
+                });
+            });
+        </script>
+
         <!-- On Click Listener -->
+
         <script>
             var seats = document.getElementsByClassName('clickable-seat');
 

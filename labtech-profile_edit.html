@@ -5,40 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LabMate - Edit Account Details</title>
     <link rel="stylesheet" href="css/profile_pages.css">
-    
+    <link rel="stylesheet" href="css/theme-style.css">
+    <link rel="stylesheet" href="css/navbar-style.css">
+
     <!-- Imported Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        /* adds outline design on active page in navigation bar */
+        $(document).ready(function() {$.getScript("js/navbar.js");});
+    </script>
 </head>
 <body>
-    <!-- Upper Tab -->
-    <header class="upper-tab">
-        <div class="logo-container">
-            <img src="img/LabMate.svg" alt="LabMate Logo" class="logo">
-        </div>
-        <div class="header-content">
-            <h1 class="page-title">Edit Account Details</h1>
-            <div class="user-greeting">
-                <span>Hello!</span>
-                <span class="user-name">Shonagon!</span>
-            </div>
-        </div>
-        <div class="profile-picture-header">
-            <img src="img/default-profile.png" alt="Profile Picture">
-        </div>
-    </header>
+    <div data-include="navbar-labtech-signedin"></div>
 
     <!-- Side Navigation -->
     <nav class="side-nav">
-        <div class="nav-item">
+        <div class="nav-item active">
             <img src="img/Home.svg" alt="Dashboard" class="nav-icon">
             <a href="profile_accountOverview.html"><span>Dashboard</span></a>
         </div>
         <div class="nav-item">
-            <img src="img/desktop.svg" alt="Lab Check" class="nav-icon">
-            <a href="student-home.html"><span>Lab Check</span></a>
-        </div>
-        <div class="nav-item active">
             <img src="img/settings.svg" alt="Settings" class="nav-icon">
             <a href="profile_overview.html"><span>Settings</span></a>
         </div>
@@ -57,7 +47,7 @@
                     </button>
                 </div>
                 <div class="name-section">
-                    <h2>Shonagon, Sei</h2>
+                    <h2>Caronongan, Charlie</h2>
                     <button class="edit-btn">
                         <img src="img/pencil_edit.svg" alt="Edit" class="edit-icon">
                     </button>
@@ -68,7 +58,7 @@
                 <div class="detail-row">
                     <span class="label">Email:</span>
                     <div class="editable-field">
-                        <span>Sei_Shonagon@dlsu.edu.ph</span>
+                        <span>charlie_caronongan@dlsu.edu.ph</span>
                         <button class="edit-btn">
                             <img src="img/pencil_edit.svg" alt="Edit" class="edit-icon">
                         </button>
@@ -78,7 +68,7 @@
                 <div class="detail-row">
                     <span class="label">Department:</span>
                     <div class="editable-field">
-                        <span>Literature and Arts</span>
+                        <span>Computer Science</span>
                         <button class="edit-btn">
                             <img src="img/pencil_edit.svg" alt="Edit" class="edit-icon">
                         </button>
@@ -93,13 +83,13 @@
                         </button>
                     </div>
                     <p class="biography-text">
-                        "OMG! Hi hi! 💕 Court lady and author of 'The Pillow Book'! Super into modern slang and totally loving this era! BTW, did you know I'm actually a Berserker class servant? Pretty wild, right? Always ready to drop some mad poetry skills and spread some positive vibes! #blessed #ServantLife #PillowBookAuthor"
+                        "dogs r the best :D"
                     </p>
                 </div>
             </div>
             <div class="action-buttons">
-                <button class="cancel-button" onclick="location.href='profile_overview.html'">CANCEL</button>
-                <button class="save-button" onclick="location.href='profile_overview.html'">SAVE</button>
+                <button class="cancel-button" onclick="location.href='labtech-profile_overview.html'">CANCEL</button>
+                <button class="save-button" onclick="location.href='labtech-profile_overview.html'">SAVE</button>
             </div>
         </div>
     </main>

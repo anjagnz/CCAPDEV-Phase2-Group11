@@ -5,19 +5,34 @@
         
         <meta charset = "UTF-8">
         <meta name = "viewport" content = "width=device-width, initial-scale=1.0">
-        
+
         <link rel="stylesheet" href="css/theme-style.css">
         <link rel="stylesheet" href="css/navbar-style.css">
-
+        
         <style>
 
+            @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+            :root {
+                --primary-color: #23c686;
+                --secondary-color: #1d3853;
+                --background-color: #fbfcf6;
+            
+                --primary-font-fam: 'Roboto';
+                --secondary-font-fam: 'DM Sans';
+                color: #1b1b1b;
+            }
+            
+
             body{
-                background: var(--green);
+                background: var(--primary-color);
                 margin: 0;
                 padding: 0;
-                font-family: var(--primary-font-family);
+                font-family: var(--primary-font-fam);
                 height: 100vh;
                 overflow: hidden;
+
             }
 
             body::before{
@@ -34,9 +49,9 @@
             }
 
             h1 {
-                color: var(--dark-blue);
+                color: var(--secondary-color);
                 font-size: 35px;
-                font-family: var(--secondary-font-family);
+                font-family: var(--secondary-font-fam);
             }
 
             #container {
@@ -51,7 +66,7 @@
                 height: 400px;
                 width: 650px;
                 padding: 30px 40px;
-                background-color: var(--off-white);
+                background-color: var(--background-color);
                 border: none;
                 border-radius: 20px;
             }
@@ -61,12 +76,12 @@
             }
 
             #signin a {
-                color: var(--dark-blue);
+                color: var(--secondary-color);
                 font-weight: bold;
             }
 
             #signin a:hover {
-                color: var(--green)
+                color: var(--primary-color)
             }
 
             #signin .right-column {
@@ -99,14 +114,14 @@
                 font-size: 1rem;
                 font-weight: bold;
                 cursor: pointer;
-                background-color: var(--dark-blue);
-                color: var(--off-white)    
+                background-color: var(--secondary-color);
+                color: var(--background-color)    
             }
 
             #email, #password {
                 height: 1.5rem;
                 border-radius: 10px;
-                border-color: var(--dark-font-color);
+                border-color: var(--text-color);
                 padding: 0 5px;
             }
 
@@ -129,7 +144,7 @@
         </script>
     </head>
     <body>
-        <!-- insert navigation bar for signed out view -->
+        
         <div data-include="navbar-signedout"></div>
 
         <div id="container">
