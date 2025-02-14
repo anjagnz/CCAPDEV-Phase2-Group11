@@ -1,13 +1,19 @@
 
 /* minor reference: https://www.youtube.com/watch?v=GdrbE-s5DgQ */
 
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
 .navbar {
     color: var(--off-white);
 }
 
 .navbar label.logo {
-    color: var(--background-color);
-    font-family: var(--secondary-font-famly);
+    color: var(--off-white);
+    font-family: var(--secondary-font-family);
     font-weight: 700;
     font-size: 32px;
 }
@@ -48,7 +54,7 @@
 
 .navbar a {
     text-decoration: none;
-    color: var(--background-color);
+    color: var(--off-white);
     font-weight: 500;
     font-size: 1.2rem;
     margin-left: 25px;
@@ -78,16 +84,6 @@
     border-bottom-style: solid;
     padding-bottom: 5px;
     transition: border-bottom-width 0.1s ease;
-}
-
-.navbar img {
-    width: 40px;
-    border-radius: 50%;
-}
-
-.navbar img:hover {
-    scale: 1.05;
-    box-shadow: 0 4px rgba(0, 0, 0, 0.2);
 }
 
 /* make navbar responsive */
