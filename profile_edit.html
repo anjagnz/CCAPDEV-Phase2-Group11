@@ -1,96 +1,103 @@
-<!-- views/profile-edit.html -->
+<!-- profile-edit.html -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LabMate - Edit Account Details</title>
     <link rel="stylesheet" href="css/profile-pages.css">
-    <link rel="stylesheet" href="css/navbar-style.css">
     
     <!-- Imported Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;600;700;900&display=swap" rel="stylesheet">
-    
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <!-- Upper Tab -->
-    <div class="upper-tab">
-        <div class="labmate-logo">
-            <img src="img/LabMate.svg" alt="LabMate Logo">
+    <header class="upper-tab">
+        <div class="logo-container">
+            <img src="img/LabMate.svg" alt="LabMate Logo" class="logo">
         </div>
-        <div class="greet-container">
-            <span class="page-title">Edit Account Details</span>
-            <div class="greeting">
+        <div class="header-content">
+            <h1 class="page-title">Edit Account Details</h1>
+            <div class="user-greeting">
                 <span>Hello!</span>
-                <span class="lastname">LastName!</span>
+                <span class="user-name">LastName!</span>
             </div>
         </div>
-        <div class="profile-picture">
+        <div class="profile-picture-header">
             <img src="img/default-profile.png" alt="Profile Picture">
         </div>
-    </div>
+    </header>
 
-    <!-- Side Tab -->
-    <div class="side-tab">
-        <div class="menu-item">
-            <img src="img/Home.svg" alt="Dashboard Icon" class="icon">
+    <!-- Side Navigation -->
+    <nav class="side-nav">
+        <div class="nav-item">
+            <img src="img/Home.svg" alt="Dashboard" class="nav-icon">
             <span>Dashboard</span>
         </div>
-        <div class="menu-item">
-            <img src="img/desktop.svg" alt="Lab Check Icon" class="icon">
+        <div class="nav-item">
+            <img src="img/desktop.svg" alt="Lab Check" class="nav-icon">
             <span>Lab Check</span>
         </div>
-        <div class="menu-item active-tab">
-            <img src="img/settings.svg" alt="Settings Icon" class="icon">
+        <div class="nav-item active">
+            <img src="img/settings.svg" alt="Settings" class="nav-icon">
             <span>Settings</span>
         </div>
-    </div>
+    </nav>
 
     <!-- Main Content -->
-    <div class="information-container">
-        <div class="profile-section">
-            <div class="profile-picture-small">
+    <main class="main-content">
+        <div class="profile-header editable">
+            <div class="profile-picture-large">
                 <img src="img/default-profile.png" alt="Profile Picture">
-                <img src="img/pencil_edit_information.svg" alt="Edit" class="edit-profile-icon">
+                <button class="edit-photo-btn">
+                    <img src="img/pencil_edit.svg" alt="Edit profile picture" class="edit-icon">
+                </button>
             </div>
             <div class="name-section">
-                <h1>Last Name, First Name</h1>
-                <img src="img/pencil_edit_information.svg" alt="Edit" class="edit-icon">
+                <h2 class="profile-name">Last Name, First Name</h2>
+                <button class="edit-btn">
+                    <img src="img/pencil_edit.svg" alt="Edit name" class="edit-icon">
+                </button>
             </div>
         </div>
         
-        <div class="details">
+        <div class="profile-details">
             <div class="detail-row">
                 <span class="label">Email:</span>
-                <div class="edit-field">
+                <div class="editable-field">
                     <input type="email" value="LastName_FirstName@dlsu.edu.ph" disabled>
-                    <img src="img/pencil_edit_information.svg" alt="Edit" class="edit-icon">
+                    <button class="edit-btn">
+                        <img src="img/pencil_edit.svg" alt="Edit email" class="edit-icon">
+                    </button>
                 </div>
             </div>
             
             <div class="detail-row">
                 <span class="label">Department:</span>
-                <div class="edit-field">
-                    <input type="text" value="DepartmentName">
-                    <img src="img/pencil_edit_information.svg" alt="Edit" class="edit-icon">
+                <div class="editable-field">
+                    <input type="text" value="DepartmentName" disabled>
+                    <button class="edit-btn">
+                        <img src="img/pencil_edit.svg" alt="Edit department" class="edit-icon">
+                    </button>
                 </div>
             </div>
             
-            <div class="biography-section">
-                <h2>Biography</h2>
-                <div class="edit-field biography-edit">
-                    <textarea class="biography-input">
-"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-                    </textarea>
-                    <img src="img/pencil_edit_information.svg" alt="Edit" class="edit-icon">
+            <section class="biography-section">
+                <div class="section-header">
+                    <h3>Biography</h3>
+                    <button class="edit-btn">
+                        <img src="img/pencil_edit.svg" alt="Edit biography" class="edit-icon">
+                    </button>
                 </div>
-            </div>
+                <textarea class="biography-input" disabled>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</textarea>
+            </section>
         </div>
 
-        <div class="button-container">
-            <button class="cancel-btn">CANCEL</button>
-            <button class="save-btn">SAVE</button>
+        <div class="action-buttons">
+            <button class="cancel-button">CANCEL</button>
+            <button class="save-button">SAVE</button>
         </div>
-    </div>
+    </main>
 </body>
 </html>
