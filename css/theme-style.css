@@ -67,6 +67,6 @@ button.round.secondary, button.square.secondary{
 input.round {
     height: 1.5rem;
     border-radius: 10px;
-    border-color: var(--text-color);
+    border-color: var(--dark-font-color);
     padding: 0 5px;
 }
