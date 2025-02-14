@@ -194,28 +194,16 @@
 
         </style>
 
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+        <script src ="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <!-- add navigation bar and interactivity  -->
         <script>
             /* adds outline design on active page in navigation bar */
-            $(document).ready(function() {
-                var includes = $('[data-include]');
-                $.each(includes, function() {
-                    var file = 'views/' + $(this).data('include') + '.html';
-                    $(this).load(file, function() {
-                        var page = window.location.pathname.split("/").pop();
-
-                        /* TODO: add laboratories, reservation here */
-                        if (page.includes("student-laboratories.html")) {
-                            document.getElementById("nav-lab").classList.add("selected");
-                        }
-                    });
-                });
-            });
+            $(document).ready(function() {$.getScript("js/navbar.js");});
         </script>
     </head>
 
     <body>
+        <!-- insert navigation bar for signed in view -->
         <div data-include="navbar-signedin"></div>
 
         <div class = "frame">
@@ -377,21 +365,7 @@
             <button id = "reserve-button"> Create Booking </button>
         </div>
 
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script>
-            $(document).ready(function(){
-                document.addEventListener("DOMContentLoaded", function() {
-                    console.log(window.location.pathname);
-                    if (window.location.pathname.endsWith("student-laboratories.html")) {
-                        document.getElementById("nav-lab").classList.add("selected");
-                    } 
-                });
-            });
-            
-        </script>
-
         <!-- On Click Listener -->
-
         <script>
             var seats = document.getElementsByClassName('clickable-seat');
 
