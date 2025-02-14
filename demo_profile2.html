@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LabMate - Profile Overview</title>
     <link rel="stylesheet" href="css/profile_pages.css">
-    
+    <link rel="stylesheet" href="css/theme-style.css">
+    <link rel="stylesheet" href="css/navbar-style.css">
+
     <!-- Imported Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;600;700;900&display=swap" rel="stylesheet">
@@ -18,17 +20,17 @@
     </script>
 </head>
 <body>
-    <div data-include="navbar-signedin"></div>
+    <div data-include="navbar-labtech-signedin"></div>
 
     <!-- Side Navigation -->
     <nav class="side-nav">
-        <div class="nav-item active">
+        <div class="nav-item">
             <img src="img/Home.svg" alt="Dashboard" class="nav-icon">
-            <a href="profile_accountOverview.html"><span>Dashboard</span></a>
+            <a href="labtech-profile_accountOverview.html"><span>Dashboard</span></a>
         </div>
         <div class="nav-item">
             <img src="img/settings.svg" alt="Settings" class="nav-icon">
-            <a href="profile_overview.html"><span>Settings</span></a>
+            <a href="labtech-profile_overview.html"><span>Settings</span></a>
         </div>
     </nav>
 
@@ -39,32 +41,27 @@
                 <div class="profile-picture-large">
                     <img src="img/default-profile.png" alt="Profile Picture">
                 </div>
-                <h2>Shonagon, Sei</h2>
+                <h2>Ho, Liana</h2>
             </div>
 
             <div class="profile-details">
                 <div class="detail-row">
                     <span class="label">Email:</span>
-                    <span class="value">Sei_Shonagon@dlsu.edu.ph</span>
+                    <span class="value">denise_liana_ho@dlsu.edu.ph</span>
                     <span class="tag">[Student]</span>
                 </div>
 
                 <div class="detail-row">
                     <span class="label">Department:</span>
-                    <span class="value">Literature and Arts</span>
+                    <span class="value">Computer Science</span>
                 </div>
 
                 <div class="biography-section">
                     <h3>Biography</h3>
                     <p class="biography-text">
-                        "OMG! Hi hi! 💕 Court lady and author of 'The Pillow Book'! Super into modern slang and totally loving this era! BTW, did you know I'm actually a Berserker class servant? Pretty wild, right? Always ready to drop some mad poetry skills and spread some positive vibes! #blessed #ServantLife #PillowBookAuthor"
+                        "cats"
                     </p>
                 </div>
-            </div>
-            <div class="action-buttons">
-                <button class="edit-button" onclick="location.href='profile_edit.html'">EDIT</button>
-                <button class="delete-button" onclick="location.href='profile_delete.html'">Delete Account</button>
-                <button class="logout-button" onclick="location.href='index.html'">LOGOUT</button>
             </div>
         </div>
     </main>

@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>See Reservations</title>
+    <title>LabMate - See Reservations</title>
     <link rel="stylesheet" href="css/see-reservations.css">
     <link rel="stylesheet" href="css/pop-up.css">
     <link rel="stylesheet" href="css/reservation-details.css">
+    <link rel="stylesheet" href="css/theme-style.css">
+    <link rel="stylesheet" href="css/navbar-style.css">
 
     <!-- Imported Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
@@ -21,7 +23,7 @@
     
     <div data-include="navbar-labtech-signedin"></div>
     
-    <h1>Students' Reservations</h1>
+    <h1>Upcoming Reservations</h1>
 
     <!-- Reservations  -->
     <div class="reservations">
@@ -55,21 +57,21 @@
                     <td>GK404B</td>
                     <td>2025-02-18</td>
                     <td> <span id="start"> 9:30 A.M. </span> - <span id="end"> 10:00 P.M.</span> </td>
-                    <td style="text-align: left;"><img src="img/reservation-details.jpeg" style="height: 25px; cursor: pointer;" onclick="openPopup3()"></td>
+                    <td style="text-align: left;"><img src="img/reservation-details.jpeg" style="height: 25px; cursor: pointer;" onclick="openPopup4()"></td>
                 </tr>
                 <tr>
                     <td style="text-align: right;"><input type="radio" name="select-option" class="select-btn"></td>
                     <td>AG1706</td>
                     <td>2025-02-19</td>
                     <td> <span id="start"> 10:30 A.M. </span> - <span id="end"> 12:00 P.M.</span> </td>
-                    <td style="text-align: left;"><img src="img/reservation-details.jpeg" style="height: 25px; cursor: pointer;" onclick="openPopup3()"></td>
+                    <td style="text-align: left;"><img src="img/reservation-details.jpeg" style="height: 25px; cursor: pointer;" onclick="openPopup5()"></td>
                 </tr>
                 <tr>
                     <td style="text-align: right;"><input type="radio" name="select-option" class="select-btn"></td>
                     <td>AG1904</td>
                     <td>2025-02-20</td>
                     <td> <span id="start"> 7:30 A.M. </span> - <span id="end"> 8:00 A.M.</span> </td>
-                    <td style="text-align: left;"><img src="img/reservation-details.jpeg" style="height: 25px; cursor: pointer;" onclick="openPopup3()"></td>
+                    <td style="text-align: left;"><img src="img/reservation-details.jpeg" style="height: 25px; cursor: pointer;" onclick="openPopup6()"></td>
                 </tr>
             </tbody>
         </table>
@@ -219,13 +221,13 @@
         </div>
     </div>
 
-    <div class="popup" id="reservation-details-1" name="reservation-details" style="margin-top: 20px; height: 86vh; width: 50%; background-color: #fbfcf6;">
+    <div class="popup" id="reservation-details-3" name="reservation-details" style="margin-top: 20px; height: 86vh; width: 50%; background-color: #fbfcf6;">
         <h1 style="text-align: center; padding-top: 30px; padding-bottom: 18px; font-size: 28px;">Reservation Details</h1>
         <div class="input-wrapper">
             <div class="label-wrapper">            
                 <label for="student-name">Student's Name:</label>
             </div>
-            <input type="text" id="lab-room" class="text-field" value="Charlie Caronongan" disabled> 
+            <input type="text" id="lab-room" class="text-field" value="Jane Doe" disabled> 
         </div>
         <div class="input-wrapper">
             <div class="label-wrapper">            
@@ -287,7 +289,7 @@
         </div>
     </div> 
 
-    <div class="popup" id="reservation-details-1" name="reservation-details" style="margin-top: 20px; height: 86vh; width: 50%; background-color: #fbfcf6;">
+    <div class="popup" id="reservation-details-4" name="reservation-details" style="margin-top: 20px; height: 86vh; width: 50%; background-color: #fbfcf6;">
         <h1 style="text-align: center; padding-top: 30px; padding-bottom: 18px; font-size: 28px;">Reservation Details</h1>
         <div class="input-wrapper">
             <div class="label-wrapper">            
@@ -355,7 +357,7 @@
         </div>
     </div> 
 
-    <div class="popup" id="reservation-details-1" name="reservation-details" style="margin-top: 20px; height: 86vh; width: 50%; background-color: #fbfcf6;">
+    <div class="popup" id="reservation-details-5" name="reservation-details" style="margin-top: 20px; height: 86vh; width: 50%; background-color: #fbfcf6;">
         <h1 style="text-align: center; padding-top: 30px; padding-bottom: 18px; font-size: 28px;">Reservation Details</h1>
         <div class="input-wrapper">
             <div class="label-wrapper">            
@@ -443,6 +445,9 @@
         let remove= document.getElementById("remove-reservation");
         let details1= document.getElementById("reservation-details-1");
         let details2= document.getElementById("reservation-details-2");
+        let details3= document.getElementById("reservation-details-3");
+        let details4= document.getElementById("reservation-details-4");
+        let details5= document.getElementById("reservation-details-5");
         let details = document.querySelectorAll('[name="reservation-details"]');
         let overlay = document.getElementById("overlay");
         let radioButtons = document.querySelectorAll(".select-btn");
@@ -474,6 +479,22 @@
             details2.classList.add("open-popup")
             overlay.style.display = "block"; 
         }
+
+        function openPopup4(){
+            details3.classList.add("open-popup")
+            overlay.style.display = "block"; 
+        }
+
+        function openPopup5(){
+            details4.classList.add("open-popup")
+            overlay.style.display = "block"; 
+        }
+
+        function openPopup6(){
+            details5.classList.add("open-popup")
+            overlay.style.display = "block"; 
+        }
+
         function confirm() {
             remove.classList.remove("open-popup");
             overlay.style.display = "none"; 

@@ -218,7 +218,7 @@
 
                 <div class="column" style="margin-top: 20px;">
                     <div class="left-column">
-                        <button id="create-btn" type="button" onclick="location.href='student-home.html'">Create Account</button>
+                        <button id="create-btn" type="button" onclick="isFaculty()">Create Account</button>
                     </div>
                     <div class="right-column">
                         <div>Already have an account?  <a href="signin-page.html">Sign in here. </a></div>
@@ -240,6 +240,19 @@
 
                 $('#faculty').hide();
             });
+        </script>
+
+        <script>
+            function isFaculty() {
+                let selected = document.querySelector('input[name="acc-type"]:checked');
+
+                if(selected.value === "faculty") {
+                    window.location.href = "labtech-home.html";
+                }
+                else {
+                    window.location.href = "student-home.html";
+                }
+            }
         </script>
         
     </body>

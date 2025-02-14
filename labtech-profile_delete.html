@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>LabMate - Delete Account</title>
+        <link rel="stylesheet" href="css/theme-style.css">
+        <link rel="stylesheet" href="css/navbar-style.css">
+        <link rel="stylesheet" href="css/pop-up.css">
+        <style>
+            body {
+                background: #fbfcf6;
+            }
+
+            .popup {
+                background: yellow;
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: white;
+                padding: 20px;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                z-index: 1000;
+                height: relative;
+                overflow: hidden
+            }
+
+            .popup h2 {
+                text-align: center;
+                color: #1d3853;
+            }
+            
+            .popup #profile-img img {
+                width: 130px;
+                height: 130px;
+                border-radius: 50%;
+                margin: 20px auto;
+                display: block;
+                border:  3px solid #1d3853;
+            }
+
+            #delete-btn {
+                background: #ce3030;
+
+            }
+        </style>
+
+        <script src ="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <!-- add navigation bar and interactivity  -->
+        <script>
+            /* adds outline design on active page in navigation bar */
+            $(document).ready(function() {$.getScript("js/navbar.js");});
+        </script>
+    </head>
+    <body>
+
+        <!-- insert navigation bar for signed in view -->
+        <div data-include="navbar-signedin"></div>
+
+        <div class="popup" id="delete-account" style="visibility: visible;">
+            <h2>Delete LabMate Account?</h2>
+            <div id="profile-img">
+                <img src="img/default-profile.png" alt="Profile Image">
+            </div>
+            <div class="popup-body">
+                <p>Please enter your password to proceed with account deletion. Once confirmed, your account will be <b>permanently deleted</b>,
+                    along with all current reservations. This action cannot be undone!
+                </p>
+                <br>
+                <div class="input-wrapper">
+                    <label for="password">Password:</label>
+                <input class="round" type="password" id="password" required>
+                </div>
+                <br>
+            </div>
+            <div class="popup-footer">
+                <button class="round primary" id="delete-btn" onclick="location.href='index.html'">Confirm Deletion</button>
+                <button class="round secondary" onclick="location.href='profile_overview.html'">Cancel</button>
+            </div>
+        </div>
+
+    </body>
+</html>
