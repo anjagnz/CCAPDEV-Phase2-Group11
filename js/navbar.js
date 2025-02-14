@@ -15,6 +15,9 @@
                     // remove the header background color
                     document.getElementById("nav-header").classList.add("index-header")
                     break;
+                case 'signedout-laboratories.html':
+                    document.getElementById("nav-lab").classList.add("active");
+                    break;
                 case 'student-home.html':
                     document.getElementById("nav-home").classList.add("active");
                     break;

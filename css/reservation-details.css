@@ -66,6 +66,9 @@ body{
     padding-right: 18px;
 }
 
+label{
+    color: var(--secondary-color);
+}
 .footer{
     padding-top: 20px;
     padding-bottom: 20px;

@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LabMate - Profile Visit</title>
     <link rel="stylesheet" href="../css/profile_pages.css">
+    <link rel="stylesheet" href="css/theme-style.css">
+    <link rel="stylesheet" href="css/navbar-style.css">
     
     <!-- Imported Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@700&display=swap" rel="stylesheet">
@@ -39,24 +41,16 @@
             }
         }
     </style>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- add navigation bar and interactivity  -->
+    <script>
+        /* adds outline design on active page in navigation bar */
+        $(document).ready(function() {$.getScript("js/navbar.js");});
+    </script>
 </head>
 <body>
-    <!-- Upper Tab -->
-    <header class="upper-tab">
-        <div class="logo-container">
-            <img src="../img/LabMate.svg" alt="LabMate Logo" class="logo">
-        </div>
-        <div class="header-content">
-            <h1 class="page-title">Profile Visit</h1>
-            <div class="user-greeting">
-                <span>Hello</span>
-                <span class="user-name">Shonagon!</span>
-            </div>
-        </div>
-        <div class="profile-picture-header">
-            <img src="../img/default-profile.png" alt="Profile Picture">
-        </div>
-    </header>
+    <div data-include="navbar-signedin"></div>
 
     <!-- Side Navigation -->
     <nav class="side-nav">

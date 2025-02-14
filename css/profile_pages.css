@@ -85,13 +85,14 @@ body {
 /* Side Navigation */
 .side-nav {
     position: fixed;
-    top: var(--header-height);
-    left: 0;
+    top: 30vh;
+    left: -5px;
     width: var(--sidebar-width);
-    height: calc(100vh - var(--header-height));
+    height: 35vh;
     background: var(--background-color);
     padding-top: 20px;
     z-index: 90;
+    border-radius: 8px;
 }
 
 .nav-item {
@@ -121,7 +122,6 @@ body {
 /* Main Content Area */
 .main-content {
     margin-left: var(--sidebar-width);
-    margin-top: var(--header-height);
     padding: 40px;
     min-height: calc(100vh - var(--header-height));
 }
@@ -206,6 +206,7 @@ body {
     line-height: 1.5;
     color: var(--text-color);
     white-space: pre-line;
+    margin-bottom: 80px;
 }
 
 /* Edit Mode Styles */
