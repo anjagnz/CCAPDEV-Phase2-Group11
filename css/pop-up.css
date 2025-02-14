@@ -29,6 +29,7 @@ body{
     text-align: center;
     padding: px 0px 0px 0px;
     visibility: hidden;
+    overflow: auto;
     transition: transition 0.15s, top 0.15s;
     z-index: 20;
 }

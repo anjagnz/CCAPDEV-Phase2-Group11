@@ -6,16 +6,17 @@
 
 html, body {
     height: 100%;
-    overflow: hidden;
     background-color: #fbfcf6;
 }
 
 h1{
-    font-family: 'DM Sans';
-    font-size: 25px;
-    display: flex;
-    justify-content: center;
-    padding: 25px;
+    position: relative;
+    text-align: center;
+    font-family: var(--secondary-font-fam);
+    font-weight: 600;
+    font-size: 35px;
+    color: var(--secondary-color);
+    padding: 80px 100px 80px 100px;
 }
 
 table{
@@ -45,9 +46,9 @@ td{
 .reservations{
     height: 65vh;
     width: 60%;
-    overflow: scroll;
+    overflow: auto;
     border-radius: 30px;
-    outline: 2px solid black;
+    outline: 1px solid var(--secondary-color);
     justify-content: center;
     margin: auto;
     background-color: #ffffff;
@@ -60,13 +61,40 @@ td{
 }
 
 .remove-btn{
-    padding: 10px 60px;
-    background: #1d3853;
-    color: #fbfcf6;
-    border: 0;
-    outline: none;
-    cursor: pointer;
-    font-size: 18px;
+    width: 200px;
+    background-color: var(--secondary-color);
+    color: var(--background-color);
+    font-family: var(--primary-font-fam);
+    font-size: 15px;
     font-weight: 500;
-    border-radius: 30px;
+    border: none;
+    border-radius: 10px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 25px;
+    margin-bottom: 50px;
+}
+
+.remove-btn:hover{
+    transform: scale(1.05);
+}
+
+th{
+    text-align: center;
+    white-space: nowrap;
+    padding: 20px;
+    font-weight: 500;
+    font-size: 15px;
+    color: var(--secondary-color);
+}
+
+td{
+    text-align: center;
+    white-space: nowrap;
+    font-weight: 400;
+    font-size: 14px;
+    border-radius: 8px;
+    padding: 5px;
+    color: var(--secondary-color);
 }

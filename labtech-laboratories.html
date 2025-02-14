@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>LabMate - Laboratories</title>
+        <meta charset = "UTF-8">
+        <meta name = "viewport" content = "width=device-width, initial-scale = 1.0">
+        <link rel="stylesheet" href="css/pop-up.css">
+        
+        <style>
+            :root {
+                --primary-color: #23c686;
+                --secondary-color: #1d3853;
+                --background-color: #fbfcf6;
+            
+                --primary-font-fam: 'Roboto';
+                --secondary-font-fam: 'DM Sans';
+                --text-color: #1b1b1b;
+            }
+
+            body{
+                background-color: var(--background-color);
+                margin: 0;
+                padding: 0;
+            }
+
+            .frame{
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .header{
+                position: relative;
+                text-align: center;
+                font-family: var(--secondary-font-fam);
+                font-weight: 600;
+                font-size: 35px;
+                color: var(--secondary-color);
+                padding: 80px 100px 50px 100px;
+            }
+
+            .dropdown, #chart{
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                border: none;
+                border-radius: 25px;
+                padding: 40px 40px 10px 40px;
+            }
+
+            .dropdown-header, #chart-header{
+                color: var(--secondary-color);
+                font-family: var(--secondary-font-fam);
+                font-size: 15px;
+                font-weight: 500;
+                padding-bottom: 10px;
+            }
+            
+            #student-name{
+                width: 1000px;
+                appearance: none;
+                border: 1px solid var(--secondary-color);
+                border-radius: 8px;
+                color: var(--secondary-color);
+                font-family: var(--primary-font-fam);
+                padding: 8px 500px 8px 15px;
+                color: rgba(29, 56, 83, 0.8);
+            }
+
+            #labs, #dates, #endtimes{
+                width: 1000px;
+                appearance: none;
+                -moz-appearance: none;
+                -webkit-appearance: none;
+                background: url(img/arrow-down.png) no-repeat 99% center, #FFFFFF;
+                background-size: 20px;
+                border: 1px solid var(--secondary-color);
+                border-radius: 8px;
+                color: var(--secondary-color);
+                font-family: var(--primary-font-fam);
+                padding: 8px 500px 8px 15px;
+                color: rgba(29, 56, 83, 0.8);
+            }
+
+            #labs:focus, #dates:focus, #endtimes:focus{
+                background: url(img/arrow-up.png) no-repeat 99% center, #FFFFFF;
+                background-size: 20px;
+            }
+
+            #chart-body{
+                width: 1000px;
+                overflow-x: auto;
+                background: #FFFFFF;
+                border: 1px solid var(--secondary-color);
+                border-radius: 8px;
+                color: var(--secondary-color);
+                font-family: var(--primary-font-fam);
+                margin-bottom: 10px;
+            }
+
+            table{
+                padding: 8px;
+                border-collapse: separate;
+            }
+
+            th{
+                text-align: center;
+                white-space: nowrap;
+                padding: 20px;
+                font-weight: 500;
+                font-size: 13px;
+            }
+
+            #seat-header{
+                white-space: nowrap;
+                padding: 20px;
+                font-weight: 600;
+                font-size: 13px;
+            }
+
+            td{
+                text-align: center;
+                white-space: nowrap;
+                font-weight: 400;
+                font-size: 12px;
+                border-radius: 8px;
+                padding: 5px;
+            }
+
+            .clickable-seat{
+                height: 50px;
+                width: 50px;
+                background: #D9D9D9;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+            }
+
+            .taken-seat{
+                height: 50px;
+                width: 50px;
+                background: #FF7878;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+            }
+
+            #seats{
+                background: none;
+                font-weight: 500;
+            }
+
+            #legend{
+                display: flex;
+                flex-direction: row;
+                align-items: center;   
+                margin-bottom: 10px;
+            }
+
+            .legend-text{
+                color: var(--secondary-color);
+                font-size: 14px;
+                padding-left: 8px;
+                padding-right: 24px;
+            }
+
+            #legend-available{
+                height: 25px;
+                width: 25px;
+                background-color: #D9D9D9;
+                border-radius: 4px;
+            }
+
+            #legend-selected{
+                height: 25px;
+                width: 25px;
+                background-color: #FC9D45;
+                border-radius: 4px;
+            }
+
+            #legend-unavailable{
+                height: 25px;
+                width: 25px;
+                background-color: #FF7878;
+                border-radius: 4px;
+            }
+
+            #legend-booking{
+                height: 25px;
+                width: 25px;
+                background-color: #23c686;
+                border-radius: 4px;
+            }
+
+            #reserve-button{
+                width: 250px;
+                background-color: var(--secondary-color);
+                color: var(--background-color);
+                font-family: var(--primary-font-fam);
+                font-size: 15px;
+                font-weight: 500;
+                border: none;
+                border-radius: 10px;
+                padding: 10px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                margin-top: 50px;
+                margin-bottom: 50px;
+            }
+
+            #reserve-button:hover{
+                transform: scale(1.05);
+            }
+
+            .popup2{
+                display: none;
+                flex-direction: column;
+                opacity: 0;
+                margin-top: 50px;
+            }
+
+            .popup-box{
+                background-color: #fff;
+                width: 200px;
+                height: 120px;
+                display: flex;
+                flex-direction: column;
+                border: 1px solid var(--secondary-color);
+                align-items: center;
+                justify-content: center;
+                border-radius: 8px;
+            }
+
+            .popup-header{
+                font-size: 14px;
+                font-family: var(--primary-font-fam);
+                color: var(--secondary-color);
+                font-weight: 500;
+                margin: 10px 0px 10px 0px;
+            }
+
+            .user-img{
+                width: 40px;
+                height: 40px;
+                border-radius: 25px;
+            }
+
+            .user-name{
+                font-size: 13px;
+                font-family: var(--primary-font-fam);
+                color: var(--secondary-color);
+                margin: 5px 0px 10px 0px;
+            }
+
+            .popup2.show{
+                display: flex;
+                opacity: 1;
+            }
+        </style>
+
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        <script>
+            /* adds outline design on active page in navigation bar */
+            $(document).ready(function() {$.getScript("js/navbar-labtech.js");});
+        </script>
+    </head>
+
+    <body>
+        <div data-include="navbar-labtech-signedin"></div>
+
+        <div class = "frame">
+            <span class = "header">Reserve a Slot</span>
+
+            <div class = "dropdown">
+                <span class = "dropdown-header">Laboratory</span>
+
+                <select name = "labs" id = "labs">
+                    <option value = "" disabled selected>Select a Laboratory</option>
+                    <option value = "lab1">Gokongwei Laboratory</option>
+                    <option value = "lab2">Andrew Gonzales Laboratory</option>
+                    <option value = "lab3">Yuchengco Laboratory</option>
+                    <option value = "lab4">Velasco Laboratory</option>
+                    <option value = "lab5">St. Miguel Laboratory</option>
+                </select>
+            </div>
+
+            
+            <div class = "dropdown">
+                <span class = "dropdown-header">Date</span>
+
+                <select name = "dates" id = "dates">
+                    <option value = "" disabled selected>Select a Date</option>
+                    <option value = "date1">February 15, 2025</option>
+                    <option value = "date2">February 16, 2025</option>
+                    <option value = "date3">February 17, 2025</option>
+                    <option value = "date4">February 18, 2025</option>
+                    <option value = "date5">February 19, 2025</option>
+                    <option value = "date6">February 20, 2025</option>
+                    <option value = "date7">February 21, 2025</option>
+                </select>
+            </div>
+
+            <div class = "popup2" id = "popup-frame-1">
+                <div class = "popup-box">
+                    <span class = "popup-header">8:30 AM - 9:00 AM</span>
+                    <img class = "user-img" src = "img/default-profile.png"></img>
+                    <span class = "user-name">Anja Gonzales</span>
+                </div>
+            </div>
+
+            <div class = "popup2" id = "popup-frame-2">
+                <div class = "popup-box">
+                    <span class = "popup-header">10:00 AM - 11:00 AM</span>
+                    <img class = "user-img" src = "img/default-profile.png"></img>
+                    <span class = "user-name">Liana Ho</span>
+                </div>
+            </div>
+
+            <div class = "popup2" id = "popup-frame-3">
+                <div class = "popup-box">
+                    <span class = "popup-header">9:30 AM - 10:00 AM</span>
+                    <img class = "user-img" src = "img/default-profile.png"></img>
+                    <span class = "user-name">Anonymous User</span>
+                </div>
+            </div>
+
+            <div class = "popup2" id = "popup-frame-4">
+                <div class = "popup-box">
+                    <span class = "popup-header">10:30 AM - 12:00 PM</span>
+                    <img class = "user-img" src = "img/default-profile.png"></img>
+                    <span class = "user-name">Angelo Rocha</span>
+                </div>
+            </div>
+
+            <div class = "popup2" id = "popup-frame-5">
+                <div class = "popup-box">
+                    <span class = "popup-header">7:30 AM - 8:00 AM</span>
+                    <img class = "user-img" src = "img/default-profile.png"></img>
+                    <span class = "user-name">Grass Capote</span>
+                </div>
+            </div>
+
+            <div id = "chart">
+                <span id = "chart-header">Slot Availability</span>
+
+                <div id = "chart-body">
+                    <table id = "slot-chart">
+                        <thead>
+                            <tr>
+                                <th id = "seat-header">Seat</th>
+                                <th>7:30 AM</th>
+                                <th>8:00 AM</th>
+                                <th>8:30 AM</th>
+                                <th>9:00 AM</th>
+                                <th>9:30 AM</th>
+                                <th>10:00 AM</th>
+                                <th>10:30 AM</th>
+                                <th>11:00 AM</th>
+                                <th>11:30 AM</th>
+                                <th>12:00 PM</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <th id = "seats">Seat 1</td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "taken-seat" onclick = "togglePopup('popup-frame-1')"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                            </tr>
+                            <tr>
+                                <th id = "seats">Seat 2</td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "taken-seat" onclick = "togglePopup('popup-frame-2')"></button></td>
+                                    <td><button class = "taken-seat" onclick = "togglePopup('popup-frame-2')"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                            </tr>
+                            <tr>
+                                <th id = "seats">Seat 3</td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "taken-seat" onclick = "togglePopup('popup-frame-3')"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                            </tr>
+                            <tr>
+                                <th id = "seats">Seat 4</td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "taken-seat" onclick = "togglePopup('popup-frame-4')"></button></td>
+                                    <td><button class = "taken-seat" onclick = "togglePopup('popup-frame-4')"></button></td>
+                                    <td><button class = "taken-seat" onclick = "togglePopup('popup-frame-4')"></button></td>
+                                    <td><button class = "taken-seat" onclick = "togglePopup('popup-frame-4')"></button></td>
+                            </tr>
+                            <tr>
+                                <th id = "seats">Seat 5</td>
+                                    <td><button class = "taken-seat" onclick = "togglePopup('popup-frame-5')"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "clickable-seat"></button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <div id = "legend">
+                <div id = "legend-available">
+                </div>
+                <span class = "legend-text">Available</span>
+                <div id = "legend-selected">
+                </div>
+                <span class = "legend-text">Selected</span>
+                <div id = "legend-unavailable">
+                </div>
+                <span class = "legend-text">Unavailable</span>
+                <div id = "legend-booking">
+                </div>
+                <span class = "legend-text">Your Booking</span>
+            </div>
+
+            <div class = "dropdown">
+                <span class = "dropdown-header">Reserve until...</span>
+
+                <select name = "endtimes" id = "endtimes">
+                    <option value = "" disabled selected>Select an End Time</option>
+                    <option value = "time1">8:00 AM</option>
+                    <option value = "time2">8:30 AM</option>
+                    <option value = "time3">9:00 AM</option>
+                    <option value = "time4">9:30 AM</option>
+                    <option value = "time5">10:00 AM</option>
+                    <option value = "time6">10:30 AM</option>
+                    <option value = "time7">11:00 AM</option>
+                    <option value = "time8">11:30 AM</option>
+                    <option value = "time9">12:00 PM</option>
+                </select>
+            </div>
+
+            <div class = "dropdown">
+                <span class = "dropdown-header">Student's Name</span>
+
+                <input type = "text" id = "student-name">
+            </div>
+
+            <button id = "reserve-button" onclick="openPopup()"> Create Booking for Student </button>
+        </div>
+
+        <div id="overlay" class="overlay"></div>
+
+        <div class="container">
+            <div class=popup id="confirm-popup">
+                <img src="img/reservation.png" class="icon" style="margin-bottom: 15px;"/>
+                <p class="message">Would you like to proceed with your reservation?
+                </p>
+            
+                <div class="btn-wrapper">
+                    <button type="cancel" class="btn1" onclick="cancel();">Cancel</button>
+                </div>
+    
+                <div class="btn-wrapper">
+                    <button type="confirm" class="btn2" onclick="confirm();">Confirm</button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- On Click Listener -->
+
+        <script>
+            var seats = document.getElementsByClassName('clickable-seat');
+
+            for(var i = 0; i < seats.length; i++) {
+                seats[i].onclick = function() {
+                    if(this.style.backgroundColor === 'rgb(252, 157, 69)') {
+                        this.style.backgroundColor = '#D9D9D9';
+                    } else {
+                        this.style.backgroundColor = '#FC9D45';
+                    }
+                };
+            }
+        </script>
+
+        <script>
+            function togglePopup(popupId) {
+                document.querySelectorAll(".popup2").forEach(popup => {
+                    if(popup.id != popupId) {
+                        popup.classList.remove('show');
+                    }
+                })
+                const popup = document.getElementById(popupId);
+                popup.classList.toggle('show');
+            }
+
+        </script>
+
+        <script>
+            let confirmPopup = document.getElementById("confirm-popup")
+            let overlay = document.getElementById("overlay");
+
+            function openPopup(){
+                confirmPopup.classList.add("open-popup");
+                overlay.style.display = "block"; 
+            }
+
+            function confirm(){
+                confirmPopup.classList.remove("open-popup");
+                overlay.style.display = "none"; 
+            }
+
+            function cancel(){
+                confirmPopup.classList.remove("open-popup");
+                overlay.style.display = "none"; 
+            }
+        </script>
+    </body>
+</html>
