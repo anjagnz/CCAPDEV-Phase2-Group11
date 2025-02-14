@@ -68,29 +68,29 @@
             let overlay = document.getElementById("overlay");
     
             function openPopup1(){
-                popup1.classList.add("open-visibility");
+                popup1.classList.add("open-popup");
                 overlay.style.display = "block"; 
             }
     
             function yes(){
-                popup1.classList.remove("open-visibility");
+                popup1.classList.remove("open-popup");
             }
     
             function no(){
-                popup1.classList.remove("open-visibility");
+                popup1.classList.remove("open-popup");
             }
 
             function openPopup2(){
-                popup2.classList.add("open-confirmation");
+                popup2.classList.add("open-popup");
             }
 
             function confirm(){
-                popup2.classList.remove("open-confirmation");
+                popup2.classList.remove("open-popup");
                 overlay.style.display = "none"; 
             }
 
             function cancel(){
-                popup2.classList.remove("open-confirmation");
+                popup2.classList.remove("open-popup");
                 overlay.style.display = "none"; 
             }
 
