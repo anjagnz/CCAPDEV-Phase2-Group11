@@ -7,10 +7,10 @@
         <meta charset = "UTF-8">
         <meta name = "viewport" content = "width=device-width, initial-scale=1.0">
 
-        <style>
+        <link rel="stylesheet" href="css/theme-style.css">
+        <link rel="stylesheet" href="css/navbar-style.css">
 
-            @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
-            @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+        <style>
 
             body{
                 background: #23c686;
@@ -49,10 +49,9 @@
                 max-height: 1080px;
             }
 
-            .header{
+            .frame h1{
                 position: relative;
                 text-align: center;
-                font-family: 'DM Sans';
                 font-weight: 600;
                 font-size: 50px;
                 color: #FFFFFF;
@@ -63,7 +62,6 @@
                 position: relative;
                 width: 900px;
                 text-align: center;
-                font-family: 'Roboto';
                 font-weight: 300;
                 font-size: 30px;
                 color: #FFFFFF;
@@ -109,12 +107,12 @@
                 cursor: pointer;
             }
 
-            .header, .description {
+            .frame h1, .description {
                 transition: transform .3s ease-in-out;
                 animation: ease-anim 2s;
             }
             
-            .header:hover, .description:hover {
+            .frame h1:hover, .description:hover {
                 transform: translateY(-10px);
                 
             }
@@ -139,14 +137,14 @@
         <div data-include="navbar-signedout"></div>
 
         <div class = "frame">
-            <span class = "header">Fulfill your every computer need.</span>
+            <h1>Fulfill your every computer need.</h1>
 
             <span class = "description">Reserve laboratory seats and foster productivity and collaboration through technology.</span>
 
             <div class = "button-frame">
-                <button id="button-1" onclick="location.href='signup-page.html'">Create an Account</button>
+                <button class="square secondary" onclick="location.href='signup-page.html'">Create an Account</button>
 
-                <button id = "button-2" onclick="location.href='#'">View our Laboratories</button>
+                <button class="square primary" onclick="location.href='#'">View our Laboratories</button>
             </div>
         </div>
 

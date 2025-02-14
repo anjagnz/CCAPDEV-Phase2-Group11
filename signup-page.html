@@ -6,27 +6,27 @@
         <meta charset = "UTF-8">
         <meta name = "viewport" content = "width=device-width, initial-scale=1.0">
 
+        <link rel="stylesheet" href="css/theme-style.css">
+        <link rel="stylesheet" href="css/navbar-style.css">
+
         <style>
 
-            @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
-            @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
-
             :root {
-                --primary-color: #23c686;
+                --green: #23c686;
                 --secondary-color: #1d3853;
                 --background-color: #fbfcf6;
             
-                --primary-font-fam: 'Roboto';
-                --secondary-font-fam: 'DM Sans';
+                --primary-font-family: 'Roboto';
+                --secondary-font-famly: 'DM Sans';
                 color: #1b1b1b;
             }
             
 
             body{
-                background: var(--primary-color);
+                background: var(--green);
                 margin: 0;
                 padding: 0;
-                font-family: var(--primary-font-fam);
+                font-family: var(--primary-font-family);
                 height: 100vh;
                 overflow: hidden;
 
@@ -47,7 +47,7 @@
 
             h1,h2 {
                 color: var(--secondary-color);
-                font-family: var(--secondary-font-fam);
+                font-family: var(--secondary-font-famly);
             }
 
             #container {
@@ -78,7 +78,7 @@
             }
 
             #signup a:hover {
-                color: var(--primary-color)
+                color: var(--green)
             }
 
             .inputWrapper {
