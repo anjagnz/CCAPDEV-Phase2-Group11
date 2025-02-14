@@ -123,6 +123,16 @@
                 background: #D9D9D9;
                 border: none;
                 border-radius: 8px;
+                cursor: pointer;
+            }
+
+            .taken-seat{
+                height: 50px;
+                width: 50px;
+                background: #FF7878;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
             }
 
             #seats{
@@ -192,6 +202,50 @@
                 transform: scale(1.05);
             }
 
+            .popup{
+                display: none;
+                flex-direction: column;
+                opacity: 0;
+                margin-top: 50px;
+            }
+
+            .popup-box{
+                background-color: #fff;
+                width: 200px;
+                height: 120px;
+                display: flex;
+                flex-direction: column;
+                border: 1px solid var(--secondary-color);
+                align-items: center;
+                justify-content: center;
+                border-radius: 8px;
+            }
+
+            .popup-header{
+                font-size: 14px;
+                font-family: var(--primary-font-fam);
+                color: var(--secondary-color);
+                font-weight: 500;
+                margin: 10px 0px 10px 0px;
+            }
+
+            .user-img{
+                width: 40px;
+                height: 40px;
+                border-radius: 25px;
+            }
+
+            .user-name{
+                font-size: 13px;
+                font-family: var(--primary-font-fam);
+                color: var(--secondary-color);
+                margin: 5px 0px 10px 0px;
+            }
+
+            .popup.show{
+                display: flex;
+                opacity: 1;
+            }
         </style>
 
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -234,6 +288,7 @@
                 </select>
             </div>
 
+            
             <div class = "dropdown">
                 <span class = "dropdown-header">Date</span>
 
@@ -247,6 +302,46 @@
                     <option value = "date6">February 20, 2025</option>
                     <option value = "date7">February 21, 2025</option>
                 </select>
+            </div>
+
+            <div class = "popup" id = "popup-frame-1">
+                <div class = "popup-box">
+                    <span class = "popup-header">8:30 AM - 9:00 AM</span>
+                    <img class = "user-img" src = "img/default-profile.png"></img>
+                    <span class = "user-name">Anja Gonzales</span>
+                </div>
+            </div>
+
+            <div class = "popup" id = "popup-frame-2">
+                <div class = "popup-box">
+                    <span class = "popup-header">10:00 AM - 11:00 AM</span>
+                    <img class = "user-img" src = "img/default-profile.png"></img>
+                    <span class = "user-name">Liana Ho</span>
+                </div>
+            </div>
+
+            <div class = "popup" id = "popup-frame-3">
+                <div class = "popup-box">
+                    <span class = "popup-header">9:30 AM - 10:00 AM</span>
+                    <img class = "user-img" src = "img/default-profile.png"></img>
+                    <span class = "user-name">Anonymous User</span>
+                </div>
+            </div>
+
+            <div class = "popup" id = "popup-frame-4">
+                <div class = "popup-box">
+                    <span class = "popup-header">10:30 AM - 12:00 PM</span>
+                    <img class = "user-img" src = "img/default-profile.png"></img>
+                    <span class = "user-name">Angelo Rocha</span>
+                </div>
+            </div>
+
+            <div class = "popup" id = "popup-frame-5">
+                <div class = "popup-box">
+                    <span class = "popup-header">7:30 AM - 8:00 AM</span>
+                    <img class = "user-img" src = "img/default-profile.png"></img>
+                    <span class = "user-name">Grass Capote</span>
+                </div>
             </div>
 
             <div id = "chart">
@@ -275,7 +370,7 @@
                                 <th id = "seats">Seat 1</td>
                                     <td><button class = "clickable-seat"></button></td>
                                     <td><button class = "clickable-seat"></button></td>
-                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "taken-seat" onclick = "togglePopup('popup-frame-1')"></button></td>
                                     <td><button class = "clickable-seat"></button></td>
                                     <td><button class = "clickable-seat"></button></td>
                                     <td><button class = "clickable-seat"></button></td>
@@ -291,8 +386,8 @@
                                     <td><button class = "clickable-seat"></button></td>
                                     <td><button class = "clickable-seat"></button></td>
                                     <td><button class = "clickable-seat"></button></td>
-                                    <td><button class = "clickable-seat"></button></td>
-                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "taken-seat" onclick = "togglePopup('popup-frame-2')"></button></td>
+                                    <td><button class = "taken-seat" onclick = "togglePopup('popup-frame-2')"></button></td>
                                     <td><button class = "clickable-seat"></button></td>
                                     <td><button class = "clickable-seat"></button></td>
                                     <td><button class = "clickable-seat"></button></td>
@@ -303,7 +398,7 @@
                                     <td><button class = "clickable-seat"></button></td>
                                     <td><button class = "clickable-seat"></button></td>
                                     <td><button class = "clickable-seat"></button></td>
-                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "taken-seat" onclick = "togglePopup('popup-frame-3')"></button></td>
                                     <td><button class = "clickable-seat"></button></td>
                                     <td><button class = "clickable-seat"></button></td>
                                     <td><button class = "clickable-seat"></button></td>
@@ -318,14 +413,14 @@
                                     <td><button class = "clickable-seat"></button></td>
                                     <td><button class = "clickable-seat"></button></td>
                                     <td><button class = "clickable-seat"></button></td>
-                                    <td><button class = "clickable-seat"></button></td>
-                                    <td><button class = "clickable-seat"></button></td>
-                                    <td><button class = "clickable-seat"></button></td>
-                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "taken-seat" onclick = "togglePopup('popup-frame-4')"></button></td>
+                                    <td><button class = "taken-seat" onclick = "togglePopup('popup-frame-4')"></button></td>
+                                    <td><button class = "taken-seat" onclick = "togglePopup('popup-frame-4')"></button></td>
+                                    <td><button class = "taken-seat" onclick = "togglePopup('popup-frame-4')"></button></td>
                             </tr>
                             <tr>
                                 <th id = "seats">Seat 5</td>
-                                    <td><button class = "clickable-seat"></button></td>
+                                    <td><button class = "taken-seat" onclick = "togglePopup('popup-frame-5')"></button></td>
                                     <td><button class = "clickable-seat"></button></td>
                                     <td><button class = "clickable-seat"></button></td>
                                     <td><button class = "clickable-seat"></button></td>
@@ -374,6 +469,10 @@
                 </select>
             </div>
 
+            <div class = "dropdown">
+                <span class = "dropdown-header">Book anonymously? <input type = "checkbox"> </span>
+            </div>
+
             <button id = "reserve-button"> Create Booking </button>
         </div>
 
@@ -387,7 +486,6 @@
                     } 
                 });
             });
-            
         </script>
 
         <!-- On Click Listener -->
@@ -403,6 +501,18 @@
                         this.style.backgroundColor = '#FC9D45';
                     }
                 };
+            }
+        </script>
+
+        <script>
+            function togglePopup(popupId) {
+                document.querySelectorAll(".popup").forEach(popup => {
+                    if(popup.id != popupId) {
+                        popup.classList.remove('show');
+                    }
+                })
+                const popup = document.getElementById(popupId);
+                popup.classList.toggle('show');
             }
         </script>
     </body>
