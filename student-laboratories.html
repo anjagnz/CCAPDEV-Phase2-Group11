@@ -5,6 +5,7 @@
         <title>LabMate - Laboratories</title>
         <meta charset = "UTF-8">
         <meta name = "viewport" content = "width=device-width, initial-scale = 1.0">
+        <link rel="stylesheet" href="css/pop-up.css">
         
         <style>
             :root {
@@ -202,7 +203,7 @@
                 transform: scale(1.05);
             }
 
-            .popup{
+            .popup2{
                 display: none;
                 flex-direction: column;
                 opacity: 0;
@@ -242,7 +243,7 @@
                 margin: 5px 0px 10px 0px;
             }
 
-            .popup.show{
+            .popup2.show{
                 display: flex;
                 opacity: 1;
             }
@@ -304,7 +305,7 @@
                 </select>
             </div>
 
-            <div class = "popup" id = "popup-frame-1">
+            <div class = "popup2" id = "popup-frame-1">
                 <div class = "popup-box">
                     <span class = "popup-header">8:30 AM - 9:00 AM</span>
                     <img class = "user-img" src = "img/default-profile.png"></img>
@@ -312,7 +313,7 @@
                 </div>
             </div>
 
-            <div class = "popup" id = "popup-frame-2">
+            <div class = "popup2" id = "popup-frame-2">
                 <div class = "popup-box">
                     <span class = "popup-header">10:00 AM - 11:00 AM</span>
                     <img class = "user-img" src = "img/default-profile.png"></img>
@@ -320,7 +321,7 @@
                 </div>
             </div>
 
-            <div class = "popup" id = "popup-frame-3">
+            <div class = "popup2" id = "popup-frame-3">
                 <div class = "popup-box">
                     <span class = "popup-header">9:30 AM - 10:00 AM</span>
                     <img class = "user-img" src = "img/default-profile.png"></img>
@@ -328,7 +329,7 @@
                 </div>
             </div>
 
-            <div class = "popup" id = "popup-frame-4">
+            <div class = "popup2" id = "popup-frame-4">
                 <div class = "popup-box">
                     <span class = "popup-header">10:30 AM - 12:00 PM</span>
                     <img class = "user-img" src = "img/default-profile.png"></img>
@@ -336,7 +337,7 @@
                 </div>
             </div>
 
-            <div class = "popup" id = "popup-frame-5">
+            <div class = "popup2" id = "popup-frame-5">
                 <div class = "popup-box">
                     <span class = "popup-header">7:30 AM - 8:00 AM</span>
                     <img class = "user-img" src = "img/default-profile.png"></img>
@@ -473,7 +474,26 @@
                 <span class = "dropdown-header">Book anonymously? <input type = "checkbox"> </span>
             </div>
 
-            <button id = "reserve-button"> Create Booking </button>
+            <button id = "reserve-button" onclick="openPopup()"> Create Booking </button>
+        </div>
+
+        <div id="overlay" class="overlay"></div>
+
+        <div class="container">
+            <div class=popup id="confirm-popup">
+                <img src="img/reservation.png" class="icon" style="margin-bottom: 15px;"/>
+                <p class="message">Would you like to proceed with your reservation?
+                </p>
+            
+                <div class="btn-wrapper">
+                    <button type="cancel" class="btn1" onclick="cancel();">Cancel</button>
+                </div>
+    
+                <div class="btn-wrapper">
+                    <button type="confirm" class="btn2" onclick="confirm();">Confirm</button>
+                </div>
+            </div>
+
         </div>
 
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -506,13 +526,34 @@
 
         <script>
             function togglePopup(popupId) {
-                document.querySelectorAll(".popup").forEach(popup => {
+                document.querySelectorAll(".popup2").forEach(popup => {
                     if(popup.id != popupId) {
                         popup.classList.remove('show');
                     }
                 })
                 const popup = document.getElementById(popupId);
                 popup.classList.toggle('show');
+            }
+
+        </script>
+
+        <script>
+            let confirmPopup = document.getElementById("confirm-popup")
+            let overlay = document.getElementById("overlay");
+
+            function openPopup(){
+                confirmPopup.classList.add("open-popup");
+                overlay.style.display = "block"; 
+            }
+
+            function confirm(){
+                confirmPopup.classList.remove("open-popup");
+                overlay.style.display = "none"; 
+            }
+
+            function cancel(){
+                confirmPopup.classList.remove("open-popup");
+                overlay.style.display = "none"; 
             }
         </script>
     </body>
