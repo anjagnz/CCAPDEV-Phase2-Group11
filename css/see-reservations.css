@@ -12,11 +12,10 @@ html, body {
 h1{
     position: relative;
     text-align: center;
-    font-family: var(--secondary-font-fam);
     font-weight: 600;
     font-size: 35px;
-    color: var(--secondary-color);
     padding: 80px 100px 80px 100px;
+    color: var(--dark-blue);
 }
 
 table{
@@ -48,7 +47,7 @@ td{
     width: 60%;
     overflow: auto;
     border-radius: 30px;
-    outline: 1px solid var(--secondary-color);
+    outline: 1px solid var(--dark-blue);
     justify-content: center;
     margin: auto;
     background-color: #ffffff;
@@ -62,9 +61,9 @@ td{
 
 .remove-btn{
     width: 200px;
-    background-color: var(--secondary-color);
-    color: var(--background-color);
-    font-family: var(--primary-font-fam);
+    background-color: var(--dark-blue);
+    color: var(--off-white);
+    font-family: var(--primary-font-family);
     font-size: 15px;
     font-weight: 500;
     border: none;
@@ -86,7 +85,7 @@ th{
     padding: 20px;
     font-weight: 500;
     font-size: 15px;
-    color: var(--secondary-color);
+    color: var(--dark-blue);
 }
 
 td{
@@ -96,5 +95,5 @@ td{
     font-size: 14px;
     border-radius: 8px;
     padding: 5px;
-    color: var(--secondary-color);
+    color: var(--dark-blue);
 }
