@@ -5,31 +5,19 @@
         
         <meta charset = "UTF-8">
         <meta name = "viewport" content = "width=device-width, initial-scale=1.0">
+        
+        <link rel="stylesheet" href="css/theme-style.css">
+        <link rel="stylesheet" href="css/navbar-style.css">
 
         <style>
 
-            @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
-            @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
-
-            :root {
-                --primary-color: #23c686;
-                --secondary-color: #1d3853;
-                --background-color: #fbfcf6;
-            
-                --primary-font-fam: 'Roboto';
-                --secondary-font-fam: 'DM Sans';
-                color: #1b1b1b;
-            }
-            
-
             body{
-                background: var(--primary-color);
+                background: var(--green);
                 margin: 0;
                 padding: 0;
-                font-family: var(--primary-font-fam);
+                font-family: var(--primary-font-family);
                 height: 100vh;
                 overflow: hidden;
-
             }
 
             body::before{
@@ -46,9 +34,9 @@
             }
 
             h1 {
-                color: var(--secondary-color);
+                color: var(--dark-blue);
                 font-size: 35px;
-                font-family: var(--secondary-font-fam);
+                font-family: var(--secondary-font-family);
             }
 
             #container {
@@ -63,7 +51,7 @@
                 height: 400px;
                 width: 650px;
                 padding: 30px 40px;
-                background-color: var(--background-color);
+                background-color: var(--off-white);
                 border: none;
                 border-radius: 20px;
             }
@@ -73,12 +61,12 @@
             }
 
             #signin a {
-                color: var(--secondary-color);
+                color: var(--dark-blue);
                 font-weight: bold;
             }
 
             #signin a:hover {
-                color: var(--primary-color)
+                color: var(--green)
             }
 
             #signin .right-column {
@@ -111,14 +99,14 @@
                 font-size: 1rem;
                 font-weight: bold;
                 cursor: pointer;
-                background-color: var(--secondary-color);
-                color: var(--background-color)    
+                background-color: var(--dark-blue);
+                color: var(--off-white)    
             }
 
             #email, #password {
                 height: 1.5rem;
                 border-radius: 10px;
-                border-color: var(--text-color);
+                border-color: var(--dark-font-color);
                 padding: 0 5px;
             }
 

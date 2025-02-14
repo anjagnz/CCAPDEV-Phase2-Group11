@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+:root {
+    --green: #23c686;
+    --dark-blue: #1d3853;
+    --off-white: #fbfcf6;
+
+    --light-font-color: #3d4455;
+    --dark-font-color: #1b1b1b;
+
+    --primary-font-family: 'Roboto';
+    --secondary-font-family: 'DM Sans';
+    
+    /* default theme */
+    font-family: var(--primary-font-family);
+    font-size: 16px;
+    color: var(--dark-font-color);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--secondary-font-family);
+    color: var(--dark-blue);
+}
+
+/* button presets */
+
+button.round {
+    padding: 0.5rem 1rem;
+    border: none;
+    outline: none;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: var(--secondary-font-family);
+}
+
+button.square {
+    width: 250px;
+    text-align: center;
+    font-weight: 500;
+    font-size: 20px;
+    border: none;
+    border-radius: 10px;
+    padding: 10px;
+    margin-right: 25px;
+    cursor: pointer;
+    font-family: var(--primary-font-family);
+}
+
+button.mini {
+    font-size: 0.8rem;
+}
+
+button.round.primary, button.square.primary {
+    background-color: var(--dark-blue);
+    color: var(--off-white);
+    font-family: var(--primary-font-family);
+}
+
+button.round.secondary, button.square.secondary{
+    background-color: var(--off-white);
+    color: var(--dark-blue);
+    font-family: var(--primary-font-family);
+}
+
+input.round {
+    height: 1.5rem;
+    border-radius: 10px;
+    border-color: var(--dark-font-color);
+    padding: 0 5px;
+}
