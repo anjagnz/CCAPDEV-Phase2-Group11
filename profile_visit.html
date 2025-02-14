@@ -5,11 +5,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LabMate - Profile Visit</title>
-    <link rel="stylesheet" href="css/profile-pages.css">
+    <link rel="stylesheet" href="css/profile_pages.css">
     
     <!-- Imported Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        .go-back-button {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            padding: 12px 40px;
+            background: #FFD174;
+            color: white;
+            border: none;
+            border-radius: 28px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+            transition: transform 0.2s ease;
+        }
+        
+        .go-back-button:hover {
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 768px) {
+            .go-back-button {
+                position: static;
+                margin-top: 40px;
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- Upper Tab -->
@@ -31,11 +61,11 @@
 
     <!-- Side Navigation -->
     <nav class="side-nav">
-        <div class="nav-item active" onclick="location.href='student-home.html'">
+        <div class="nav-item">
             <img src="img/Home.svg" alt="Dashboard" class="nav-icon">
             <span>Dashboard</span>
         </div>
-        <div class="nav-item" onclick="location.href='student-laboratories.html'">
+        <div class="nav-item">
             <img src="img/desktop.svg" alt="Lab Check" class="nav-icon">
             <span>Lab Check</span>
         </div>
@@ -47,39 +77,35 @@
 
     <!-- Main Content -->
     <main class="main-content">
-        <div class="profile-header">
-            <div class="profile-picture-large">
-                <img src="img/default-profile.png" alt="Profile Picture">
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-picture-large">
+                    <img src="img/default-profile.png" alt="Profile Picture">
+                </div>
+                <h2>Last Name, First Name</h2>
             </div>
-            <h2 class="profile-name">Last Name, First Name</h2>
-        </div>
-        
-        <div class="profile-details">
-            <div class="detail-row">
-                <span class="label">Email:</span>
-                <span class="value">LastName_FirstName@dlsu.edu.ph</span>
-                <span class="tag">[Student]</span>
-            </div>
-            
-            <div class="detail-row">
-                <span class="label">Department:</span>
-                <span class="value">DepartmentName</span>
-            </div>
-            
-            <section class="biography-section">
-                <h3>Biography</h3>
-                <p class="biography-text">
-                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor 
-                    incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis 
-                    nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
-                    Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore 
-                    eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt 
-                    in culpa qui officia deserunt mollit anim id est laborum."
-                </p>
-            </section>
-        </div>
 
-        <button class="back-button" onclick="history.back()">Go Back</button>
+            <div class="profile-details">
+                <div class="detail-row">
+                    <span class="label">Email:</span>
+                    <span class="value">LastName_FirstName@dlsu.edu.ph</span>
+                    <span class="tag">[Student]</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="label">Department:</span>
+                    <span class="value">DepartmentName</span>
+                </div>
+
+                <div class="biography-section">
+                    <h3>Biography</h3>
+                    <p class="biography-text">
+                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+                    </p>
+                </div>
+            </div>
+            <button class="go-back-button">Go Back</button>
+        </div>
     </main>
 </body>
 </html>

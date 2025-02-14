@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LabMate - Account Overview</title>
-    <link rel="stylesheet" href="css/profile-pages.css">
+    <link rel="stylesheet" href="css/profile_pages.css">
     
     <!-- Imported Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@700&display=swap" rel="stylesheet">
@@ -53,8 +53,8 @@
                 <h2>Upcoming Laboratory</h2>
                 <div class="card-content">
                     <div class="info-row">
-                        <span class="date">&lt;Date&gt;</span>
-                        <span class="room">&lt;Room&gt;</span>
+                        <span>&lt;Date&gt;</span>
+                        <span>&lt;Room&gt;</span>
                     </div>
                 </div>
             </div>
@@ -62,7 +62,7 @@
             <div class="card total-reserved">
                 <h2>Total Reserved</h2>
                 <div class="card-content">
-                    <img src="img/desktop.svg" alt="Computer Icon" class="card-icon">
+                    <img src="img/desktop.svg" alt="Computer Icon" class="desktop-icon">
                     <span class="count">&lt;num&gt;</span>
                 </div>
             </div>
@@ -85,20 +85,35 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td>&lt;num&gt;</td>
+                            <td>&lt;id&gt;</td>
                             <td>&lt;date&gt;</td>
                             <td>&lt;room&gt;</td>
-                            <td>&lt;slot&gt;</td>
+                            <td>&lt;num&gt;</td>
                             <td>&lt;status&gt;</td>
                             <td><button class="cancel-btn">CANCEL</button></td>
                         </tr>
-                        <!-- Additional rows as needed -->
+                        <tr>
+                            <td>&lt;id&gt;</td>
+                            <td>&lt;date&gt;</td>
+                            <td>&lt;room&gt;</td>
+                            <td>&lt;num&gt;</td>
+                            <td>&lt;status&gt;</td>
+                            <td><button class="cancel-btn">CANCEL</button></td>
+                        </tr>
+                        <tr>
+                            <td>&lt;id&gt;</td>
+                            <td>&lt;date&gt;</td>
+                            <td>&lt;room&gt;</td>
+                            <td>&lt;num&gt;</td>
+                            <td>&lt;status&gt;</td>
+                            <td><button class="cancel-btn">CANCEL</button></td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </section>
 
-        <button class="logout-button" onclick="location.href='signin-page.html'">LOGOUT</button>
+        <button class="logout-button">LOGOUT</button>
     </main>
 </body>
 </html>
