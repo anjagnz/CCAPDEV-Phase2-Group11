@@ -2,7 +2,7 @@
 
 var includes = $('[data-include]');
 $.each(includes, function() {
-    var file = 'views/' + $(this).data('include') + '.html';
+    var file = 'partials/' + $(this).data('include') + '.html';
     $(this).load(file, function() {
         var page = window.location.pathname.split("/").pop() || "index.html"; 
 
