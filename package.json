@@ -19,6 +19,7 @@
   "homepage": "https://github.com/anjagnz/CCAPDEV-S16#readme",
   "description": "",
   "dependencies": {
-    "body-parser": "^1.20.3"
+    "body-parser": "^1.20.3",
+    "mongoose": "^8.12.1"
   }
 }
