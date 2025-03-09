@@ -12,6 +12,42 @@ app.use(express.json())
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.urlencoded({ extended: false }));
 
+// Get all reservations
+app.get("/api/reservations", async(req,res) => {
+    try{
+        const reservations = await Reservation.find();
+        res.json(reservations);
+    } catch (error) {
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+})
+
+// Get a specific reservation
+app.get("/api/reservations/:id", async(req,res) => {
+    try{
+        const reservation = await Reservation.findById(req.params.id);
+        if (!reservation) {
+            return res.status(404).json({ message: "Reservation not found" });
+        }
+        res.json(reservation); 
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error });
+    }
+})
+
+// Delete a specific reservation
+app.delete("/api/reservations/:id", async(req,res) => {
+    try{
+        const reservation = await Reservation.findByIdAndDelete(req.params.id);
+        if (!reservation) {
+            return res.status(404).json({ message: "Reservation not found" });
+        }   
+        res.json(reservation);  
+    } catch (error){
+        res.status(500).json({ message: "Server error", error });
+    }
+})
+
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "index.html"))); 
 app.get("/signup-page", (req, res) => res.sendFile(path.join(__dirname, "signup-page.html"))); 
 app.get("/signin-page", (req, res) => res.sendFile(path.join(__dirname, "signin-page.html")));
