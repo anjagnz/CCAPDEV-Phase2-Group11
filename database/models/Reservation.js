@@ -4,7 +4,7 @@ const ReservationSchema = new mongoose.Schema({
     userId: { type: Number, required: true },
     laboratoryRoom: { type: String, required: true },
     seatNumber: { type: Number, required: true },
-    bookingDate: { type: Date, required: true }, 
+    bookingDate: { type: Date, required: true }, // booking time can be extracter from this
     reservationDate: { type: Date, required: true }, 
     startTime: { type: String, required: true },
     endTime: { type: String, required: true },
