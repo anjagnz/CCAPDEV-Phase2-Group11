@@ -10,10 +10,6 @@
         <link rel="stylesheet" href="css/navbar-style.css">
         
         <style>
-
-            @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
-            @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
-
             :root {
                 --primary-color: #23c686;
                 --secondary-color: #1d3853;
@@ -23,7 +19,7 @@
                 --secondary-font-fam: 'DM Sans';
                 color: #1b1b1b;
             }
-            
+        
 
             body{
                 background: var(--primary-color);
@@ -118,13 +114,6 @@
                 color: var(--background-color)    
             }
 
-            #email, #password {
-                height: 1.5rem;
-                border-radius: 10px;
-                border-color: var(--text-color);
-                padding: 0 5px;
-            }
-
             @media (max-height: 600px) {
                 #container {
                     overflow: scroll;
@@ -133,6 +122,10 @@
 
             input[type="email"], input[type="password"] {
                 width: 90%;
+                height: 1.5rem;
+                border-radius: 10px;
+                border-color: var(--text-color);
+                padding: 0 5px;
             }
         </style>
 
@@ -147,17 +140,17 @@
         
         <div data-include="navbar-signedout"></div>
 
-        <div id="container">
-            <div id="signin">
+        <form action ="/signin-page" method="post" id="container">
+            <div id="signin"> 
                 <div class="left-column">
                     <h1>Account Sign-in</h1>
                     <div class="inputWrapper">
                         <label for="email">DLSU Email Address</label>
-                        <input type="email" id="email">
+                        <input type="email" required>
                     </div>
                     <div class="inputWrapper">
                         <label for="password">Password</label>
-                        <input type="password" id="password">
+                        <input type="password" required>
                     </div>
                     <div class="inputWrapper">
                         <label>
@@ -166,7 +159,7 @@
                         </label>
                     </div>
                     
-                    <button id="signin-btn" type="button" onclick="location.href='/student-home'">Sign In</button>
+                    <input id="signin-btn" type="submit" value="Sign In">
                 </div>
 
                 <div class="right-column">
@@ -174,7 +167,7 @@
                     <div style="margin-top: 10px">Don't have an account?  <a href="/signup-page">Create an account. </a></div>
                 </div>
             </div>
-        </div>
+        </form>
 
         
         

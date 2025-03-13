@@ -1,7 +1,8 @@
 const express = require("express");
-const app = express();
+const app = new express();
 const bodyParser = require("body-parser");
 const { engine } = require("express-handlebars");
+const fileUpload = require('express-fileupload')
 const cron = require("node-cron");
 
 const mongoose = require("mongoose");
@@ -11,14 +12,19 @@ app.use(express.urlencoded({ extended : true}));
 app.engine("hbs", engine({ extname: ".hbs", defaultLayout: "main"}))
 app.set("view engine", "hbs");
 
-const Reservation = require('./database/models/Reservation');
 const path = require("path");
+const Reservation = require('./database/models/Reservation');
 const Laboratory = require("./database/models/Laboratory");
 const TimeSlot = require("./database/models/TimeSlot");
+const User = require("./database/models/User");
 
-app.use(express.json()) 
+app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true })); // files consist of more than strings
+//app.use(bodyParser.urlencoded({ extended: false })); https://stackoverflow.com/questions/47232187/express-json-vs-bodyparser-json
+app.use(fileUpload());
+
+/*** RESERVATIONS ***/
 
 // Get all reservations
 app.get("/api/reservations", async(req,res) => {
@@ -163,7 +169,53 @@ async function populateTimeSlots() {
     }
 }*/
 
+
+
+/*** USERS ***/
+
+
+// request for form submission 
+app.get("/signin-page", (req,res) => {
+    // TODO: for sessions MCO3
+})
+
+// Sign in submission
+app.post("/signin-page", express.urlencoded({extended: true}), (req,res) => {
+    const {email, password, rememberUser} = req.body;
+    
+    // search user credentials in db
+    // if exist, correct password -> homepage
+    // else, error in form
+
+    // hardcoded details
+    if (email === "the_goat@dlsu.edu.ph" && password === "admin" ) {
+        // direct session to this user
+        res.redirect("/student-home")
+    } else {
+        res.send("INVALID! </a>");
+    }
+    res.send("Login: " + email + " " + password +" " + rememberUser)
+})
+
+// Initial users
+async function populateUsers() {
+    const existingUsers = await User.find();
+    
+    if(existingUsers.length === 0) {
+        const users = [
+            { userId: 1, type: "Student", firstName: "Denise Liana", lastName: "Ho", image:"img/demo_data/sonoda.jpg", email: "denise_liana_ho@dlsu.edu.ph", password: "123", biography: "idk stream tsunami sea yeah", department: "Computer Science" },
+            { userId: 2, type: "Student", firstName: "Anja", lastName: "Gonzales", email: "anja_gonzales@dlsu.edu.ph", password: "234", biography: "i need sleep", department: "Computer Science" },
+            { userId: 3, type: "Student", firstName: "Angelo", lastName: "Rocha", email: "angelo_rocha@dlsu.edu.ph", password: "345", biography: "idk what to put here", department: "Computer Science" },
+            { userId: 4, type: "Student", firstName: "Grass", lastName: "Capote", email: "mary_grace_capote@dlsu.edu.ph", password: "456", biography: "send help", department: "Computer Science" },
+            { userId: 5, type: "Faculty", firstName: "The", lastName: "Goat", email: "the_goat@dlsu.edu.ph", password: "admin", department:"Computer Science" },
+        ];
+
+        await User.insertMany(users);
+    }
+}
+
 populateLaboratories();
+populateUsers();
 
 app.listen(3000, () => {
     console.log("Node server running at http://localhost:3000");
