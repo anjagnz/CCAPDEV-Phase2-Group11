@@ -77,7 +77,7 @@
         // Function to load and display reservations
         async function loadReservations() {
             try {
-                const response = await fetch("/api/reservations/user/67d3a9fbd6b982b14c8adf6c"); // hard coded for now until session implementation
+                const response = await fetch("/api/reservations"); // fetch only the reservations of the logged in user for Phase 3
                 const reservations = await response.json();
 
                 const tableBody = document.querySelector("tbody");
@@ -154,8 +154,77 @@
                 var formattedDate = formatDate(new Date(reservation.bookingDate)).split("T");
                 var bookingDate = formattedDate[0];
                 var bookingTime = formattedDate[1];
-            
-                reservationDetails.innerHTML = `
+
+                if (reservation.studentName){ // for walk in students
+                    reservationDetails.innerHTML = `
+                    <h1 style="text-align: center; padding-top: 30px; padding-bottom: 18px; font-size: 28px;">Reservation Details</h1>
+                    <div class="input-wrapper">
+                        <div class="label-wrapper">            
+                           Student Name:
+                        </div>
+                        <input type="text" id="lab-room" class="text-field" value="${reservation.studentName}" data-label="laboratoryRoom"  disabled> 
+                    </div>
+                    <div class="input-wrapper">
+                        <div class="label-wrapper">            
+                           Laboratory Room:
+                        </div>
+                        <input type="text" id="lab-room" class="text-field" value="${reservation.laboratoryRoom}" data-label="laboratoryRoom"  disabled> 
+                    </div>
+
+                    <div class="input-wrapper">
+                        <div class="label-wrapper">            
+                            Seat Number:
+                        </div>
+                        <input type="text" id="seat-num" class="text-field" value="${reservation.seatNumber}" data-label="seatNumber"  disabled>
+                    </div>
+
+                    <div class="input-wrapper">
+                        <div class="label-wrapper">            
+                            Date of Booking:
+                        </div>
+                        <input type="text" id="booking-date" class="text-field" value="${bookingDate}" data-label="bookingDate"  disabled>
+                    </div>
+
+                    <div class="input-wrapper">
+                        <div class="label-wrapper">            
+                            Time of Booking:
+                        </div>
+                        <input type="text" id="booking-time" class="text-field" value="${bookingTime}" disabled>
+                    </div>
+
+                    <div class="input-wrapper">
+                        <div class="label-wrapper">            
+                            Reservation Date:
+                        </div>
+                        <input type="text" id="reserve-date" class="text-field" value="${reservationDate}" data-label="reservationDate"  disabled>
+                    </div>
+
+                    <div class="input-wrapper">
+                        <div class="label-wrapper">            
+                            Start Time:
+                        </div>
+                        <input type="text" id="start-time" class="text-field" value="${reservation.startTime}"  data-label="startTime" disabled>
+                    </div>
+
+                    <div class="input-wrapper">
+                        <div class="label-wrapper">            
+                            End Time:
+                        </div>
+                        <input type="text" id="end-time" class="text-field" name="editable" value="${reservation.endTime}" data-label="endTime"  disabled>
+                    </div>
+
+                    <div class="footer">
+                        <div class="button-wrapper">
+                            <button type="button" class="btn-1" id="edit-btn" onclick="edit('${reservationId}')">Edit Reservation</button>
+                        </div>
+
+                        <div class="button-wrapper">
+                            <button type="done" class="btn-2" id="done-btn" onclick="done()">Done</button>
+                        </div>
+                    </div>
+                `;
+                } else{
+                    reservationDetails.innerHTML = `
                     <h1 style="text-align: center; padding-top: 30px; padding-bottom: 18px; font-size: 28px;">Reservation Details</h1>
                     <div class="input-wrapper">
                         <div class="label-wrapper">            
@@ -216,6 +285,9 @@
                         </div>
                     </div>
                 `;
+                }
+            
+                
             } catch (error) {
                 console.error("Error fetching reservations:", error);
             }
