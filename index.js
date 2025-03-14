@@ -1,14 +1,15 @@
 const express = require("express");
 const app = new express();
 const bodyParser = require("body-parser");
-const { engine } = require("express-handlebars");
+// const { engine } = require("express-handlebars");
 const fileUpload = require('express-fileupload')
 const cron = require("node-cron");
-const path = require("path");
 const mongoose = require("mongoose");
+const hbs = require("hbs")
+const path = require("path");
 
-app.engine("hbs", engine({ extname: ".hbs", defaultLayout: "main"}))
-app.set("view engine", "hbs");
+//app.engine("hbs", engine({ extname: ".hbs", defaultLayout: "main"}))
+app.set('view engine', 'hbs'); 
 
 mongoose.connect('mongodb://localhost/LabMateDB')
 const Reservation = require('./database/models/Reservation');
@@ -162,7 +163,6 @@ async function populateLaboratories() {
 
 async function updateTimeSlots() {
     const today = new Date().toISOString().split('T')[0];
-
     const timeSlotsFound = await TimeSlot.find();
 
     timeSlotsFound = timeSlotsFound.filter(slot => slot.date >= today);
@@ -190,7 +190,7 @@ async function updateTimeSlots() {
                     const timeSlot = {
                         laboratoryId: labs[i].laboratoryId,
                         seatNumber: j,
-                        date: newDate,
+                         date: newDate,
                         time: time.toLocaleTimeString('en-US', {
                             hour: '2-digit',
                             minute: '2-digit',
@@ -272,8 +272,6 @@ async function populateTimeSlots() {
     }
 }
 
-
-
 /*** USERS ***/
 
 // request for form submission 
@@ -289,16 +287,27 @@ app.post("/signin", async (req,res) => {
     if (!email || !password) {
         return res.status(400).json({ error: "Email and password are required." });
     }
-
     let user = await User.findOne({ email: email.toLowerCase() }).lean();
     
     if (user) {
+        console.log(user);
         
         if (user.password === password) {
-            // THIS WONT WORK!!! "FAILED TO CONNECT TO SERVER"
-            res.render('student-home',{user});
+
+            // fetch all user data, use to render
+            const userData = { 
+                type: user.type, 
+                firstName: user.firstName, 
+                lastName: user.lastName, 
+                email: user.email, 
+                password: user.password, 
+                biography: user.biography,
+                department: user.department,
+                image: user.image,
+            }
+            res.render("student-home", { userData });
         } else { 
-            // user password is wrong
+            // user passwords do not match
             res.status(401).json({ error: "Password is incorrect. Please try again" });
     } 
     } else {
@@ -308,7 +317,49 @@ app.post("/signin", async (req,res) => {
 })
 
 // TODO: Sign-up submission
+app.post("/signup", async (req, res) => {
+    const { firstName, lastName, email, newPass, confirmPass, type } = req.body;
 
+    // VALIDATE FORM INPUTS
+
+    if (!firstName || !lastName || !email || !newPass || !confirmPass) {
+        return res.status(400).json({ error: "Please enter all fields required fields." });
+    }
+
+    // radio buttons not selected
+    if (!type) {
+        return res.status(400).json({error: "Please select an account type."})
+    }
+
+    // passwords dont match
+    if (newPass !== confirmPass) {
+        return res.status(400).json({ error: "Passwords do not match. Please try again." });
+    }
+
+    // check if email is already in use
+    if (await User.findOne({ email: email.toLowerCase() }).lean()) {
+        return res.status(400).json({ error: "Email already in use! Please use a different email." });
+    }
+
+    // CREATE USER AND ADD TO DATABASE
+    const userData = { 
+            type: type, 
+            firstName: toTitleCase(firstName), 
+            lastName: toTitleCase(lastName), 
+            email: email, 
+            password: confirmPass, 
+        }
+
+    const user = await User.create(userData)
+    console.log("User created: " + user);
+
+    // RENDER HOME
+    if (type === "Student") {
+        res.render("student-home", {userData})
+    } else {
+        res.render("labtech-home", {userData})
+    }
+});
 // TODO: User (and reservations) deletion
 
 // Initial users
@@ -328,10 +379,23 @@ async function populateUsers() {
     }
 }
 
-populateLaboratories();
-populateUsers();
-populateReservations();
-populateTimeSlots();
+// helper functions
+function toTitleCase(string) {
+    return string.replace(
+      /\w\S*/g,
+      text => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase()
+    );
+}
+
+function populateDatabase() {
+    populateUsers();
+    populateLaboratories();
+    populateReservations();
+    populateTimeSlots();
+}
+
+// populate database (for demo)
+populateDatabase();
 
 app.listen(3000, () => {
     console.log("Node server running at http://localhost:3000");
