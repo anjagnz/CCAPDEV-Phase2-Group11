@@ -8,10 +8,10 @@ const mongoose = require("mongoose");
 const hbs = require("hbs");
 
 // Configure middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(__dirname)); // Serve files from root directory
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(fileUpload());
@@ -341,131 +341,136 @@ app.patch("/api/reservation/:id", async(req,res) => {
     }
 })
 
-// Register Handlebars helpers
-const findReservation = function(seatNum, timeSlot, reservations) {
-    return reservations.find(r => {
-        const seatMatch = r.seatNumber === parseInt(seatNum);
-        const timeMatch = r.startTime === timeSlot;
-        return seatMatch && timeMatch;
-    });
-};
+// Serve the sign-up page
+app.get("/signup-page", (req, res) => res.sendFile(path.join(__dirname, "signup-page.html")));
 
-const findReservationIndex = function(seatNum, timeSlot, reservations) {
-    return reservations.findIndex(r => {
-        const seatMatch = r.seatNumber === parseInt(seatNum);
-        const timeMatch = r.startTime === timeSlot;
-        return seatMatch && timeMatch;
-    });
-};
-
-// Register the helpers globally
-hbs.registerHelper('findReservation', findReservation);
-hbs.registerHelper('findReservationIndex', findReservationIndex);
-hbs.registerHelper('equal', function(a, b) {
-    return a === b;
-});
-hbs.registerHelper('range', function(start, end) {
-    const result = [];
-    for (let i = start; i <= end; i++) {
-        result.push(i);
-    }
-    return result;
-});
-
-// Routes for laboratory pages with database loading
-app.get("/student-laboratories", async (req, res) => {
+// Handle sign-up form submission
+app.post("/signup", async (req, res) => {
     try {
-        const labs = await Laboratory.find({}).lean();
-        const today = new Date();
-        const next7Days = [];
-        for(let i = 0; i < 7; i++) {
-            const date = new Date();
-            date.setDate(today.getDate() + i);
-            next7Days.push({
-                formattedDate: date.toISOString().split('T')[0],
-                displayDate: date.toLocaleDateString('en-US', {weekday: 'long', month: 'long', day: 'numeric'})
-            });
-        }
-
-        // Get any existing reservations
-        const reservations = await Reservation.find().lean().populate('userId', 'firstName lastName');
-
-        res.render('student-laboratories', { 
-            labs, 
-            next7Days, 
-            timeSlots,
-            reservations 
-        });
-    } catch (error) {
-        console.error('Error fetching laboratories:', error);
-        res.status(500).send('Internal Server Error');
-    }
-});
-
-app.get("/signedout-laboratories", async (req, res) => {
-    try {
-        const labs = await Laboratory.find({}).lean();
-        const today = new Date();
-        const next7Days = [];
-        for(let i = 0; i < 7; i++) {
-            const date = new Date();
-            date.setDate(today.getDate() + i);
-            next7Days.push({
-                formattedDate: date.toISOString().split('T')[0],
-                displayDate: date.toLocaleDateString('en-US', {weekday: 'long', month: 'long', day: 'numeric'})
-            });
-        }
-
-        // Get any existing reservations
-        const reservations = await Reservation.find().lean().populate('userId', 'firstName lastName');
-
-        res.render('signedout-laboratories', { 
-            labs, 
-            next7Days, 
-            timeSlots,
-            reservations 
-        });
-    } catch (error) {
-        console.error('Error fetching laboratories:', error);
-        res.status(500).send('Internal Server Error');
-    }
-});
-
-app.get("/labtech-laboratories", async (req, res) => {
-    try {
-        const labs = await Laboratory.find({}).lean();
-        const selectedLabId = req.query.labs ? req.query.labs.toString() : null;
+        const { firstName, lastName, email, newPass, confirmPass, type } = req.body;
         
-        const today = new Date();
-        const next7Days = [];
-        for(let i = 0; i < 7; i++) {
-            const date = new Date();
-            date.setDate(today.getDate() + i);
-            next7Days.push({
-                formattedDate: date.toISOString().split('T')[0],
-                displayDate: date.toLocaleDateString('en-US', {weekday: 'long', month: 'long', day: 'numeric'})
-            });
+        console.log("Received sign-up request:", { firstName, lastName, email, type });
+        
+        // Validate input
+        if (!firstName || !lastName || !email || !newPass || !confirmPass) {
+            return res.status(400).json({ error: "All fields are required" });
         }
-
-        // Get any existing reservations
-        const reservations = await Reservation.find().lean().populate('userId', 'firstName lastName');
-
-        res.render("labtech-laboratories", {
-            labs, 
-            next7Days, 
-            timeSlots, 
-            endTimeOptions,
-            selectedLabId,
-            reservations
-        });
+        
+        // Check if passwords match
+        if (newPass !== confirmPass) {
+            return res.status(400).json({ error: "Passwords do not match" });
+        }
+        
+        // Check if email is already in use
+        const existingUser = await UserModel.findOne({ email });
+        const existingLabTech = await LabTechModel.findOne({ email });
+        
+        if (existingUser || existingLabTech) {
+            return res.status(400).json({ error: "Email is already in use" });
+        }
+        
+        // Create new user based on account type
+        if (type === "Student") {
+            const newUser = new UserModel({
+                firstName,
+                lastName,
+                email,
+                password: newPass, // Using plain text as per user preference
+                profilePicture: '/img/default-profile.png',
+                department: '',
+                biography: ''
+            });
+            
+            await newUser.save();
+            console.log("New student user created:", newUser._id);
+            
+            // Redirect to login page
+            res.redirect("/signin-page");
+        } else if (type === "Faculty") {
+            const facultyCode = req.body.facultyCode;
+            
+            // Verify faculty code (for demo: i-am-faculty)
+            if (facultyCode !== "i-am-faculty") {
+                return res.status(400).json({ error: "Invalid faculty code" });
+            }
+            
+            const newLabTech = new LabTechModel({
+                firstName,
+                lastName,
+                email,
+                password: newPass, // Using plain text as per user preference
+                profilePicture: '/img/default-profile.png',
+                department: '',
+                biography: ''
+            });
+            
+            await newLabTech.save();
+            console.log("New lab tech user created:", newLabTech._id);
+            
+            // Redirect to login page
+            res.redirect("/signin-page");
+        } else {
+            return res.status(400).json({ error: "Invalid account type" });
+        }
     } catch (error) {
-        console.error('Error fetching laboratories:', error);
-        res.status(500).send('Internal Server Error');
+        console.error("Error during sign-up:", error);
+        res.status(500).json({ error: "An error occurred during sign-up" });
     }
 });
 
-//getting labs and days for labtech-labs
-// Removed duplicate route
+// Serve the login page
+app.get("/signin-page", (req, res) => res.sendFile(path.join(__dirname, "signin-page.html")));
+
+// Handle sign-in form submission
+app.post("/signin", async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        
+        console.log("Received sign-in request for email:", email);
+        
+        // Validate input
+        if (!email || !password) {
+            return res.status(400).json({ error: "Email and password are required" });
+        }
+        
+        // Try to find the user in the UserModel first
+        let user = await UserModel.findOne({ email });
+        let isLabTech = false;
+        
+        if (!user) {
+            // If not found in UserModel, try LabTechModel
+            user = await LabTechModel.findOne({ email });
+            isLabTech = true;
+            
+            if (!user) {
+                return res.status(401).json({ error: "Invalid email or password" });
+            }
+        }
+        
+        // Verify password (using plain text comparison as per user preference)
+        if (password !== user.password) {
+            return res.status(401).json({ error: "Invalid email or password" });
+        }
+        
+        // Determine redirect URL based on user type
+        const redirectUrl = isLabTech ? "/labtech-home" : "/student-home";
+        
+        // Send success response with user info
+        res.json({
+            success: true,
+            userId: user._id,
+            isLabTech,
+            redirect: redirectUrl
+        });
+        
+    } catch (error) {
+        console.error("Error during sign-in:", error);
+        res.status(500).json({ error: "An error occurred during sign-in" });
+    }
+});
+
+// Serve the student home page
+app.get("/student-home", (req, res) => res.sendFile(path.join(__dirname, "student-home.html")));
 
 // Profile Pages
 app.get("/popup-profile", (req, res) => {
@@ -579,19 +584,25 @@ app.get("/api/reservations/lab/:labId/date/:date", async (req, res) => {
             return res.status(400).json({ error: "Laboratory and date are required" });
         }
         
-        // Format the reservation date
-        const reservationDate = new Date(date);
-        
         console.log(`Fetching reservations for lab: ${labId}, date: ${date}`);
+        
+        // Create start and end date for the query (beginning and end of the day)
+        const startDate = new Date(date);
+        startDate.setHours(0, 0, 0, 0);
+        
+        const endDate = new Date(date);
+        endDate.setHours(23, 59, 59, 999);
+        
+        console.log(`Date range: ${startDate.toISOString()} to ${endDate.toISOString()}`);
         
         // Find all reservations for the given lab and date
         const reservations = await Reservation.find({
             laboratoryRoom: labId,
             reservationDate: {
-                $gte: new Date(date + "T00:00:00.000Z"),
-                $lt: new Date(date + "T23:59:59.999Z")
+                $gte: startDate,
+                $lt: endDate
             }
-        });
+        }).populate('userId', 'firstName lastName');
         
         console.log(`Found ${reservations.length} reservations`);
         
@@ -601,7 +612,8 @@ app.get("/api/reservations/lab/:labId/date/:date", async (req, res) => {
             seatNumber: reservation.seatNumber,
             startTime: reservation.startTime,
             endTime: reservation.endTime,
-            userId: reservation.userId
+            userId: reservation.userId,
+            studentName: reservation.isAnonymous ? "Anonymous" : reservation.studentName || (reservation.userId ? `${reservation.userId.firstName} ${reservation.userId.lastName}` : "Unknown")
         }));
         
         res.json({ reservations: formattedReservations });
@@ -659,59 +671,130 @@ app.post("/create-reservation", async (req, res) => {
     }
 });
 
-// Handle user login
-app.post("/signin", async (req, res) => {
+// Routes for laboratory pages with database loading
+app.get("/student-laboratories", async (req, res) => {
     try {
-        console.log("Login attempt received:", req.body);
-        const { email, password } = req.body;
-        
-        // Validate inputs
-        if (!email || !password) {
-            console.log("Missing email or password");
-            return res.status(400).json({ error: "Email and password are required" });
+        const labs = await Laboratory.find({}).lean();
+        const today = new Date();
+        const next7Days = [];
+        for(let i = 0; i < 7; i++) {
+            const date = new Date();
+            date.setDate(today.getDate() + i);
+            next7Days.push({
+                formattedDate: date.toISOString().split('T')[0],
+                displayDate: date.toLocaleDateString('en-US', {weekday: 'long', month: 'long', day: 'numeric'})
+            });
         }
-        
-        // Check if it's a student login
-        let user = await UserModel.findOne({ email });
-        let isLabTech = false;
-        
-        // If not found as a student, check if it's a lab technician
-        if (!user) {
-            console.log("User not found in UserModel, checking LabTechModel");
-            user = await LabTechModel.findOne({ email });
-            isLabTech = !!user;
-        }
-        
-        // If user not found in either collection
-        if (!user) {
-            console.log("User not found in either collection");
-            return res.status(401).json({ error: "Invalid email or password" });
-        }
-        
-        console.log("User found:", user.email, "isLabTech:", isLabTech);
-        
-        // Check password (using plain text comparison as per project requirements)
-        if (user.password !== password) {
-            console.log("Password mismatch");
-            return res.status(401).json({ error: "Invalid email or password" });
-        }
-        
-        // Determine redirect based on user type
-        const redirectUrl = isLabTech ? "/labtech-profile" : "/user-profile";
-        console.log("Login successful, redirecting to:", redirectUrl);
-        
-        // Successful login
-        res.status(200).json({ 
-            success: true, 
-            redirect: redirectUrl,
-            userId: user._id,
-            isLabTech
+
+        // Get any existing reservations
+        const reservations = await Reservation.find().lean().populate('userId', 'firstName lastName');
+
+        res.render('student-laboratories', { 
+            labs, 
+            next7Days, 
+            timeSlots,
+            reservations 
         });
-        
     } catch (error) {
-        console.error("Login error:", error);
-        res.status(500).json({ error: "An error occurred during login" });
+        console.error('Error fetching laboratories:', error);
+        res.status(500).send('Internal Server Error');
     }
+});
+
+app.get("/signedout-laboratories", async (req, res) => {
+    try {
+        const labs = await Laboratory.find({}).lean();
+        const today = new Date();
+        const next7Days = [];
+        for(let i = 0; i < 7; i++) {
+            const date = new Date();
+            date.setDate(today.getDate() + i);
+            next7Days.push({
+                formattedDate: date.toISOString().split('T')[0],
+                displayDate: date.toLocaleDateString('en-US', {weekday: 'long', month: 'long', day: 'numeric'})
+            });
+        }
+
+        // Get any existing reservations
+        const reservations = await Reservation.find().lean().populate('userId', 'firstName lastName');
+
+        res.render('signedout-laboratories', { 
+            labs, 
+            next7Days, 
+            timeSlots,
+            reservations 
+        });
+    } catch (error) {
+        console.error('Error fetching laboratories:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.get("/labtech-laboratories", async (req, res) => {
+    try {
+        const labs = await Laboratory.find({}).lean();
+        const selectedLabId = req.query.labs ? req.query.labs.toString() : null;
+        
+        const today = new Date();
+        const next7Days = [];
+        for(let i = 0; i < 7; i++) {
+            const date = new Date();
+            date.setDate(today.getDate() + i);
+            next7Days.push({
+                formattedDate: date.toISOString().split('T')[0],
+                displayDate: date.toLocaleDateString('en-US', {weekday: 'long', month: 'long', day: 'numeric'})
+            });
+        }
+
+        // Get any existing reservations
+        const reservations = await Reservation.find().lean().populate('userId', 'firstName lastName');
+
+        res.render("labtech-laboratories", {
+            labs, 
+            next7Days, 
+            timeSlots, 
+            endTimeOptions,
+            selectedLabId,
+            reservations
+        });
+    } catch (error) {
+        console.error('Error fetching laboratories:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+//getting labs and days for labtech-labs
+// Removed duplicate route
+
+// Register Handlebars helpers
+const findReservation = function(seatNum, timeSlot, reservations) {
+    return reservations.find(r => {
+        const seatMatch = r.seatNumber === parseInt(seatNum);
+        const timeMatch = r.startTime === timeSlot;
+        return seatMatch && timeMatch;
+    });
+};
+
+const findReservationIndex = function(seatNum, timeSlot, reservations) {
+    return reservations.findIndex(r => {
+        const seatMatch = r.seatNumber === parseInt(seatNum);
+        const timeMatch = r.startTime === timeSlot;
+        return seatMatch && timeMatch;
+    });
+};
+
+// Register the helpers globally
+hbs.registerHelper('findReservation', findReservation);
+hbs.registerHelper('findReservationIndex', findReservationIndex);
+hbs.registerHelper('equal', function(a, b) {
+    return a === b;
+});
+hbs.registerHelper('range', function(start, end) {
+    const result = [];
+    for (let i = start; i <= end; i++) {
+        result.push(i);
+    }
+    return result;
 });
 
 // Start the server

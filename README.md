@@ -1,13 +1,7 @@
 CCAPDEV - S16 (Capote, Gonzales Ho, Rocha)
 
-How to run:
+# How to Run the Application
 
-1. Open the root directory in command prompt
-2. Install all dependencies with `npm update --save` or alternatively, `npm install` each dependency listed below:
-    - express
-    - express-fileupload
-    - hbs
-    - node-cron
-    - mongoose
-    - path
-3. Run the node server with `node index.js`
+To start the application, simply run the `start-app.bat` file located in the root directory of the project.
+
+This will automatically set up the environment and start the server for you.

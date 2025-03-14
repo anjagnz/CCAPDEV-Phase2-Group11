@@ -213,7 +213,7 @@
                 }
             }
 
-            // Generate the next 7 days dynamically
+            // Generate dates including our seeded dates (March 15-29, 2025)
             function generateNext7Days() {
                 const dateSelect = document.getElementById('dates');
                 // Clear existing options except the first one
@@ -221,6 +221,7 @@
                     dateSelect.remove(1);
                 }
                 
+                // Add the next 7 days from today
                 const today = new Date();
                 
                 for (let i = 0; i < 7; i++) {
@@ -239,6 +240,29 @@
                     option.text = displayDate;
                     dateSelect.appendChild(option);
                 }
+                
+                // Add our seeded reservation dates (March 15-29, 2025)
+                const seedStartDate = new Date('2025-03-15');
+                const seedEndDate = new Date('2025-03-29');
+                
+                // Add an option group for seeded dates
+                const optgroup = document.createElement('optgroup');
+                optgroup.label = "Demo Data (March 2025)";
+                dateSelect.appendChild(optgroup);
+                
+                for (let date = new Date(seedStartDate); date <= seedEndDate; date.setDate(date.getDate() + 1)) {
+                    const formattedDate = date.toISOString().split('T')[0];
+                    const displayDate = date.toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                    
+                    const option = document.createElement('option');
+                    option.value = formattedDate;
+                    option.text = displayDate;
+                    optgroup.appendChild(option);
+                }
             }
 
             // Update the view when lab or date changes
@@ -253,28 +277,43 @@
                     return;
                 }
                 
+                console.log(`Updating view for lab: ${lab}, date: ${date}`);
+                
                 // Reset all seats to available
-                const seats = document.querySelectorAll('.view-seat');
+                const seats = document.querySelectorAll('.view-seat, .taken-seat');
                 seats.forEach(seat => {
                     seat.className = "view-seat";
+                    seat.title = "Available";
                 });
                 
                 // Fetch reservations for the selected lab and date
                 fetch(`/api/reservations/lab/${lab}/date/${date}`)
                     .then(response => response.json())
                     .then(data => {
+                        console.log('Received reservation data:', data);
+                        
                         // Mark booked seats
                         if (data.reservations && data.reservations.length > 0) {
                             data.reservations.forEach(reservation => {
                                 const seatNumber = reservation.seatNumber;
                                 const startTime = reservation.startTime;
+                                const studentName = reservation.studentName || "Anonymous";
                                 
                                 // Find the seat button with matching seat number and time slot
-                                const seatButton = document.querySelector(`.view-seat[data-seat-number="${seatNumber}"][data-time-slot="${startTime}"]`);
+                                const seatSelector = `.view-seat[data-seat-number="${seatNumber}"][data-time-slot="${startTime}"]`;
+                                console.log(`Looking for seat with selector: ${seatSelector}`);
+                                
+                                const seatButton = document.querySelector(seatSelector);
                                 if (seatButton) {
                                     seatButton.className = "taken-seat";
+                                    seatButton.title = `Booked by ${studentName}`;
+                                    console.log(`Marked seat ${seatNumber} at ${startTime} as taken by ${studentName}`);
+                                } else {
+                                    console.log(`Could not find seat element for seat ${seatNumber} at time ${startTime}`);
                                 }
                             });
+                        } else {
+                            console.log('No reservations found for this lab and date');
                         }
                     })
                     .catch(error => {

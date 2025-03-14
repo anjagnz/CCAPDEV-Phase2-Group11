@@ -25,6 +25,65 @@
                 $.getScript("/js/navbar.js");
             });
         </script>
+        
+        <style>
+            /* Seat styles */
+            .clickable-seat {
+                background-color: #4CAF50;
+                color: white;
+                border: none;
+                padding: 10px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+                margin: 4px 2px;
+                cursor: pointer;
+                border-radius: 5px;
+            }
+            
+            .taken-seat {
+                background-color: #f44336;
+                color: white;
+                border: none;
+                padding: 10px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+                margin: 4px 2px;
+                cursor: not-allowed;
+                border-radius: 5px;
+            }
+            
+            .selected-seat {
+                background-color: #2196F3;
+                color: white;
+                border: none;
+                padding: 10px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+                margin: 4px 2px;
+                cursor: pointer;
+                border-radius: 5px;
+            }
+            
+            .my-booking-seat {
+                background-color: #9C27B0;
+                color: white;
+                border: none;
+                padding: 10px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+                margin: 4px 2px;
+                cursor: not-allowed;
+                border-radius: 5px;
+            }
+        </style>
     </head>
 
     <body>
@@ -375,15 +434,36 @@
                     return;
                 }
                 
+                console.log(`Updating seat status for lab: ${selectedLab}, date: ${selectedDate}`);
+                
                 // Reset all seats to available (clickable)
-                document.querySelectorAll('.clickable-seat, .taken-seat, .selected-seat').forEach(seat => {
+                document.querySelectorAll('.clickable-seat, .taken-seat, .selected-seat, .my-booking-seat').forEach(seat => {
                     seat.className = "clickable-seat";
+                    // Re-attach click handlers for all seats
+                    seat.onclick = function() {
+                        // Remove selected class from all seats
+                        document.querySelectorAll('.selected-seat').forEach(s => {
+                            if (s.classList.contains('my-booking-seat')) {
+                                s.className = "my-booking-seat";
+                            } else if (s.classList.contains('taken-seat')) {
+                                s.className = "taken-seat";
+                            } else {
+                                s.className = "clickable-seat";
+                            }
+                        });
+                        // Add selected class to this seat if it's clickable
+                        if (this.className === "clickable-seat") {
+                            this.className = "selected-seat";
+                        }
+                    };
                 });
                 
                 // Fetch current reservations from the server
                 fetch(`/api/reservations/lab/${selectedLab}/date/${selectedDate}`)
                     .then(response => response.json())
                     .then(data => {
+                        console.log('Received reservation data:', data);
+                        
                         if (data.reservations && data.reservations.length > 0) {
                             // Mark booked seats
                             data.reservations.forEach(reservation => {
@@ -393,22 +473,19 @@
                                 // Find the seat button with matching seat number and time slot
                                 const seatButton = document.querySelector(`.clickable-seat[data-seat-number="${seatNumber}"][data-time-slot="${startTime}"]`);
                                 if (seatButton) {
-                                    seatButton.className = "taken-seat";
+                                    // If this is the current user's booking, mark it differently
+                                    if (reservation.userId === userId) {
+                                        seatButton.className = "my-booking-seat";
+                                        seatButton.title = "Your booking";
+                                    } else {
+                                        seatButton.className = "taken-seat";
+                                        seatButton.title = "Already booked";
+                                    }
+                                    // Remove click handler from booked seats
+                                    seatButton.onclick = null;
                                 }
                             });
                         }
-                        
-                        // Re-attach click handlers for available seats
-                        document.querySelectorAll('.clickable-seat').forEach(seat => {
-                            seat.onclick = function() {
-                                // Remove selected class from all seats
-                                document.querySelectorAll('.selected-seat').forEach(s => {
-                                    s.className = "clickable-seat";
-                                });
-                                // Add selected class to this seat
-                                this.className = "selected-seat";
-                            };
-                        });
                     })
                     .catch(error => {
                         console.error('Error fetching reservations:', error);
