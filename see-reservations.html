@@ -77,7 +77,7 @@
         // Function to load and display reservations
         async function loadReservations() {
             try {
-                const response = await fetch("/api/reservations/user/101"); // hard coded for now until session implementation
+                const response = await fetch("/api/reservations/user/67d3a9fbd6b982b14c8adf6c"); // hard coded for now until session implementation
                 const reservations = await response.json();
 
                 const tableBody = document.querySelector("tbody");
@@ -157,12 +157,6 @@
             
                 reservationDetails.innerHTML = `
                     <h1 style="text-align: center; padding-top: 30px; padding-bottom: 18px; font-size: 28px;">Reservation Details</h1>
-                    <div class="input-wrapper">
-                        <div class="label-wrapper">            
-                            User ID:
-                        </div>
-                        <input type="text" id="user-id" class="text-field" value="${reservation.userId}" data-label="userId" disabled> 
-                    </div>
                     <div class="input-wrapper">
                         <div class="label-wrapper">            
                            Laboratory Room:
