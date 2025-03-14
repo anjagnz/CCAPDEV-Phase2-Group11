@@ -7,7 +7,6 @@ How to run:
     - express
     - express-fileupload
     - hbs
-    - node-cron
     - mongoose
     - path
 3. Run the node server with `node index.js`
