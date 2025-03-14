@@ -95,10 +95,10 @@ async function populateReservations(){
     const reservationsFound = await Reservation.find();
     if (reservationsFound.length == 0){
         const reservations = [
-            { userId: new mongoose.Types.ObjectId("67d3a9fbd6b982b14c8adf6c"), laboratoryRoom: "GK101B", seatNumber: 26, bookingDate: new Date(), reservationDate: new Date(2025, 2, 10), startTime: "7:30 A.M.", endTime: "9:00 A.M." },
+            { userId: new mongoose.Types.ObjectId("67d3a9fbd6b982b14c8adf6c"), studentName: "Jane", laboratoryRoom: "GK101B", seatNumber: 26, bookingDate: new Date(), reservationDate: new Date(2025, 2, 10), startTime: "7:30 A.M.", endTime: "9:00 A.M." },
             { userId: new mongoose.Types.ObjectId("67d3a9fbd6b982b14c8adf6d"), laboratoryRoom: "AG1904", seatNumber: 15, bookingDate: new Date(), reservationDate: new Date(2025, 2, 11), startTime: "10:00 A.M.", endTime: "11:30 A.M." },
             { userId: new mongoose.Types.ObjectId("67d3a9fbd6b982b14c8adf6c"), laboratoryRoom: "GK401A", seatNumber: 32, bookingDate: new Date(), reservationDate: new Date(2025, 2, 12), startTime: "1:00 P.M.", endTime: "2:30 P.M." },
-            { userId: new mongoose.Types.ObjectId("67d3a9fbd6b982b14c8adf6e"), laboratoryRoom: "AG1701", seatNumber: 8, bookingDate: new Date(), reservationDate: new Date(2025, 2, 13), startTime: "3:00 P.M.", endTime: "4:30 P.M." },
+            { userId: new mongoose.Types.ObjectId("67d3a9fbd6b982b14c8adf6e"), studentName: "Art", laboratoryRoom: "AG1701", seatNumber: 8, bookingDate: new Date(), reservationDate: new Date(2025, 2, 13), startTime: "3:00 P.M.", endTime: "4:30 P.M." },
             { userId: new mongoose.Types.ObjectId("67d3a9fbd6b982b14c8adf6b"), laboratoryRoom: "GK102A", seatNumber: 19, bookingDate: new Date(), reservationDate: new Date(2025, 2, 14), startTime: "5:00 P.M.", endTime: "6:30 P.M." }
         ];
         
