@@ -412,6 +412,46 @@ app.post("/signup", async (req, res) => {
 });
 // TODO: User (and reservations) deletion
 
+// User edit
+app.patch("/api/users/:id", async (req, res) => {
+    try {
+        const user = await User.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        res.json(user);
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error });
+    }
+});
+
+// User (and reservations) deletion
+app.post("/delete-user", async (req, res) => {
+    // try {
+    //     const password = req.body;
+
+    //     // needs session management
+       
+    //     // find user by id and delete
+    //     const user = await User.findByIdAndDelete(req.params.id);
+
+    //     /*
+    //     if (password === user.password) {
+    //         delete user
+    //     }
+        
+    //     */
+
+    //     // delete all associated reservations, if any
+    //     await Reservation.deleteMany({ userId: req.params.id });
+    //     res.json({ message: "User and associated reservations deleted successfully" });
+    // } catch (error) {
+    //     res.status(500).json({ message: "Server error", error });
+    // }
+    res.sendFile(path.join(__dirname, "index.html"))
+});
+
+
 // Initial users
 async function populateUsers() {
     const existingUsers = await User.find();

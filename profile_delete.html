@@ -66,10 +66,12 @@
                     along with all current reservations. This action cannot be undone!
                 </p>
                 <br>
-                <div class="input-wrapper">
-                    <label for="password">Password:</label>
-                <input class="round" type="password" id="password" required>
-                </div>
+                <form method="post" action="/delete-user">
+                    <div class="input-wrapper">
+                        <label for="password">Password:</label>
+                    <input class="round" type="password" id="password" required>
+                    </div>
+                </form>
                 <br>
             </div>
             <div class="popup-footer">

@@ -68,14 +68,16 @@
                 <br>
                 <div class="input-wrapper">
                     <label for="password">Password:</label>
-                <input class="round" type="password" id="password" required>
+                <input class="round" type="password" id="password" name="password" required>
                 </div>
                 <br>
             </div>
-            <div class="popup-footer">
-                <button class="round primary" id="delete-btn" onclick="location.href='/'">Confirm Deletion</button>
-                <button class="round secondary" onclick="location.href='/labtech-profile-overview'">Cancel</button>
-            </div>
+            <form action="/delete-user" method="post">
+                <div class="popup-footer">
+                    <button class="round primary" id="delete-btn" type="submit">Confirm Deletion</button>
+                    <button class="round secondary" type="button">Cancel</button>
+                </div>
+            </form>
         </div>
 
     </body>
