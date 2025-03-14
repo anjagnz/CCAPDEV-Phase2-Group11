@@ -221,7 +221,7 @@ const seedDatabase = async () => {
             
             // Morning slots
             timeSlots.push({
-                laboratoryId: lab._id,
+                laboratoryRoom: lab.laboratoryName,
                 seatNumber: 1,
                 date: new Date(feb15),
                 time: '8:30 AM - 9:00 AM',
@@ -230,7 +230,7 @@ const seedDatabase = async () => {
             });
             
             timeSlots.push({
-                laboratoryId: lab._id,
+                laboratoryRoom: lab.laboratoryName,
                 seatNumber: 2,
                 date: new Date(feb15),
                 time: '9:30 AM - 10:00 AM',
@@ -239,7 +239,7 @@ const seedDatabase = async () => {
             });
             
             timeSlots.push({
-                laboratoryId: lab._id,
+                laboratoryRoom: lab.laboratoryName,
                 seatNumber: 3,
                 date: new Date(feb15),
                 time: '10:00 AM - 11:00 AM',
@@ -249,7 +249,7 @@ const seedDatabase = async () => {
             
             // Add some available slots
             timeSlots.push({
-                laboratoryId: lab._id,
+                laboratoryRoom: lab.laboratoryName,
                 seatNumber: 4,
                 date: new Date(feb15),
                 time: '11:00 AM - 12:00 PM',
@@ -258,7 +258,7 @@ const seedDatabase = async () => {
             });
             
             timeSlots.push({
-                laboratoryId: lab._id,
+                laboratoryRoom: lab.laboratoryName,
                 seatNumber: 5,
                 date: new Date(feb15),
                 time: '1:00 PM - 2:00 PM',

@@ -1,28 +1,37 @@
 <!DOCTYPE html>
-
 <html>
     <head>
         <title>LabMate - Laboratories</title>
-        <meta charset = "UTF-8">
-        <meta name = "viewport" content = "width=device-width, initial-scale = 1.0">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="/css/pop-up.css">
         <link rel="stylesheet" href="/css/theme-style.css">
         <link rel="stylesheet" href="/css/navbar-style.css">
         <link rel="stylesheet" href="/css/student-laboratories.css">
         
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="/js/seat-manager.js"></script>
 
         <script>
-            /* adds outline design on active page in navigation bar */
-            $(document).ready(function() {$.getScript("js/navbar.js");});
+            let isLoggedIn = false;
+            $(document).ready(function() {
+                const userId = localStorage.getItem('userId');
+                if (userId) {
+                    isLoggedIn = true;
+                    document.getElementById('anonymous-option').style.display = 'flex';
+                } else {
+                    console.error('No user ID found in localStorage');
+                }
+                $.getScript("/js/navbar.js");
+            });
         </script>
     </head>
 
     <body>
         <div data-include="navbar-signedin"></div>
 
-        <div class = "frame">
-            <span class = "header">Reserve a Slot</span>
+        <div class="frame">
+            <span class="header">Reserve a Slot</span>
 
             {{#if success}}
             <div style="background-color: #23c686; color: white; padding: 10px; border-radius: 5px; margin-bottom: 20px; text-align: center;">
@@ -32,68 +41,40 @@
 
             <div class="dropdown">
                 <span class="dropdown-header">Laboratory</span>
-
                 <select name="labs" id="labs">
                     <option value="" disabled selected>Select a Laboratory</option>
-                    <option value="G301">G301</option>
-                    <option value="G302">G302</option>
-                    <option value="G303">G303</option>
-                    <option value="G304">G304</option>
+                    <option value="GK101A">GK101A</option>
+                    <option value="GK203B">GK203B</option>
+                    <option value="GK404B">GK404B</option>
+                    <option value="AG1706">AG1706</option>
+                    <option value="AG1904">AG1904</option>
                 </select>
             </div>
 
-            
-            <div class = "dropdown">
-                <span class = "dropdown-header">Date</span>
-
+            <div class="dropdown">
+                <span class="dropdown-header">Date</span>
                 <select name="dates" id="dates">
-                    <option value="" disabled selected>Select a Date</option>
+                    <option value="disabled selected">Select a Date</option>
                 </select>
             </div>
 
-            <div class="popup2" id="popup-frame-1">
+            {{!-- Dynamic popups for reservations --}}
+            {{#each reservations}}
+            <div class="popup2" id="popup-frame-{{@index}}">
                 <div class="popup-box">
-                    <span class="popup-header">8:30 AM - 9:00 AM</span>
-                    <img class="user-img" src="img/default-profile.png" onclick="location.href='/demo-profile-1'"></img>
-                    <span class="user-name">John Doe</span>
+                    <span class="popup-header">{{this.startTime}} - {{this.endTime}}</span>
+                    {{#if this.isAnonymous}}
+                        <span class="user-name">Anonymous Reservation</span>
+                    {{else}}
+                        <img class="user-img" src="{{this.user.profilePicture}}" onclick="location.href='/profile/{{this.user._id}}'"></img>
+                        <span class="user-name">{{#if this.isCurrentUser}}Your Reservation{{else}}{{this.user.name}}{{/if}}</span>
+                    {{/if}}
                 </div>
             </div>
-
-            <div class="popup2" id="popup-frame-2">
-                <div class="popup-box">
-                    <span class="popup-header">10:00 AM - 11:00 AM</span>
-                    <img class="user-img" src="img/default-profile.png" onclick="location.href='/demo-profile-2'"></img>
-                    <span class="user-name">Jane Smith</span>
-                </div>
-            </div>
-
-            <div class="popup2" id="popup-frame-3">
-                <div class="popup-box">
-                    <span class="popup-header">9:30 AM - 10:00 AM</span>
-                    <img class="user-img" src="img/default-profile.png" onclick="location.href='/demo-profile-3'"></img>
-                    <span class="user-name">Your Reservation</span>
-                </div>
-            </div>
-
-            <div class="popup2" id="popup-frame-4">
-                <div class="popup-box">
-                    <span class="popup-header">10:30 AM - 12:00 PM</span>
-                    <img class="user-img" src="img/default-profile.png" onclick="location.href='/demo-profile-4'"></img>
-                    <span class="user-name">Alex Johnson</span>
-                </div>
-            </div>
-
-            <div class="popup2" id="popup-frame-5">
-                <div class="popup-box">
-                    <span class="popup-header">7:30 AM - 8:00 AM</span>
-                    <img class="user-img" src="img/default-profile.png" onclick="location.href='/demo-profile-5'"></img>
-                    <span class="user-name">Sam Wilson</span>
-                </div>
-            </div>
+            {{/each}}
 
             <div id="chart">
                 <span id="chart-header">Slot Availability</span>
-
                 <div id="chart-body">
                     <table id="slot-chart">
                         <thead>
@@ -111,47 +92,92 @@
                                 <th>12:00 PM</th>
                             </tr>
                         </thead>
-
                         <tbody>
-                            {{#range 1 5}}
                             <tr>
-                                <th id="seats">Seat {{this}}</th>
-                                {{#each ../timeSlots}}
-                                    <td>
-                                        {{#if (findReservation ../this this)}}
-                                            <button class="taken-seat" onclick="togglePopup('popup-frame-{{../this}}')"></button>
-                                        {{else}}
-                                            <button class="clickable-seat" seat-number="{{../this}}" seat-time="{{this}}"></button>
-                                        {{/if}}
-                                    </td>
-                                {{/each}}
+                                <th id="seats">Seat 1</th>
+                                <td><button class="clickable-seat" data-seat-number="1" data-time-slot="7:30 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="1" data-time-slot="8:00 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="1" data-time-slot="8:30 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="1" data-time-slot="9:00 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="1" data-time-slot="9:30 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="1" data-time-slot="10:00 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="1" data-time-slot="10:30 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="1" data-time-slot="11:00 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="1" data-time-slot="11:30 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="1" data-time-slot="12:00 PM" onclick="handleSeatClick(event)"></button></td>
                             </tr>
-                            {{/range}}
+                            <tr>
+                                <th id="seats">Seat 2</th>
+                                <td><button class="clickable-seat" data-seat-number="2" data-time-slot="7:30 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="2" data-time-slot="8:00 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="2" data-time-slot="8:30 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="2" data-time-slot="9:00 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="2" data-time-slot="9:30 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="2" data-time-slot="10:00 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="2" data-time-slot="10:30 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="2" data-time-slot="11:00 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="2" data-time-slot="11:30 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="2" data-time-slot="12:00 PM" onclick="handleSeatClick(event)"></button></td>
+                            </tr>
+                            <tr>
+                                <th id="seats">Seat 3</th>
+                                <td><button class="clickable-seat" data-seat-number="3" data-time-slot="7:30 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="3" data-time-slot="8:00 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="3" data-time-slot="8:30 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="3" data-time-slot="9:00 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="3" data-time-slot="9:30 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="3" data-time-slot="10:00 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="3" data-time-slot="10:30 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="3" data-time-slot="11:00 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="3" data-time-slot="11:30 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="3" data-time-slot="12:00 PM" onclick="handleSeatClick(event)"></button></td>
+                            </tr>
+                            <tr>
+                                <th id="seats">Seat 4</th>
+                                <td><button class="clickable-seat" data-seat-number="4" data-time-slot="7:30 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="4" data-time-slot="8:00 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="4" data-time-slot="8:30 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="4" data-time-slot="9:00 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="4" data-time-slot="9:30 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="4" data-time-slot="10:00 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="4" data-time-slot="10:30 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="4" data-time-slot="11:00 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="4" data-time-slot="11:30 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="4" data-time-slot="12:00 PM" onclick="handleSeatClick(event)"></button></td>
+                            </tr>
+                            <tr>
+                                <th id="seats">Seat 5</th>
+                                <td><button class="clickable-seat" data-seat-number="5" data-time-slot="7:30 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="5" data-time-slot="8:00 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="5" data-time-slot="8:30 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="5" data-time-slot="9:00 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="5" data-time-slot="9:30 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="5" data-time-slot="10:00 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="5" data-time-slot="10:30 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="5" data-time-slot="11:00 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="5" data-time-slot="11:30 AM" onclick="handleSeatClick(event)"></button></td>
+                                <td><button class="clickable-seat" data-seat-number="5" data-time-slot="12:00 PM" onclick="handleSeatClick(event)"></button></td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
 
             <div id="legend">
-                <div id="legend-available">
-                </div>
+                <div id="legend-available"></div>
                 <span class="legend-text">Available</span>
-                <div id="legend-selected">
-                </div>
+                <div id="legend-selected"></div>
                 <span class="legend-text">Selected</span>
-                <div id="legend-unavailable">
-                </div>
+                <div id="legend-unavailable"></div>
                 <span class="legend-text">Unavailable</span>
-                <div id="legend-booking">
-                </div>
+                <div id="legend-booking"></div>
                 <span class="legend-text">Your Booking</span>
             </div>
 
             <div class="dropdown">
                 <span class="dropdown-header">Reserve until...</span>
-
                 <select name="endtimes" id="endtimes">
-                    <option value="" disabled selected>Select an End Time</option>
+                    <option value="disabled selected">Select an End Time</option>
                     <option value="8:00 AM">8:00 AM</option>
                     <option value="8:30 AM">8:30 AM</option>
                     <option value="9:00 AM">9:00 AM</option>
@@ -164,7 +190,12 @@
                 </select>
             </div>
 
-            <button id="reserve-button" onclick="openPopup()">Reserve</button>
+            <div id="anonymous-option" class="checkbox-container" style="display: none;">
+                <input type="checkbox" id="anonymous" name="anonymous">
+                <label for="anonymous">Book anonymously?</label>
+            </div>
+
+            <button id="reserve-button" onclick="openPopup()">Create Booking</button>
         </div>
 
         <div id="overlay" class="overlay"></div>
@@ -185,30 +216,15 @@
         </div>
 
         <form id="reservationForm" action="/create-reservation" method="POST" style="display: none;">
-            <input type="hidden" id="labId" name="labId" value="{{selectedLabId}}">
+            <input type="hidden" id="labId" name="labId" value="">
             <input type="hidden" id="date" name="date" value="">
             <input type="hidden" id="seatNumber" name="seatNumber" value="">
             <input type="hidden" id="startTime" name="startTime" value="">
             <input type="hidden" id="endTime" name="endTime" value="">
+            <input type="hidden" id="userId" name="userId" value="">
         </form>
 
         <script>
-            var seats = document.getElementsByClassName('clickable-seat');
-            var selectedSeat = null;
-
-            for(var i = 0; i < seats.length; i++) {
-                seats[i].onclick = function() {
-                    // Reset all seats to default color
-                    for(var j = 0; j < seats.length; j++) {
-                        seats[j].style.backgroundColor = '#D9D9D9';
-                    }
-                    
-                    // Highlight the selected seat
-                    this.style.backgroundColor = '#FC9D45';
-                    selectedSeat = this;
-                };
-            }
-
             function togglePopup(popupId) {
                 document.querySelectorAll(".popup2").forEach(popup => {
                     if(popup.id != popupId) {
@@ -223,27 +239,40 @@
             let overlay = document.getElementById("overlay");
 
             function openPopup(){
+                // Check if a seat is selected by looking for the selected-seat class
+                const selectedSeat = document.querySelector('.selected-seat');
                 if (!selectedSeat) {
                     alert("Please select a seat first!");
                     return;
                 }
                 
                 var endTime = document.getElementById("endtimes").value;
-                if (!endTime) {
+                if (!endTime || endTime === "disabled selected") {
                     alert("Please select an end time!");
                     return;
                 }
-                
+
                 confirmPopup.classList.add("open-popup");
                 overlay.classList.add("active");
             }
 
             function submitReservation() {
-                var lab = document.getElementById("labs").value;
-                var date = document.getElementById("dates").value;
-                var endTime = document.getElementById("endtimes").value;
-                var seatNumber = selectedSeat.getAttribute("seat-number");
-                var startTime = selectedSeat.getAttribute("seat-time");
+                const lab = document.getElementById('labs').value;
+                const date = document.getElementById('dates').value;
+                const endTime = document.getElementById('endtimes').value;
+                
+                // Get the selected seat
+                const selectedSeat = document.querySelector('.selected-seat');
+                if (!selectedSeat) {
+                    alert("Please select a seat first!");
+                    confirmPopup.classList.remove("open-popup");
+                    overlay.classList.remove("active");
+                    return;
+                }
+                
+                const seatNumber = selectedSeat.getAttribute('data-seat-number');
+                const startTime = selectedSeat.getAttribute('data-time-slot');
+                const isAnonymous = document.getElementById('anonymous') ? document.getElementById('anonymous').checked : false;
 
                 // Validate that all required fields are selected
                 if (!lab || !date || !endTime || !seatNumber || !startTime) {
@@ -253,24 +282,33 @@
                     return;
                 }
 
-                // Map the lab value to a lab ID
-                var labId;
-                switch(lab) {
-                    case "G301": labId = "G301"; break;
-                    case "G302": labId = "G302"; break;
-                    case "G303": labId = "G303"; break;
-                    case "G304": labId = "G304"; break;
-                    default: labId = lab;
-                }
-
-                // The date is already in the correct format (YYYY-MM-DD)
-                document.getElementById("labId").value = labId;
-                document.getElementById("date").value = date;
-                document.getElementById("seatNumber").value = seatNumber;
-                document.getElementById("startTime").value = startTime;
-                document.getElementById("endTime").value = endTime;
-
-                document.getElementById("reservationForm").submit();
+                // Now we query the database to check if the seat is available
+                fetch(`/api/reservations/check-availability?lab=${lab}&date=${date}&seatNumber=${seatNumber}&startTime=${startTime}&endTime=${endTime}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.available) {
+                            // Seat is available, proceed with booking
+                            document.getElementById("labId").value = lab;
+                            document.getElementById("date").value = date;
+                            document.getElementById("seatNumber").value = seatNumber;
+                            document.getElementById("startTime").value = startTime;
+                            document.getElementById("endTime").value = endTime;
+                            document.getElementById("userId").value = localStorage.getItem('userId');
+                            
+                            // Submit the form
+                            document.getElementById("reservationForm").submit();
+                        } else {
+                            alert('This seat is no longer available. Please select another seat or time slot.');
+                            confirmPopup.classList.remove("open-popup");
+                            overlay.classList.remove("active");
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error checking seat availability:', error);
+                        alert('Failed to check seat availability. Please try again.');
+                        confirmPopup.classList.remove("open-popup");
+                        overlay.classList.remove("active");
+                    });
             }
 
             function cancel(){
@@ -287,14 +325,17 @@
                 }
                 
                 const today = new Date();
-                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
                 
                 for (let i = 0; i < 7; i++) {
                     const date = new Date();
                     date.setDate(today.getDate() + i);
                     
-                    const formattedDate = date.toISOString().split('T')[0]; // YYYY-MM-DD
-                    const displayDate = date.toLocaleDateString('en-US', options); // Monday, March 15, 2025
+                    const formattedDate = date.toISOString().split('T')[0];
+                    const displayDate = date.toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        month: 'long',
+                        day: 'numeric'
+                    });
                     
                     const option = document.createElement('option');
                     option.value = formattedDate;
@@ -303,10 +344,218 @@
                 }
             }
             
-            // Call the function when the page loads
+            // Function to reload the page with the selected lab and date
+            function updateLabView() {
+                const labSelect = document.getElementById('labs');
+                const dateSelect = document.getElementById('dates');
+                const userId = localStorage.getItem('userId');
+                
+                // Only update when both lab and date are properly selected
+                if (labSelect.value !== "" && labSelect.value !== "disabled selected" && 
+                    dateSelect.value !== "" && dateSelect.value !== "disabled selected") {
+                    
+                    // Store selections in localStorage to preserve them
+                    localStorage.setItem('selectedLab', labSelect.value);
+                    localStorage.setItem('selectedDate', dateSelect.value);
+                    
+                    // Instead of refreshing the page, just update the seat status
+                    updateSeatStatus();
+                }
+            }
+            
+            // Function to update seat status based on selected lab and date
+            function updateSeatStatus() {
+                const selectedLab = document.getElementById('labs').value;
+                const selectedDate = document.getElementById('dates').value;
+                const userId = localStorage.getItem('userId');
+                
+                // Only query when both lab and date are properly selected
+                if (!selectedLab || selectedLab === "" || selectedLab === "disabled selected" || 
+                    !selectedDate || selectedDate === "" || selectedDate === "disabled selected") {
+                    return;
+                }
+                
+                // Reset all seats to available (clickable)
+                document.querySelectorAll('.clickable-seat, .taken-seat, .selected-seat').forEach(seat => {
+                    seat.className = "clickable-seat";
+                });
+                
+                // Fetch current reservations from the server
+                fetch(`/api/reservations/lab/${selectedLab}/date/${selectedDate}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.reservations && data.reservations.length > 0) {
+                            // Mark booked seats
+                            data.reservations.forEach(reservation => {
+                                const seatNumber = reservation.seatNumber;
+                                const startTime = reservation.startTime;
+                                
+                                // Find the seat button with matching seat number and time slot
+                                const seatButton = document.querySelector(`.clickable-seat[data-seat-number="${seatNumber}"][data-time-slot="${startTime}"]`);
+                                if (seatButton) {
+                                    seatButton.className = "taken-seat";
+                                }
+                            });
+                        }
+                        
+                        // Re-attach click handlers for available seats
+                        document.querySelectorAll('.clickable-seat').forEach(seat => {
+                            seat.onclick = function() {
+                                // Remove selected class from all seats
+                                document.querySelectorAll('.selected-seat').forEach(s => {
+                                    s.className = "clickable-seat";
+                                });
+                                // Add selected class to this seat
+                                this.className = "selected-seat";
+                            };
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching reservations:', error);
+                    });
+                
+                // Set up the reserve button click handler
+                document.getElementById('reserve-button').onclick = function() {
+                    const selectedSeat = document.querySelector('.selected-seat');
+                    if (!selectedSeat) {
+                        alert('Please select a seat first!');
+                        return;
+                    }
+                    
+                    const endTime = document.getElementById('endtimes').value;
+                    if (!endTime || endTime === "disabled selected") {
+                        alert('Please select an end time!');
+                        return;
+                    }
+                    
+                    // Show confirmation popup
+                    openPopup();
+                };
+            }
+            
+            // Add this function to restore selections on page load
+            function restoreSelections() {
+                const selectedLab = localStorage.getItem('selectedLab');
+                const selectedDate = localStorage.getItem('selectedDate');
+                
+                if (selectedLab) {
+                    document.getElementById('labs').value = selectedLab;
+                }
+                
+                if (selectedDate) {
+                    // First populate the dates
+                    generateNext7Days();
+                    
+                    // Then set the selected date
+                    const dateSelect = document.getElementById('dates');
+                    for (let i = 0; i < dateSelect.options.length; i++) {
+                        if (dateSelect.options[i].value === selectedDate) {
+                            dateSelect.selectedIndex = i;
+                            break;
+                        }
+                    }
+                    
+                    // If both lab and date are selected, update seat status
+                    if (selectedLab) {
+                        updateSeatStatus();
+                    }
+                }
+            }
+            
+            // Function to periodically update seat status
+            function startAutoRefresh() {
+                // Update seat status immediately if lab and date are selected
+                const selectedLab = document.getElementById('labs').value;
+                const selectedDate = document.getElementById('dates').value;
+                
+                if (selectedLab !== "" && selectedLab !== "disabled selected" && 
+                    selectedDate !== "" && selectedDate !== "disabled selected") {
+                    updateSeatStatus();
+                }
+                
+                // Then update every 10 seconds
+                setInterval(function() {
+                    const lab = document.getElementById('labs').value;
+                    const date = document.getElementById('dates').value;
+                    
+                    if (lab !== "" && lab !== "disabled selected" && 
+                        date !== "" && date !== "disabled selected") {
+                        updateSeatStatus();
+                    }
+                }, 10000); // 10 seconds
+            }
+            
+            // Call restoreSelections when the page loads
+            document.addEventListener('DOMContentLoaded', function() {
+                restoreSelections();
+                startAutoRefresh();
+            });
+            
+            // Add event listeners to the lab and date selects
+            document.getElementById('labs').addEventListener('change', updateLabView);
+            document.getElementById('dates').addEventListener('change', updateLabView);
+
             window.onload = function() {
                 generateNext7Days();
+                
+                // If there's a success parameter in the URL, scroll to the top
+                const urlParams = new URLSearchParams(window.location.search);
+                if (urlParams.get('success')) {
+                    window.scrollTo(0, 0);
+                }
             };
+
+            // Function to handle seat click
+            function handleSeatClick(event) {
+                const userId = localStorage.getItem('userId');
+                if (!userId) {
+                    alert('Please sign in to select a seat');
+                    return;
+                }
+
+                // Remove any previously selected seats
+                document.querySelectorAll('.selected-seat').forEach(seat => {
+                    seat.classList.remove('selected-seat');
+                    seat.classList.add('clickable-seat');
+                });
+
+                // Add selected class to clicked seat
+                const seat = event.target;
+                seat.classList.remove('clickable-seat');
+                seat.classList.add('selected-seat');
+                
+                // Store the selected seat info
+                localStorage.setItem('selectedSeatNumber', seat.getAttribute('data-seat-number'));
+                localStorage.setItem('selectedTimeSlot', seat.getAttribute('data-time-slot'));
+
+                // Update end time options based on selected time slot
+                updateEndTimeOptions(seat.getAttribute('data-time-slot'));
+            }
+            
+            // Function to update end time options based on selected start time
+            function updateEndTimeOptions(startTime) {
+                const endTimeSelect = document.getElementById('endtimes');
+                const morningTimeSlots = [
+                    '7:30 AM', '8:00 AM', '8:30 AM', '9:00 AM', '9:30 AM',
+                    '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM'
+                ];
+                
+                // Clear existing options except the first one
+                while (endTimeSelect.options.length > 1) {
+                    endTimeSelect.remove(1);
+                }
+
+                // Find start index and add subsequent time slots
+                const startIndex = morningTimeSlots.indexOf(startTime);
+                if (startIndex !== -1) {
+                    for (let i = startIndex + 1; i < morningTimeSlots.length; i++) {
+                        const option = document.createElement('option');
+                        option.value = morningTimeSlots[i];
+                        option.text = morningTimeSlots[i];
+                        endTimeSelect.appendChild(option);
+                    }
+                }
+            }
         </script>
     </body>
 </html>

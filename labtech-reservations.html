@@ -333,7 +333,7 @@
                 }
 
                 // Send DELETE request to the server
-                const response = await fetch(`/api/reservations/${selectedReservation}`, { method: 'DELETE' });
+                const response = await fetch(`/api/reservation/${selectedReservation}`, { method: 'DELETE' });
 
                 // Check if the deletion was successful
                 if (!response.ok) {

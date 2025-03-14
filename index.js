@@ -59,6 +59,14 @@ mongoose.connect('mongodb://localhost/LabMateDB', {
 const Reservation = require('./database/models/Reservation');
 const Laboratory = require("./database/models/Laboratory");
 const TimeSlot = require("./database/models/TimeSlot");
+const { timeSlots, endTimeOptions, morningTimeSlots } = require('./database/models/TimeSlotOptions');
+
+// Basic routes
+app.get("/", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
+app.get("/signup-page", (req, res) => res.sendFile(path.join(__dirname, "signup-page.html")));
+app.get("/signin-page", (req, res) => res.sendFile(path.join(__dirname, "signin-page.html")));
+app.get("/student-home", (req, res) => res.sendFile(path.join(__dirname, "student-home.html")));
+app.get("/popup-profile", (req, res) => res.sendFile(path.join(__dirname, "popup-profile.html")));
 
 // API Endpoints for Reservations
 app.get("/api/reservations", async (req, res) => {
@@ -97,7 +105,47 @@ app.get("/api/reservation/:id", async (req, res) => {
     }
 });
 
-// Get user data by ID
+// Get detailed user information by ID (must be defined BEFORE the more general route)
+app.get("/api/user/details/:id", async (req, res) => {
+    try {
+        console.log(`Fetching detailed user info with ID: ${req.params.id}`);
+        
+        // Try to find the user in the UserModel first
+        let user = await UserModel.findById(req.params.id);
+        let isLabTech = false;
+        
+        // If not found in UserModel, try LabTechModel
+        if (!user) {
+            user = await LabTechModel.findById(req.params.id);
+            isLabTech = true;
+        }
+        
+        if (!user) {
+            console.log(`User not found with ID: ${req.params.id}`);
+            return res.status(404).json({ message: "User not found" });
+        }
+        
+        // Return detailed user data
+        const userDetails = {
+            _id: user._id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            department: user.department,
+            biography: user.biography,
+            image: user.image,
+            isLabTech: isLabTech
+        };
+        
+        console.log(`Found detailed user info: ${JSON.stringify(userDetails)}`);
+        res.json(userDetails);
+    } catch (error) {
+        console.error(`Error finding detailed user info: ${error.message}`);
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+});
+
+// Get user by ID (basic info)
 app.get("/api/user/:id", async (req, res) => {
     try {
         console.log(`Fetching user with ID: ${req.params.id}`);
@@ -143,27 +191,142 @@ app.post("/api/reservation", async (req, res) => {
     }
 });
 
+// Update user profile
+app.put("/api/user/update/:id", async (req, res) => {
+    try {
+        console.log(`Updating user with ID: ${req.params.id}`, req.body);
+        
+        // Check which model the user belongs to
+        let user = await UserModel.findById(req.params.id);
+        let isLabTech = false;
+        
+        if (!user) {
+            user = await LabTechModel.findById(req.params.id);
+            isLabTech = true;
+            
+            if (!user) {
+                return res.status(404).json({ message: "User not found" });
+            }
+        }
+        
+        // Verify current password (using plain text comparison as per user preference)
+        if (req.body.currentPassword !== user.password) {
+            return res.status(401).json({ message: "Current password is incorrect" });
+        }
+        
+        // Update user fields
+        user.firstName = req.body.firstName || user.firstName;
+        user.lastName = req.body.lastName || user.lastName;
+        user.email = req.body.email || user.email;
+        user.department = req.body.department || user.department;
+        user.biography = req.body.biography || user.biography;
+        
+        // Update password if provided
+        if (req.body.newPassword) {
+            user.password = req.body.newPassword;
+        }
+        
+        // Handle image upload if provided
+        if (req.files && req.files.profileImage) {
+            const profileImage = req.files.profileImage;
+            const uploadPath = path.join(__dirname, 'public/uploads', `${user._id}_${profileImage.name}`);
+            
+            // Save the file
+            await profileImage.mv(uploadPath);
+            
+            // Update the user's image path
+            user.image = `/uploads/${user._id}_${profileImage.name}`;
+        }
+        
+        // Save the updated user
+        await user.save();
+        
+        res.json({ 
+            message: "Profile updated successfully",
+            user: {
+                _id: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email,
+                department: user.department,
+                biography: user.biography,
+                image: user.image,
+                isLabTech: isLabTech
+            }
+        });
+    } catch (error) {
+        console.error(`Error updating user: ${error.message}`);
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+});
+
 // Delete a specific reservation
 app.delete("/api/reservation/:id", async (req, res) => {
     try {
         const reservationId = req.params.id;
         console.log(`Attempting to delete reservation with ID: ${reservationId}`);
         
-        // Use findByIdAndRemove which handles ObjectId conversion automatically
-        const deletedReservation = await Reservation.findByIdAndRemove(reservationId);
+        // Find and delete the reservation
+        const reservation = await Reservation.findByIdAndDelete(reservationId);
         
-        if (!deletedReservation) {
+        if (!reservation) {
             console.log(`Reservation not found with ID: ${reservationId}`);
             return res.status(404).json({ message: "Reservation not found" });
         }
         
-        console.log(`Successfully deleted reservation: ${JSON.stringify(deletedReservation)}`);
-        res.json({ message: "Reservation successfully deleted", reservation: deletedReservation });
+        console.log(`Successfully deleted reservation with ID: ${reservationId}`);
+        res.json({ message: "Reservation deleted successfully" });
     } catch (error) {
         console.error(`Error deleting reservation: ${error.message}`);
         res.status(500).json({ message: "Server error", error: error.message });
     }
-})
+});
+
+// Delete user account
+app.delete("/api/user/:id", async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const { password } = req.body;
+        
+        console.log(`Attempting to delete user account with ID: ${userId}`);
+        
+        // Try to find the user in the UserModel first
+        let user = await UserModel.findById(userId);
+        let isLabTech = false;
+        
+        if (!user) {
+            user = await LabTechModel.findById(userId);
+            isLabTech = true;
+            
+            if (!user) {
+                return res.status(404).json({ message: "User not found" });
+            }
+        }
+        
+        // Verify password (using plain text comparison as per user preference)
+        if (password !== user.password) {
+            return res.status(401).json({ message: "Incorrect password" });
+        }
+        
+        // Delete all reservations associated with the user
+        if (!isLabTech) {
+            await Reservation.deleteMany({ userId: userId });
+        }
+        
+        // Delete the user account
+        if (isLabTech) {
+            await LabTechModel.findByIdAndDelete(userId);
+        } else {
+            await UserModel.findByIdAndDelete(userId);
+        }
+        
+        console.log(`Successfully deleted user account with ID: ${userId}`);
+        res.json({ message: "Account deleted successfully" });
+    } catch (error) {
+        console.error(`Error deleting user account: ${error.message}`);
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+});
 
 // Edit a specific reservation
 app.patch("/api/reservation/:id", async(req,res) => {
@@ -178,178 +341,131 @@ app.patch("/api/reservation/:id", async(req,res) => {
     }
 })
 
-//getting labs and days for labtech-labs
-app.get("/labtech-laboratories", async(req, res) => {
-    try{
+// Register Handlebars helpers
+const findReservation = function(seatNum, timeSlot, reservations) {
+    return reservations.find(r => {
+        const seatMatch = r.seatNumber === parseInt(seatNum);
+        const timeMatch = r.startTime === timeSlot;
+        return seatMatch && timeMatch;
+    });
+};
+
+const findReservationIndex = function(seatNum, timeSlot, reservations) {
+    return reservations.findIndex(r => {
+        const seatMatch = r.seatNumber === parseInt(seatNum);
+        const timeMatch = r.startTime === timeSlot;
+        return seatMatch && timeMatch;
+    });
+};
+
+// Register the helpers globally
+hbs.registerHelper('findReservation', findReservation);
+hbs.registerHelper('findReservationIndex', findReservationIndex);
+hbs.registerHelper('equal', function(a, b) {
+    return a === b;
+});
+hbs.registerHelper('range', function(start, end) {
+    const result = [];
+    for (let i = start; i <= end; i++) {
+        result.push(i);
+    }
+    return result;
+});
+
+// Routes for laboratory pages with database loading
+app.get("/student-laboratories", async (req, res) => {
+    try {
         const labs = await Laboratory.find({}).lean();
-        const selectedLabId = req.query.labs ? req.query.labs.toString() : null;
-        console.log("Selected Lab ID: ", selectedLabId);
-
-        let selectedLab = null;
-
-        if(selectedLabId) {
-            selectedLab = await Laboratory.findById(selectedLabId);
-        }
-
         const today = new Date();
-        const timeSlots = [
-            "07:30 A.M.", "08:00 A.M.", "08:30 A.M.", "09:00 A.M.",
-            "09:30 A.M.", "10:00 A.M.", "10:30 A.M.", "11:00 A.M.",
-            "11:30 A.M.", "12:00 P.M.", "12:30 P.M.", "01:00 P.M.",
-            "01:30 P.M.", "02:00 P.M.", "02:30 P.M.", "03:00 P.M.",
-            "03:30 P.M.", "04:00 P.M.", "04:30 P.M.", "05:00 P.M.",
-            "05:30 P.M.", "06:00 P.M.", "06:30 P.M.", "07:00 P.M.",
-            "07:30 P.M.", "08:00 P.M.", "08:30 P.M.", "09:00 P.M."
-        ];
         const next7Days = [];
-
         for(let i = 0; i < 7; i++) {
             const date = new Date();
             date.setDate(today.getDate() + i);
-
             next7Days.push({
                 formattedDate: date.toISOString().split('T')[0],
                 displayDate: date.toLocaleDateString('en-US', {weekday: 'long', month: 'long', day: 'numeric'})
             });
         }
 
-        res.render("labtech-laboratories", {labs, next7Days, timeSlots, selectedLabId, capacity: selectedLab ? selectedLab.capacity : 0});
-    } catch(error) {
-        res.status(500).json({ message: "Failed to get labs", error})
-    }
-})
+        // Get any existing reservations
+        const reservations = await Reservation.find().lean().populate('userId', 'firstName lastName');
 
-// Initial Reservation Population
-async function populateReservations(){
-    const reservationsFound = await Reservation.find();
-    if (reservationsFound.length == 0){
-        // query db for userIds
-        const reservations = [
-            { userId: await UserModel.findOne({ lastName: "Ho" })._id, laboratoryRoom: "GK101B", seatNumber: 26, bookingDate: new Date(), reservationDate: new Date(2025, 2, 10), startTime: "7:30 A.M.", endTime: "9:00 A.M." },
-            { userId: await UserModel.findOne({ lastName: "Capote" })._id, laboratoryRoom: "AG1904", seatNumber: 15, bookingDate: new Date(), reservationDate: new Date(2025, 2, 11), startTime: "10:00 A.M.", endTime: "11:30 A.M." },
-            { userId: await UserModel.findOne({ lastName: "Gonzales" })._id, laboratoryRoom: "GK401A", seatNumber: 32, bookingDate: new Date(), reservationDate: new Date(2025, 2, 12), startTime: "1:00 P.M.", endTime: "2:30 P.M." },
-            { userId: await UserModel.findOne({ lastName: "Rocha" })._id, laboratoryRoom: "AG1701", seatNumber: 8, bookingDate: new Date(), reservationDate: new Date(2025, 2, 13), startTime: "3:00 P.M.", endTime: "4:30 P.M." },
-            { userId: await UserModel.findOne({ lastName: "Rocha" })._id, laboratoryRoom: "GK102A", seatNumber: 19, bookingDate: new Date(), reservationDate: new Date(2025, 2, 14), startTime: "5:00 P.M.", endTime: "6:30 P.M." }
-        ];
-        
-        await Reservation.insertMany(reservations);        
+        res.render('student-laboratories', { 
+            labs, 
+            next7Days, 
+            timeSlots,
+            reservations 
+        });
+    } catch (error) {
+        console.error('Error fetching laboratories:', error);
+        res.status(500).send('Internal Server Error');
     }
-}
+});
 
-app.get("/", (req, res) => res.sendFile(path.join(__dirname, "index.html"))); 
-app.get("/signup-page", (req, res) => res.sendFile(path.join(__dirname, "signup-page.html"))); 
-app.get("/signin-page", (req, res) => res.sendFile(path.join(__dirname, "signin-page.html")));
-app.get("/student-home", (req, res) => res.sendFile(path.join(__dirname, "student-home.html"))); 
-app.get("/student-laboratories", async (req, res) => {
+app.get("/signedout-laboratories", async (req, res) => {
+    try {
+        const labs = await Laboratory.find({}).lean();
+        const today = new Date();
+        const next7Days = [];
+        for(let i = 0; i < 7; i++) {
+            const date = new Date();
+            date.setDate(today.getDate() + i);
+            next7Days.push({
+                formattedDate: date.toISOString().split('T')[0],
+                displayDate: date.toLocaleDateString('en-US', {weekday: 'long', month: 'long', day: 'numeric'})
+            });
+        }
+
+        // Get any existing reservations
+        const reservations = await Reservation.find().lean().populate('userId', 'firstName lastName');
+
+        res.render('signedout-laboratories', { 
+            labs, 
+            next7Days, 
+            timeSlots,
+            reservations 
+        });
+    } catch (error) {
+        console.error('Error fetching laboratories:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.get("/labtech-laboratories", async (req, res) => {
     try {
         const labs = await Laboratory.find({}).lean();
         const selectedLabId = req.query.labs ? req.query.labs.toString() : null;
         
-        let selectedLab = null;
-        if(selectedLabId) {
-            selectedLab = await Laboratory.findById(selectedLabId);
-        }
-
-        // Get reservations for the selected lab if any
-        let reservations = [];
-        if(selectedLabId) {
-            reservations = await Reservation.find({ laboratoryRoom: selectedLab.laboratoryName }).lean();
-            
-            // Populate student names for each reservation
-            for(let i = 0; i < reservations.length; i++) {
-                if(reservations[i].userId) {
-                    const user = await UserModel.findById(reservations[i].userId).lean();
-                    if(user) {
-                        reservations[i].studentName = `${user.firstName} ${user.lastName}`;
-                    } else {
-                        reservations[i].studentName = "Anonymous User";
-                    }
-                }
-            }
-        }
-
         const today = new Date();
-        const timeSlots = [
-            "7:30 AM", "8:00 AM", "8:30 AM", "9:00 AM",
-            "9:30 AM", "10:00 AM", "10:30 AM", "11:00 AM",
-            "11:30 AM", "12:00 PM", "12:30 PM", "1:00 PM",
-            "1:30 PM", "2:00 PM", "2:30 PM", "3:00 PM",
-            "3:30 PM", "4:00 PM", "4:30 PM", "5:00 PM",
-            "5:30 PM", "6:00 PM", "6:30 PM", "7:00 PM",
-            "7:30 PM", "8:00 PM", "8:30 PM", "9:00 PM"
-        ];
-        
-        const endTimeOptions = [
-            "8:00 AM", "8:30 AM", "9:00 AM", "9:30 AM",
-            "10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM",
-            "12:00 PM", "12:30 PM", "1:00 PM", "1:30 PM",
-            "2:00 PM", "2:30 PM", "3:00 PM", "3:30 PM",
-            "4:00 PM", "4:30 PM", "5:00 PM", "5:30 PM",
-            "6:00 PM", "6:30 PM", "7:00 PM", "7:30 PM",
-            "8:00 PM", "8:30 PM", "9:00 PM", "9:30 PM"
-        ];
-        
         const next7Days = [];
         for(let i = 0; i < 7; i++) {
             const date = new Date();
             date.setDate(today.getDate() + i);
-
             next7Days.push({
                 formattedDate: date.toISOString().split('T')[0],
                 displayDate: date.toLocaleDateString('en-US', {weekday: 'long', month: 'long', day: 'numeric'})
             });
         }
 
-        // Helper function to find a reservation for a specific seat and time
-        const findReservation = (seatNumber, timeSlot) => {
-            // Convert seatNumber from string to number since it comes from the template
-            const seatNum = parseInt(seatNumber);
-            const selectedDate = req.query.date ? req.query.date : null;
-            
-            return reservations.find(r => {
-                // Check if seat number and time slot match
-                const seatMatch = r.seatNumber === seatNum;
-                const timeMatch = r.startTime === timeSlot;
-                
-                // If a date is selected, also check if the reservation date matches
-                if (selectedDate) {
-                    const reservationDate = new Date(r.reservationDate);
-                    const formattedReservationDate = reservationDate.toISOString().split('T')[0];
-                    return seatMatch && timeMatch && formattedReservationDate === selectedDate;
-                }
-                
-                // If no date is selected, just check seat and time
-                return seatMatch && timeMatch;
-            });
-        };
+        // Get any existing reservations
+        const reservations = await Reservation.find().lean().populate('userId', 'firstName lastName');
 
-        // Register the helper function
-        hbs.registerHelper('findReservation', findReservation);
-        
-        // Register the equal helper if not already registered
-        if (!hbs.handlebars.helpers.equal) {
-            hbs.registerHelper('equal', function(a, b, options) {
-                console.log(`Comparing ${a} and ${b}`);
-                return a === b ? options.fn(this) : options.inverse(this);
-            });
-        }
-
-        res.render("student-laboratories", {
+        res.render("labtech-laboratories", {
             labs, 
             next7Days, 
             timeSlots, 
             endTimeOptions,
-            selectedLabId, 
-            capacity: selectedLab ? selectedLab.capacity : 0,
-            reservations,
-            success: req.query.success === 'true'
+            selectedLabId,
+            reservations
         });
-    } catch(error) {
-        console.error("Error fetching laboratory data:", error);
-        res.status(500).json({ message: "Failed to get labs", error });
+    } catch (error) {
+        console.error('Error fetching laboratories:', error);
+        res.status(500).send('Internal Server Error');
     }
 });
-app.get("/signedout-lab", (req, res) => res.sendFile(path.join(__dirname, "signedout-laboratories.html"))); 
+
+//getting labs and days for labtech-labs
+// Removed duplicate route
 
 // Profile Pages
 app.get("/popup-profile", (req, res) => {
@@ -420,42 +536,92 @@ async function populateDatabase() {
 // populate database (for demo)
 populateDatabase();
 
-hbs.registerHelper("range", function(start, end, block) {
-    let accum = '';
-    for(let i = start; i <= end; i++) {
-        accum += block.fn(i);
+// API endpoint to check seat availability
+app.get("/api/reservations/check-availability", async (req, res) => {
+    try {
+        const { lab, date, seatNumber, startTime, endTime } = req.query;
+        
+        // Validate inputs
+        if (!lab || !date || !seatNumber || !startTime || !endTime) {
+            return res.status(400).json({ available: false, message: "All parameters are required" });
+        }
+        
+        // Format the reservation date
+        const reservationDate = new Date(date);
+        
+        // Check if there's already a reservation for this seat, date, and time
+        const existingReservation = await Reservation.findOne({
+            laboratoryRoom: lab,
+            seatNumber: parseInt(seatNumber),
+            reservationDate: reservationDate,
+            startTime: startTime
+        });
+        
+        if (existingReservation) {
+            return res.json({ available: false, message: "This seat is already reserved for the selected time" });
+        }
+        
+        // If no reservation found, the seat is available
+        return res.json({ available: true, message: "Seat is available" });
+    } catch (error) {
+        console.error("Error checking seat availability:", error);
+        res.status(500).json({ available: false, message: "An error occurred while checking seat availability" });
     }
-    return accum;
 });
 
-
-hbs.registerHelper("equal", function(a, b, options) {
-    console.log(`Comparing ${a} and ${b}`);
-    return a === b ? options.fn(this) : options.inverse(this);
+// API endpoint to get reservations for a lab and date
+app.get("/api/reservations/lab/:labId/date/:date", async (req, res) => {
+    try {
+        const { labId, date } = req.params;
+        
+        // Validate inputs
+        if (!labId || !date) {
+            return res.status(400).json({ error: "Laboratory and date are required" });
+        }
+        
+        // Format the reservation date
+        const reservationDate = new Date(date);
+        
+        console.log(`Fetching reservations for lab: ${labId}, date: ${date}`);
+        
+        // Find all reservations for the given lab and date
+        const reservations = await Reservation.find({
+            laboratoryRoom: labId,
+            reservationDate: {
+                $gte: new Date(date + "T00:00:00.000Z"),
+                $lt: new Date(date + "T23:59:59.999Z")
+            }
+        });
+        
+        console.log(`Found ${reservations.length} reservations`);
+        
+        // Format the reservations for the response
+        const formattedReservations = reservations.map(reservation => ({
+            _id: reservation._id,
+            seatNumber: reservation.seatNumber,
+            startTime: reservation.startTime,
+            endTime: reservation.endTime,
+            userId: reservation.userId
+        }));
+        
+        res.json({ reservations: formattedReservations });
+    } catch (error) {
+        console.error("Error fetching reservations:", error);
+        res.status(500).json({ error: "An error occurred while fetching reservations" });
+    }
 });
 
 // Create a new reservation
 app.post("/create-reservation", async (req, res) => {
     try {
-        const { labId, date, seatNumber, startTime, endTime } = req.body;
+        const { labId, date, seatNumber, startTime, endTime, userId } = req.body;
         
         // Validate inputs
-        if (!labId || !date || !seatNumber || !startTime || !endTime) {
+        if (!labId || !date || !seatNumber || !startTime || !endTime || !userId) {
             return res.status(400).send("All fields are required");
         }
         
-        // Get laboratory information
-        const laboratory = await Laboratory.findOne({ laboratoryName: labId });
-        if (!laboratory) {
-            return res.status(404).send("Laboratory not found");
-        }
-        
-        // Find a demo user from the database to use for reservations
-        const demoUser = await UserModel.findOne({ firstName: 'Anja' });
-        if (!demoUser) {
-            return res.status(400).send("No demo user found in the database. Please check if the database is properly seeded.");
-        }
-        const userId = demoUser._id;
+        console.log("Creating reservation with data:", req.body);
         
         // Format the reservation date
         const reservationDate = new Date(date);
@@ -485,8 +651,8 @@ app.post("/create-reservation", async (req, res) => {
         
         await newReservation.save();
         
-        // Redirect back to the laboratories page with success message and selected lab and date
-        res.redirect(`/student-laboratories?success=true&labs=${laboratory._id}&date=${date}`);
+        // Redirect to see-reservations.html after successful booking
+        res.redirect('/see-reservations');
     } catch (error) {
         console.error("Error creating reservation:", error);
         res.status(500).send("An error occurred while creating the reservation");

@@ -19,6 +19,7 @@ $.each(includes, function() {
                 document.getElementById("nav-header")?.classList.add("index-header");
                 break;
             case 'signedout-lab':
+            case 'signedout-laboratories':
                 document.getElementById("nav-lab")?.classList.add("active");
                 break;
             case 'student-home':

@@ -27,21 +27,21 @@
 
     <!-- Side Navigation -->
     <nav class="side-nav">
-        <div class="nav-item" id="dashboard-nav">
+        <div class="nav-item active" id="dashboard-nav">
             <img src="img/Home.svg" alt="Dashboard" class="nav-icon">
-            <a href="#dashboard"><span>Dashboard</span></a>
+            <a href="#dashboard">Dashboard</a>
         </div>
-        <div class="nav-item" id="overview-nav">
+        <div class="nav-item" id="settings-nav">
             <img src="img/settings.svg" alt="Settings" class="nav-icon">
-            <a href="#overview"><span>Settings</span></a>
+            <a href="#settings">Settings</a>
         </div>
         <div class="nav-item" id="edit-nav">
             <img src="img/edit.svg" alt="Edit" class="nav-icon">
-            <a href="#edit"><span>Edit Profile</span></a>
+            <a href="#edit">Edit Profile</a>
         </div>
         <div class="nav-item" id="delete-nav">
             <img src="img/delete.svg" alt="Delete" class="nav-icon">
-            <a href="#delete"><span>Delete Account</span></a>
+            <a href="#delete">Delete Account</a>
         </div>
     </nav>
 
@@ -223,7 +223,7 @@
             // Get all content sections
             const sections = {
                 'dashboard-nav': document.getElementById('dashboard-section'),
-                'overview-nav': document.getElementById('overview-section'),
+                'settings-nav': document.getElementById('overview-section'),
                 'edit-nav': document.getElementById('edit-section'),
                 'delete-nav': document.getElementById('delete-section')
             };
@@ -270,38 +270,81 @@
         });
         
         function loadProfileData() {
-            // This function would fetch the user's profile data from the server
-            // For now, we'll use placeholder data
-            const userData = {
-                firstName: 'Anja',
-                lastName: 'Gonzales',
-                email: 'anja_gonzales@dlsu.edu.ph',
-                type: 'Student',
-                department: 'Computer Science',
-                biography: 'i need sleep',
-                image: 'img/default-profile.png'
-            };
-            
-            // Populate profile overview
-            document.getElementById('profile-name').textContent = userData.lastName + ', ' + userData.firstName;
-            document.getElementById('profile-email').textContent = userData.email;
-            document.getElementById('profile-type').textContent = '[' + userData.type + ']';
-            document.getElementById('profile-department').textContent = userData.department;
-            document.getElementById('profile-bio').textContent = userData.biography;
-            document.getElementById('profile-image').src = userData.image;
-            
-            // Populate edit form
-            document.getElementById('firstName').value = userData.firstName;
-            document.getElementById('lastName').value = userData.lastName;
-            document.getElementById('email').value = userData.email;
-            document.getElementById('department').value = userData.department;
-            document.getElementById('biography').value = userData.biography;
-            document.getElementById('edit-profile-image').src = userData.image;
+            // Get the current user ID from localStorage
+            const userId = localStorage.getItem('userId');
+            if (!userId) {
+                console.error('No user ID found in localStorage');
+                document.getElementById('profile-name').textContent = 'Please sign in to view profile.';
+                return;
+            }
+
+            // Fetch user data from the API
+            fetch(`/api/user/${userId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch user data');
+                    }
+                    return response.json();
+                })
+                .then(userData => {
+                    console.log('Loaded user data:', userData);
+                    
+                    // Populate profile overview
+                    document.getElementById('profile-name').textContent = userData.lastName + ', ' + userData.firstName;
+                    document.getElementById('profile-email').textContent = userData.email;
+                    document.getElementById('profile-type').textContent = '[' + (userData.isLabTech ? 'Lab Technician' : 'Student') + ']';
+                    
+                    // Fetch additional user details
+                    return fetch(`/api/user/details/${userId}`);
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch user details');
+                    }
+                    return response.json();
+                })
+                .then(userDetails => {
+                    console.log('Loaded user details:', userDetails);
+                    
+                    // Populate the rest of the profile data
+                    document.getElementById('profile-department').textContent = userDetails.department || 'Not specified';
+                    document.getElementById('profile-bio').textContent = userDetails.biography || 'No biography provided.';
+                    
+                    // Set profile image
+                    if (userDetails.image) {
+                        document.getElementById('profile-image').src = userDetails.image;
+                    } else {
+                        document.getElementById('profile-image').src = 'img/default-profile.png';
+                    }
+                    
+                    // Populate edit form
+                    document.getElementById('firstName').value = userDetails.firstName || '';
+                    document.getElementById('lastName').value = userDetails.lastName || '';
+                    document.getElementById('email').value = userDetails.email || '';
+                    document.getElementById('department').value = userDetails.department || '';
+                    document.getElementById('biography').value = userDetails.biography || '';
+                    document.getElementById('edit-profile-image').src = userDetails.image || 'img/default-profile.png';
+                })
+                .catch(error => {
+                    console.error('Error loading profile data:', error);
+                    document.getElementById('profile-name').textContent = 'Error loading profile data.';
+                });
         }
         
         function loadReservationsData() {
-            // Fetch reservations from the database
-            fetch('/api/reservations')
+            console.log('Loading reservations data...');
+            // Get the current user ID from localStorage
+            const userId = localStorage.getItem('userId');
+            if (!userId) {
+                console.error('No user ID found in localStorage');
+                document.getElementById('upcoming-lab-info').textContent = 'Please sign in to view reservations.';
+                document.getElementById('reserved-count').textContent = '0';
+                return;
+            }
+
+            console.log('Fetching reservations for user ID:', userId);
+            // Fetch reservations for the current user
+            fetch(`/api/reservations/user/${userId}`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Failed to fetch reservations');
@@ -328,71 +371,180 @@
                     
                     // Populate reservations table
                     const tableBody = document.getElementById('reservations-body');
-                    tableBody.innerHTML = '';
+                    tableBody.innerHTML = ''; // Clear existing content
+                    console.log('Clearing and repopulating reservations table');
                     
-                    reservations.forEach(reservation => {
-                        const reservationDate = new Date(reservation.reservationDate).toISOString().split('T')[0];
-                        const row = document.createElement('tr');
-                        
-                        // For debugging - display the reservation ID
-                        console.log('Reservation ID:', reservation._id);
-                        
-                        row.innerHTML = `
-                            <td>${reservation.laboratoryRoom}</td>
-                            <td>${reservationDate}</td>
-                            <td>${reservation.startTime} - ${reservation.endTime}</td>
-                            <td>${reservation.seatNumber}</td>
-                            <td>Upcoming</td>
-                            <td>
-                                <button type="button" class="cancel-btn" onclick="cancelReservation('${reservation._id}')">CANCEL</button>
-                            </td>
-                        `;
-                        tableBody.appendChild(row);
-                    });
+                    if (reservations.length === 0) {
+                        // Add a row indicating no reservations
+                        const emptyRow = document.createElement('tr');
+                        emptyRow.innerHTML = '<td colspan="6" style="text-align: center;">No reservations found</td>';
+                        tableBody.appendChild(emptyRow);
+                    } else {
+                        reservations.forEach(reservation => {
+                            const reservationDate = new Date(reservation.reservationDate).toISOString().split('T')[0];
+                            const row = document.createElement('tr');
+                            
+                            // For debugging - display the reservation ID
+                            console.log('Adding reservation to table:', reservation._id);
+                            
+                            row.innerHTML = `
+                                <td>${reservation.laboratoryRoom}</td>
+                                <td>${reservationDate}</td>
+                                <td>${reservation.startTime} - ${reservation.endTime}</td>
+                                <td>${reservation.seatNumber}</td>
+                                <td>Upcoming</td>
+                                <td>
+                                    <button type="button" class="cancel-btn" onclick="cancelReservation('${reservation._id}')">CANCEL</button>
+                                </td>
+                            `;
+                            tableBody.appendChild(row);
+                        });
+                    }
                 })
                 .catch(error => {
                     console.error('Error fetching reservations:', error);
                     document.getElementById('upcoming-lab-info').textContent = 'Error loading reservations.';
                     document.getElementById('reserved-count').textContent = '0';
+                    
+                    // Clear table and show error
+                    const tableBody = document.getElementById('reservations-body');
+                    tableBody.innerHTML = '';
+                    const errorRow = document.createElement('tr');
+                    errorRow.innerHTML = '<td colspan="6" style="text-align: center; color: red;">Error loading reservations</td>';
+                    tableBody.appendChild(errorRow);
                 });
         }
         
-        function cancelReservation(reservationId) {
+        async function cancelReservation(reservationId) {
             console.log('Attempting to cancel reservation with ID:', reservationId);
-            if (confirm('Are you sure you want to cancel this reservation?')) {
-                // Send request to delete the reservation
-                fetch(`/api/reservation/${reservationId}`, {
-                    method: 'DELETE'
-                })
-                .then(response => {
-                    console.log('Delete response status:', response.status);
-                    
-                    if (response.ok) {
-                        // Reload reservations data to update the UI
-                        loadReservationsData();
-                        alert('Reservation cancelled successfully!');
-                    } else {
-                        alert('Failed to cancel reservation. Please try again.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error cancelling reservation:', error);
-                    alert('An error occurred while cancelling the reservation.');
+            
+            if (!confirm('Are you sure you want to cancel this reservation?')) {
+                return; // User canceled the operation
+            }
+            
+            try {
+                // Send DELETE request to the server
+                const response = await fetch(`/api/reservation/${reservationId}`, { 
+                    method: 'DELETE' 
                 });
+                
+                // Check if the deletion was successful
+                if (!response.ok) {
+                    throw new Error("Failed to delete reservation.");
+                }
+                
+                console.log("Reservation deleted successfully!");
+                
+                // Refresh the reservations list after deletion
+                loadReservationsData();
+                alert('Reservation cancelled successfully!');
+            } catch (error) {
+                console.error("Error deleting reservation:", error);
+                alert('An error occurred while cancelling the reservation.');
             }
         }
         
         function cancelEdit() {
-            // Reset form and navigate back to overview
+            // Reset form and navigate back to dashboard
             document.getElementById('profile-edit-form').reset();
-            document.getElementById('overview-nav').click();
+            document.getElementById('dashboard-nav').click();
         }
         
         function cancelDelete() {
-            // Reset form and navigate back to overview
+            // Reset form and navigate back to dashboard
             document.getElementById('delete-account-form').reset();
-            document.getElementById('overview-nav').click();
+            document.getElementById('dashboard-nav').click();
         }
+        
+        // Handle profile edit form submission
+        document.getElementById('profile-edit-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            // Get the current user ID from localStorage
+            const userId = localStorage.getItem('userId');
+            if (!userId) {
+                alert('You must be logged in to update your profile.');
+                return;
+            }
+            
+            // Get form data
+            const firstName = document.getElementById('firstName').value;
+            const lastName = document.getElementById('lastName').value;
+            const email = document.getElementById('email').value;
+            const department = document.getElementById('department').value;
+            const biography = document.getElementById('biography').value;
+            const currentPassword = document.getElementById('current-password').value;
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            // Validate form data
+            if (!firstName || !lastName || !email || !currentPassword) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            // Check if new password and confirm password match
+            if (newPassword && newPassword !== confirmPassword) {
+                alert('New password and confirm password do not match.');
+                return;
+            }
+            
+            // Create form data object for API request
+            const formData = new FormData();
+            formData.append('firstName', firstName);
+            formData.append('lastName', lastName);
+            formData.append('email', email);
+            formData.append('department', department);
+            formData.append('biography', biography);
+            formData.append('currentPassword', currentPassword);
+            
+            // Add new password if provided
+            if (newPassword) {
+                formData.append('newPassword', newPassword);
+            }
+            
+            // Add profile image if selected
+            const profileImageInput = document.getElementById('profile-image-input');
+            if (profileImageInput.files.length > 0) {
+                formData.append('profileImage', profileImageInput.files[0]);
+            }
+            
+            // Send update request to the server
+            fetch(`/api/user/update/${userId}`, {
+                method: 'PUT',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to update profile');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Profile updated successfully:', data);
+                alert('Profile updated successfully!');
+                
+                // Reload profile data and go back to dashboard
+                loadProfileData();
+                document.getElementById('dashboard-nav').click();
+            })
+            .catch(error => {
+                console.error('Error updating profile:', error);
+                alert('Error updating profile. Please try again.');
+            });
+        });
+        
+        // Handle profile image selection
+        document.getElementById('profile-image-input').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('edit-profile-image').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
     </script>
 </body>
 </html>

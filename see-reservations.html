@@ -135,7 +135,18 @@
         // Function to load and display reservations
         async function loadReservations() {
             try {
-                const response = await fetch("/api/reservations"); // fetch only the reservations of the logged in user for Phase 3
+                // Get the current user ID from localStorage
+                const userId = localStorage.getItem('userId');
+                if (!userId) {
+                    console.error('No user ID found in localStorage');
+                    alert('Please sign in to view your reservations');
+                    // Redirect to login page
+                    // window.location.href = '/signin-page';
+                    return;
+                }
+
+                // Fetch only the reservations of the logged in user
+                const response = await fetch(`/api/reservations/user/${userId}`);
                 const reservations = await response.json();
 
                 const tableBody = document.querySelector("tbody");
@@ -274,7 +285,7 @@
                 }
 
                 // Send DELETE request to the server
-                const response = await fetch(`/api/reservations/${selectedReservation}`, { method: 'DELETE' });
+                const response = await fetch(`/api/reservation/${selectedReservation}`, { method: 'DELETE' });
 
                 // Check if the deletion was successful
                 if (!response.ok) {

@@ -9,8 +9,9 @@ const ReservationSchema = new mongoose.Schema({
     reservationDate: { type: Date, required: true }, 
     startTime: { type: String, required: true },
     endTime: { type: String, required: true },
+    isAnonymous: { type: Boolean, default: false } // Whether the reservation should be shown anonymously
 });
 
-const Reservation = mongoose.model("Reservation",ReservationSchema);
+const Reservation = mongoose.model("Reservation", ReservationSchema);
 
 module.exports = Reservation

@@ -1,0 +1,308 @@
+<html>
+    <head>
+        <title>LabMate - Laboratories</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="/css/pop-up.css">
+        <link rel="stylesheet" href="/css/theme-style.css">
+        <link rel="stylesheet" href="/css/navbar-style.css">
+        <link rel="stylesheet" href="/css/signedout-laboratories.css">
+        
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="/js/seat-manager.js"></script>
+
+        <script>
+            $(document).ready(function() {
+                $.getScript("/js/navbar.js");
+                // Initialize seats in view-only mode
+                initializeSeats(true);
+            });
+        </script>
+    </head>
+
+    <body>
+        <div data-include="navbar-signedout"></div>
+
+        <div class = "frame">
+            <span class = "header">View Slots</span>
+
+            <div class = "dropdown">
+                <span class = "dropdown-header">Laboratory</span>
+
+                <select name = "labs" id = "labs">
+                    <option value = "disabled selected">Select a Laboratory</option>
+                    <option value="GK101A">GK101A</option>
+                    <option value="GK203B">GK203B</option>
+                    <option value="GK404B">GK404B</option>
+                    <option value="AG1706">AG1706</option>
+                    <option value="AG1904">AG1904</option>
+                </select>
+            </div>
+
+            
+            <div class = "dropdown">
+                <span class = "dropdown-header">Date</span>
+
+                <select name = "dates" id = "dates">
+                    <option value = "disabled selected">Select a Date</option>
+                </select>
+            </div>
+
+            {{!-- Dynamic popups for reservations --}}
+            {{#each reservations}}
+            <div class="popup2" id="popup-frame-{{@index}}">
+                <div class="popup-box">
+                    <span class="popup-header">{{this.startTime}} - {{this.endTime}}</span>
+                    <img class="user-img" src="{{this.user.profilePicture}}"></img>
+                    <span class="user-name">{{this.user.name}}</span>
+                </div>
+            </div>
+            {{/each}}
+
+            {{#if selectedDate}}
+            <div id="daily-reservations">
+                <h2>Reservations for {{#each next7Days}}{{#if (equal this.formattedDate ../selectedDate)}}{{this.displayDate}}{{/if}}{{/each}}</h2>
+                
+                {{#each labs}}
+                {{#if (lookup (lookup ../groupedReservations ../selectedDate) this.laboratoryName)}}
+                <div class="lab-section">
+                    <h3>Laboratory {{this.laboratoryName}}</h3>
+                    <div class="reservation-list">
+                        {{#each (lookup (lookup ../../groupedReservations ../../selectedDate) this.laboratoryName)}}
+                        <div class="reservation-item">
+                            <div class="reservation-time">{{this.startTime}} - {{this.endTime}}</div>
+                            <div class="reservation-seat">Seat {{this.seatNumber}}</div>
+                            <div class="reservation-user">
+                                <img src="{{this.user.profilePicture}}" class="small-avatar">
+                                <span>{{this.user.name}}</span>
+                            </div>
+                        </div>
+                        {{/each}}
+                    </div>
+                </div>
+                {{/if}}
+                {{/each}}
+                
+                {{#unless (or 
+                    (lookup (lookup groupedReservations selectedDate) "G301")
+                    (lookup (lookup groupedReservations selectedDate) "G302")
+                    (lookup (lookup groupedReservations selectedDate) "G303")
+                    (lookup (lookup groupedReservations selectedDate) "G304")
+                )}}
+                <div class="no-reservations">
+                    <p>No reservations found for this date.</p>
+                </div>
+                {{/unless}}
+            </div>
+            {{/if}}
+
+            <div id = "chart">
+                <span id = "chart-header">Slot Availability</span>
+
+                <div id = "chart-body">
+                    <table id = "slot-chart">
+                        <thead>
+                            <tr>
+                                <th id="seat-header">Seat</th>
+                                <th>7:30 AM</th>
+                                <th>8:00 AM</th>
+                                <th>8:30 AM</th>
+                                <th>9:00 AM</th>
+                                <th>9:30 AM</th>
+                                <th>10:00 AM</th>
+                                <th>10:30 AM</th>
+                                <th>11:00 AM</th>
+                                <th>11:30 AM</th>
+                                <th>12:00 PM</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr>
+                                <th id="seats">Seat 1</th>
+                                <td><button class="view-seat" data-seat-number="1" data-time-slot="7:30 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="1" data-time-slot="8:00 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="1" data-time-slot="8:30 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="1" data-time-slot="9:00 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="1" data-time-slot="9:30 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="1" data-time-slot="10:00 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="1" data-time-slot="10:30 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="1" data-time-slot="11:00 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="1" data-time-slot="11:30 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="1" data-time-slot="12:00 PM" onclick="promptSignIn()"></button></td>
+                            </tr>
+                            <tr>
+                                <th id="seats">Seat 2</th>
+                                <td><button class="view-seat" data-seat-number="2" data-time-slot="7:30 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="2" data-time-slot="8:00 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="2" data-time-slot="8:30 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="2" data-time-slot="9:00 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="2" data-time-slot="9:30 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="2" data-time-slot="10:00 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="2" data-time-slot="10:30 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="2" data-time-slot="11:00 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="2" data-time-slot="11:30 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="2" data-time-slot="12:00 PM" onclick="promptSignIn()"></button></td>
+                            </tr>
+                            <tr>
+                                <th id="seats">Seat 3</th>
+                                <td><button class="view-seat" data-seat-number="3" data-time-slot="7:30 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="3" data-time-slot="8:00 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="3" data-time-slot="8:30 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="3" data-time-slot="9:00 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="3" data-time-slot="9:30 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="3" data-time-slot="10:00 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="3" data-time-slot="10:30 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="3" data-time-slot="11:00 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="3" data-time-slot="11:30 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="3" data-time-slot="12:00 PM" onclick="promptSignIn()"></button></td>
+                            </tr>
+                            <tr>
+                                <th id="seats">Seat 4</th>
+                                <td><button class="view-seat" data-seat-number="4" data-time-slot="7:30 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="4" data-time-slot="8:00 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="4" data-time-slot="8:30 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="4" data-time-slot="9:00 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="4" data-time-slot="9:30 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="4" data-time-slot="10:00 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="4" data-time-slot="10:30 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="4" data-time-slot="11:00 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="4" data-time-slot="11:30 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="4" data-time-slot="12:00 PM" onclick="promptSignIn()"></button></td>
+                            </tr>
+                            <tr>
+                                <th id="seats">Seat 5</th>
+                                <td><button class="view-seat" data-seat-number="5" data-time-slot="7:30 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="5" data-time-slot="8:00 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="5" data-time-slot="8:30 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="5" data-time-slot="9:00 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="5" data-time-slot="9:30 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="5" data-time-slot="10:00 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="5" data-time-slot="10:30 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="5" data-time-slot="11:00 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="5" data-time-slot="11:30 AM" onclick="promptSignIn()"></button></td>
+                                <td><button class="view-seat" data-seat-number="5" data-time-slot="12:00 PM" onclick="promptSignIn()"></button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id = "legend">
+                <div id = "legend-available">
+                </div>
+                <span class = "legend-text">Available</span>
+                <div id = "legend-selected">
+                </div>
+                <span class = "legend-text">Selected</span>
+                <div id = "legend-unavailable">
+                </div>
+                <span class = "legend-text">Unavailable</span>
+            </div>
+        </div>
+
+        <script>
+            function promptSignIn() {
+                alert("Please sign in to reserve a laboratory seat.");
+            }
+
+            function togglePopup(popupId) {
+                const popup = document.getElementById(popupId);
+                if (popup) {
+                    popup.classList.toggle('show');
+                }
+            }
+
+            // Generate the next 7 days dynamically
+            function generateNext7Days() {
+                const dateSelect = document.getElementById('dates');
+                // Clear existing options except the first one
+                while (dateSelect.options.length > 1) {
+                    dateSelect.remove(1);
+                }
+                
+                const today = new Date();
+                
+                for (let i = 0; i < 7; i++) {
+                    const date = new Date();
+                    date.setDate(today.getDate() + i);
+                    
+                    const formattedDate = date.toISOString().split('T')[0];
+                    const displayDate = date.toLocaleDateString('en-US', {
+                        weekday: 'long',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                    
+                    const option = document.createElement('option');
+                    option.value = formattedDate;
+                    option.text = displayDate;
+                    dateSelect.appendChild(option);
+                }
+            }
+
+            // Update the view when lab or date changes
+            document.getElementById('labs').addEventListener('change', updateLabView);
+            document.getElementById('dates').addEventListener('change', updateLabView);
+
+            function updateLabView() {
+                const lab = document.getElementById('labs').value;
+                const date = document.getElementById('dates').value;
+                
+                if (lab === "disabled selected" || date === "disabled selected") {
+                    return;
+                }
+                
+                // Reset all seats to available
+                const seats = document.querySelectorAll('.view-seat');
+                seats.forEach(seat => {
+                    seat.className = "view-seat";
+                });
+                
+                // Fetch reservations for the selected lab and date
+                fetch(`/api/reservations/lab/${lab}/date/${date}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        // Mark booked seats
+                        if (data.reservations && data.reservations.length > 0) {
+                            data.reservations.forEach(reservation => {
+                                const seatNumber = reservation.seatNumber;
+                                const startTime = reservation.startTime;
+                                
+                                // Find the seat button with matching seat number and time slot
+                                const seatButton = document.querySelector(`.view-seat[data-seat-number="${seatNumber}"][data-time-slot="${startTime}"]`);
+                                if (seatButton) {
+                                    seatButton.className = "taken-seat";
+                                }
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching reservations:', error);
+                    });
+            }
+
+            // Function to periodically update seat status
+            function startAutoRefresh() {
+                // Update seat status immediately
+                updateLabView();
+                
+                // Then update every 10 seconds
+                setInterval(function() {
+                    const lab = document.getElementById('labs').value;
+                    const date = document.getElementById('dates').value;
+                    
+                    if (lab !== "disabled selected" && date !== "disabled selected") {
+                        updateLabView();
+                    }
+                }, 10000); // 10 seconds
+            }
+
+            // Initialize dates when the page loads
+            document.addEventListener('DOMContentLoaded', function() {
+                generateNext7Days();
+                startAutoRefresh();
+            });
+        </script>
+    </body>
+</html>

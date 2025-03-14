@@ -19,6 +19,9 @@ document.addEventListener('DOMContentLoaded', function() {
     if (isLaboratoriesPage) {
         setupLaboratoryManagement();
     }
+    
+    // Call setupSeatColors when the DOM is fully loaded
+    setupSeatColors();
 });
 
 function setupProfileFunctionality() {
@@ -201,4 +204,25 @@ function confirmLaboratoryDeletion(labId) {
             labRow.remove();
         }
     }
+}
+
+function setupSeatColors() {
+    // Example: Assume each seat is a div with class 'seat' and data attribute 'status'
+    const seats = document.querySelectorAll('.seat');
+    seats.forEach(seat => {
+        const status = seat.getAttribute('data-status');
+        switch (status) {
+            case 'available':
+                seat.style.backgroundColor = 'green';
+                break;
+            case 'occupied':
+                seat.style.backgroundColor = 'red';
+                break;
+            case 'reserved':
+                seat.style.backgroundColor = 'yellow';
+                break;
+            default:
+                seat.style.backgroundColor = 'gray';
+        }
+    });
 }
