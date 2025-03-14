@@ -105,3 +105,27 @@ label{
     font-weight: 500;
     border-radius: 30px;
 }
+
+/* Added styles for reservation details */
+.reservation-details-title {
+    text-align: center;
+    padding-top: 30px;
+    padding-bottom: 18px;
+    font-size: 28px;
+    color: var(--dark-blue);
+    font-family: var(--secondary-font-family);
+}
+
+.details-container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.field-group {
+    margin-bottom: 10px;
+}
+
+.field-label {
+    font-weight: 500;
+    color: var(--dark-blue);
+}

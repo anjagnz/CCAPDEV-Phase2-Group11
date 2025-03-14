@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>LabMate - Laboratories</title>
+        <meta charset = "UTF-8">
+        <meta name = "viewport" content = "width=device-width, initial-scale = 1.0">
+        <link rel="stylesheet" href="/css/pop-up.css">
+        <link rel="stylesheet" href="/css/theme-style.css">
+        <link rel="stylesheet" href="/css/navbar-style.css">
+        <link rel="stylesheet" href="/css/student-laboratories.css">
+        
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+        <script>
+            /* adds outline design on active page in navigation bar */
+            $(document).ready(function() {$.getScript("js/navbar.js");});
+        </script>
+    </head>
+
+    <body>
+        <div data-include="navbar-signedin"></div>
+
+        <div class = "frame">
+            <span class = "header">Reserve a Slot</span>
+
+            {{#if success}}
+            <div style="background-color: #23c686; color: white; padding: 10px; border-radius: 5px; margin-bottom: 20px; text-align: center;">
+                Your reservation has been successfully created!
+            </div>
+            {{/if}}
+
+            <div class="dropdown">
+                <span class="dropdown-header">Laboratory</span>
+
+                <select name="labs" id="labs">
+                    <option value="" disabled selected>Select a Laboratory</option>
+                    <option value="G301">G301</option>
+                    <option value="G302">G302</option>
+                    <option value="G303">G303</option>
+                    <option value="G304">G304</option>
+                </select>
+            </div>
+
+            
+            <div class = "dropdown">
+                <span class = "dropdown-header">Date</span>
+
+                <select name="dates" id="dates">
+                    <option value="" disabled selected>Select a Date</option>
+                </select>
+            </div>
+
+            <div class="popup2" id="popup-frame-1">
+                <div class="popup-box">
+                    <span class="popup-header">8:30 AM - 9:00 AM</span>
+                    <img class="user-img" src="img/default-profile.png" onclick="location.href='/demo-profile-1'"></img>
+                    <span class="user-name">John Doe</span>
+                </div>
+            </div>
+
+            <div class="popup2" id="popup-frame-2">
+                <div class="popup-box">
+                    <span class="popup-header">10:00 AM - 11:00 AM</span>
+                    <img class="user-img" src="img/default-profile.png" onclick="location.href='/demo-profile-2'"></img>
+                    <span class="user-name">Jane Smith</span>
+                </div>
+            </div>
+
+            <div class="popup2" id="popup-frame-3">
+                <div class="popup-box">
+                    <span class="popup-header">9:30 AM - 10:00 AM</span>
+                    <img class="user-img" src="img/default-profile.png" onclick="location.href='/demo-profile-3'"></img>
+                    <span class="user-name">Your Reservation</span>
+                </div>
+            </div>
+
+            <div class="popup2" id="popup-frame-4">
+                <div class="popup-box">
+                    <span class="popup-header">10:30 AM - 12:00 PM</span>
+                    <img class="user-img" src="img/default-profile.png" onclick="location.href='/demo-profile-4'"></img>
+                    <span class="user-name">Alex Johnson</span>
+                </div>
+            </div>
+
+            <div class="popup2" id="popup-frame-5">
+                <div class="popup-box">
+                    <span class="popup-header">7:30 AM - 8:00 AM</span>
+                    <img class="user-img" src="img/default-profile.png" onclick="location.href='/demo-profile-5'"></img>
+                    <span class="user-name">Sam Wilson</span>
+                </div>
+            </div>
+
+            <div id="chart">
+                <span id="chart-header">Slot Availability</span>
+
+                <div id="chart-body">
+                    <table id="slot-chart">
+                        <thead>
+                            <tr>
+                                <th id="seat-header">Seat</th>
+                                <th>7:30 AM</th>
+                                <th>8:00 AM</th>
+                                <th>8:30 AM</th>
+                                <th>9:00 AM</th>
+                                <th>9:30 AM</th>
+                                <th>10:00 AM</th>
+                                <th>10:30 AM</th>
+                                <th>11:00 AM</th>
+                                <th>11:30 AM</th>
+                                <th>12:00 PM</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {{#range 1 5}}
+                            <tr>
+                                <th id="seats">Seat {{this}}</th>
+                                {{#each ../timeSlots}}
+                                    <td>
+                                        {{#if (findReservation ../this this)}}
+                                            <button class="taken-seat" onclick="togglePopup('popup-frame-{{../this}}')"></button>
+                                        {{else}}
+                                            <button class="clickable-seat" seat-number="{{../this}}" seat-time="{{this}}"></button>
+                                        {{/if}}
+                                    </td>
+                                {{/each}}
+                            </tr>
+                            {{/range}}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="legend">
+                <div id="legend-available">
+                </div>
+                <span class="legend-text">Available</span>
+                <div id="legend-selected">
+                </div>
+                <span class="legend-text">Selected</span>
+                <div id="legend-unavailable">
+                </div>
+                <span class="legend-text">Unavailable</span>
+                <div id="legend-booking">
+                </div>
+                <span class="legend-text">Your Booking</span>
+            </div>
+
+            <div class="dropdown">
+                <span class="dropdown-header">Reserve until...</span>
+
+                <select name="endtimes" id="endtimes">
+                    <option value="" disabled selected>Select an End Time</option>
+                    <option value="8:00 AM">8:00 AM</option>
+                    <option value="8:30 AM">8:30 AM</option>
+                    <option value="9:00 AM">9:00 AM</option>
+                    <option value="9:30 AM">9:30 AM</option>
+                    <option value="10:00 AM">10:00 AM</option>
+                    <option value="10:30 AM">10:30 AM</option>
+                    <option value="11:00 AM">11:00 AM</option>
+                    <option value="11:30 AM">11:30 AM</option>
+                    <option value="12:00 PM">12:00 PM</option>
+                </select>
+            </div>
+
+            <button id="reserve-button" onclick="openPopup()">Reserve</button>
+        </div>
+
+        <div id="overlay" class="overlay"></div>
+
+        <div class="container">
+            <div class="popup" id="confirm-popup">
+                <img src="img/reservation.png" class="icon" style="margin-bottom: 15px;"/>
+                <p class="message">Would you like to proceed with your reservation?</p>
+            
+                <div class="btn-wrapper">
+                    <button type="cancel" class="btn1" onclick="cancel();">Cancel</button>
+                </div>
+    
+                <div class="btn-wrapper">
+                    <button type="confirm" class="btn2" onclick="submitReservation()">Confirm</button>
+                </div>
+            </div>
+        </div>
+
+        <form id="reservationForm" action="/create-reservation" method="POST" style="display: none;">
+            <input type="hidden" id="labId" name="labId" value="{{selectedLabId}}">
+            <input type="hidden" id="date" name="date" value="">
+            <input type="hidden" id="seatNumber" name="seatNumber" value="">
+            <input type="hidden" id="startTime" name="startTime" value="">
+            <input type="hidden" id="endTime" name="endTime" value="">
+        </form>
+
+        <script>
+            var seats = document.getElementsByClassName('clickable-seat');
+            var selectedSeat = null;
+
+            for(var i = 0; i < seats.length; i++) {
+                seats[i].onclick = function() {
+                    // Reset all seats to default color
+                    for(var j = 0; j < seats.length; j++) {
+                        seats[j].style.backgroundColor = '#D9D9D9';
+                    }
+                    
+                    // Highlight the selected seat
+                    this.style.backgroundColor = '#FC9D45';
+                    selectedSeat = this;
+                };
+            }
+
+            function togglePopup(popupId) {
+                document.querySelectorAll(".popup2").forEach(popup => {
+                    if(popup.id != popupId) {
+                        popup.classList.remove('show');
+                    }
+                });
+                const popup = document.getElementById(popupId);
+                popup.classList.toggle('show');
+            }
+
+            let confirmPopup = document.getElementById("confirm-popup");
+            let overlay = document.getElementById("overlay");
+
+            function openPopup(){
+                if (!selectedSeat) {
+                    alert("Please select a seat first!");
+                    return;
+                }
+                
+                var endTime = document.getElementById("endtimes").value;
+                if (!endTime) {
+                    alert("Please select an end time!");
+                    return;
+                }
+                
+                confirmPopup.classList.add("open-popup");
+                overlay.classList.add("active");
+            }
+
+            function submitReservation() {
+                var lab = document.getElementById("labs").value;
+                var date = document.getElementById("dates").value;
+                var endTime = document.getElementById("endtimes").value;
+                var seatNumber = selectedSeat.getAttribute("seat-number");
+                var startTime = selectedSeat.getAttribute("seat-time");
+
+                // Validate that all required fields are selected
+                if (!lab || !date || !endTime || !seatNumber || !startTime) {
+                    alert("Please select a laboratory, date, end time, and seat before reserving.");
+                    confirmPopup.classList.remove("open-popup");
+                    overlay.classList.remove("active");
+                    return;
+                }
+
+                // Map the lab value to a lab ID
+                var labId;
+                switch(lab) {
+                    case "G301": labId = "G301"; break;
+                    case "G302": labId = "G302"; break;
+                    case "G303": labId = "G303"; break;
+                    case "G304": labId = "G304"; break;
+                    default: labId = lab;
+                }
+
+                // The date is already in the correct format (YYYY-MM-DD)
+                document.getElementById("labId").value = labId;
+                document.getElementById("date").value = date;
+                document.getElementById("seatNumber").value = seatNumber;
+                document.getElementById("startTime").value = startTime;
+                document.getElementById("endTime").value = endTime;
+
+                document.getElementById("reservationForm").submit();
+            }
+
+            function cancel(){
+                confirmPopup.classList.remove("open-popup");
+                overlay.classList.remove("active");
+            }
+
+            // Generate the next 7 days dynamically
+            function generateNext7Days() {
+                const dateSelect = document.getElementById('dates');
+                // Clear existing options except the first one
+                while (dateSelect.options.length > 1) {
+                    dateSelect.remove(1);
+                }
+                
+                const today = new Date();
+                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                
+                for (let i = 0; i < 7; i++) {
+                    const date = new Date();
+                    date.setDate(today.getDate() + i);
+                    
+                    const formattedDate = date.toISOString().split('T')[0]; // YYYY-MM-DD
+                    const displayDate = date.toLocaleDateString('en-US', options); // Monday, March 15, 2025
+                    
+                    const option = document.createElement('option');
+                    option.value = formattedDate;
+                    option.text = displayDate;
+                    dateSelect.appendChild(option);
+                }
+            }
+            
+            // Call the function when the page loads
+            window.onload = function() {
+                generateNext7Days();
+            };
+        </script>
+    </body>
+</html>

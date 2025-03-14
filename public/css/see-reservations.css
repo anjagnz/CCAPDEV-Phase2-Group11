@@ -24,14 +24,23 @@ table{
 
 th{
     padding: 20px 20px 10px 20px;
-
+    text-align: center;
+    white-space: nowrap;
+    font-weight: 500;
+    font-size: 15px;
+    color: var(--dark-blue);
 }
 
 td{
     text-align: center;
     padding-top: 10px;
     padding-bottom: 10px;
-    
+    white-space: nowrap;
+    font-weight: 400;
+    font-size: 14px;
+    border-radius: 8px;
+    padding: 5px;
+    color: var(--dark-blue);
 }
 
 .select-btn{
@@ -40,7 +49,6 @@ td{
     border-radius: 15px;
     margin-top: 8px;
 }
-
 
 .reservations{
     height: 65vh;
@@ -79,21 +87,14 @@ td{
     transform: scale(1.05);
 }
 
-th{
-    text-align: center;
-    white-space: nowrap;
-    padding: 20px;
-    font-weight: 500;
-    font-size: 15px;
-    color: var(--dark-blue);
+/* Added styles from inline CSS */
+#reservation-details {
+    margin-top: 20px;
+    height: 86vh;
+    width: 50%;
+    background-color: #fbfcf6;
 }
 
-td{
-    text-align: center;
-    white-space: nowrap;
-    font-weight: 400;
-    font-size: 14px;
-    border-radius: 8px;
-    padding: 5px;
-    color: var(--dark-blue);
+#remove-reservation {
+    margin-top: 20px;
 }

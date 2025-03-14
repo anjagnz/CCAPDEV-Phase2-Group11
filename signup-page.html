@@ -8,129 +8,7 @@
 
         <link rel="stylesheet" href="css/theme-style.css">
         <link rel="stylesheet" href="css/navbar-style.css">
-
-        <style>
-            body{
-                background: var(--green);
-                margin: 0;
-                padding: 0;
-                font-family: var(--primary-font-family);
-                height: 100vh;
-                overflow: hidden;
-
-            }
-
-            body::before{
-                content: "";
-                position: fixed;
-                width: 100%;
-                height: 100%;
-                background-size: cover;
-                background-position: center;
-                background-repeat: no-repeat;
-                background-image: url('img/bg-image1.jpg');
-                opacity: 0.05;
-                z-index: -1;
-            }
-
-            h1,h2 {
-                color: var(--dark-blue);
-                font-family: var(--secondary-font-family);
-            }
-
-            #container {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: 100%;
-            }
-
-            #signup {
-                display: block;
-                height: relative;
-                width: 650px;
-                padding: 30px 40px;
-                background-color: var(--off-white);
-                border: none;
-                border-radius: 20px;
-            }
-
-            .column {
-                display: flex;
-                justify-content: space-between;
-            }
-
-            #signup a {
-                color: var(--dark-blue);
-                font-weight: bold;
-            }
-
-            #signup a:hover {
-                color: var(--green)
-            }
-
-            .inputWrapper {
-                margin-top: 20px;
-            }
-            .inputWrapper label {
-                display: block;
-                margin: 5px 0;
-            }
-
-            #signup #signup-btn {
-                padding: 0.5rem 1rem;
-                border: none;
-                outline: none;
-                border-radius: 20px;
-                font-size: 1rem;
-                font-weight: bold;
-                cursor: pointer;
-                background-color: var(--dark-blue);
-                color: var(--off-white)    
-            }
-
-            @media (max-height: 600px) {
-                #container {
-                    overflow: scroll;
-                }
-            }
-            .right-column, .left-column {
-                width: 45%;
-                display: block;
-
-            }
-
-            .text-field {
-                height: 1.5rem;
-                width: 96%;
-                border-radius: 10px;
-                border-color: var(--dark-font-color);
-                padding: 0 5px;
-            }
-
-            #signup #create-btn {
-                padding: 0.5rem 1rem;
-                border: none;
-                outline: none;
-                border-radius: 20px;
-                font-size: 1rem;
-                font-weight: bold;
-                cursor: pointer;
-                background-color: var(--dark-blue);
-                color: var(--off-white)    
-            }
-
-            input[type="radio"] {
-                margin-right: 10px;
-            }
-
-            #error {
-                display: block;
-                color: red;
-                font-style: italic;
-                font-size: 0.9rem;
-            }
-        </style>
+        <link rel="stylesheet" href="css/signup-page.css">
 
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <!-- add navigation bar and interactivity  -->
@@ -145,7 +23,7 @@
 
         <form action="/signup" method="post" id="container">
             <div id="signup">
-                <h1 style="font-size: 35px">Account Sign Up </h1>
+                <h1>Account Sign Up </h1>
                 <p id="error"></p>
                 <div class="column">
                     <div class="left-column">   
@@ -165,7 +43,7 @@
                 <div>
                     <div class="inputWrapper">
                         <label for="email">Email Address</label>
-                        <input type="email" id="email" class="text-field" name="email" style="width: 98%" required>
+                        <input type="email" id="email" class="text-field" name="email" required>
                     </div>
                 </div>
                 <div class="column">
@@ -186,8 +64,8 @@
                 <br>
 
                 <div>
-                    <h2 style="margin-top:20px">Please select an account type</h2>
-                    <span style="font-size:.9rem; font-style: italic;">Your account type cannot be changed after account creation.</span>
+                    <h2>Please select an account type</h2>
+                    <span>Your account type cannot be changed after account creation.</span>
                     
                     <div class="column" id="radio-type">
                         <div class="left-column">
@@ -207,7 +85,7 @@
                         
                         <div class="left-column">
                             <div class="inputWrapper">
-                                <span style="font-size:.9rem; font-style: italic;">
+                                <span>
                                     Please enter your faculty code for verification. 
                                     For assistance, contact an IT administrator. (for demo: i-am-faculty)    
                                 </span>
@@ -269,8 +147,8 @@
         <script>
             /* display faculty code form if radio value = 'faculty' */
             $(document).ready(function() {
-                $("input[name='acc-type']").change(function() {
-                    if ($(this).val() === 'faculty') {
+                $("input[name='type']").change(function() {
+                    if ($(this).val() === 'Faculty') {
                         $('#faculty').show();
                     } else {
                         $('#faculty').hide();
@@ -284,9 +162,9 @@
         <script>
             // TODO: do faculty / labtech shit
             function isFaculty() {
-                let selected = document.querySelector('input[name="acc-type"]:checked');
+                let selected = document.querySelector('input[name="type"]:checked');
 
-                if(selected.value === "faculty") {
+                if(selected.value === "Faculty") {
                     window.location.href = "/labtech-home";
                 }
                 else {

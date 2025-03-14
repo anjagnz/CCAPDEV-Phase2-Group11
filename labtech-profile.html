@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LabMate - Lab Technician Profile</title>
+    <link rel="stylesheet" href="css/profile_pages.css">
+    <link rel="stylesheet" href="css/theme-style.css">
+    <link rel="stylesheet" href="css/navbar-style.css">
+
+    <!-- Imported Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        /* adds outline design on active page in navigation bar */
+        $(document).ready(function() {
+            $.getScript("public/js/navbar-labtech.js");
+            $.getScript("public/js/labtechProfile.js");
+        });
+    </script>
+</head>
+<body>
+    <div data-include="navbar-labtech-signedin"></div>
+
+    <!-- Side Navigation -->
+    <nav class="side-nav">
+        <div class="nav-item" id="dashboard-nav">
+            <img src="img/Home.svg" alt="Dashboard" class="nav-icon">
+            <a href="#dashboard"><span>Dashboard</span></a>
+        </div>
+        <div class="nav-item" id="overview-nav">
+            <img src="img/settings.svg" alt="Settings" class="nav-icon">
+            <a href="#overview"><span>Settings</span></a>
+        </div>
+        <div class="nav-item" id="edit-nav">
+            <img src="img/edit.svg" alt="Edit" class="nav-icon">
+            <a href="#edit"><span>Edit Profile</span></a>
+        </div>
+        <div class="nav-item" id="delete-nav">
+            <img src="img/delete.svg" alt="Delete" class="nav-icon">
+            <a href="#delete"><span>Delete Account</span></a>
+        </div>
+    </nav>
+
+    <!-- Main Content Sections -->
+    <div id="content-container">
+        <!-- Dashboard Section -->
+        <main class="main-content dashboard" id="dashboard-section">
+            <!-- Overview Cards -->
+            <div class="overview-cards">
+                <div class="card upcoming-lab">
+                    <h2>Ongoing Laboratories</h2>
+                    <div class="card-content">
+                        <div class="info-row">
+                            <span id="ongoing-labs-info">No laboratory sessions are ongoing.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card total-reserved">
+                    <h2>Total Ongoing Reservations</h2>
+                    <div class="card-content">
+                        <img src="img/desktop.svg" alt="Computer Icon" class="desktop-icon">
+                        <span class="count" id="ongoing-count">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reservations Table -->
+            <section class="reservations-section">
+                <h2>Ongoing Reservations</h2>
+                <div class="table-container">
+                    <table class="reservations-table" id="ongoing-reservations-table">
+                        <thead>
+                            <tr>
+                                <th>Laboratory</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Seat</th>
+                                <th>Student</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ongoing-reservations-body">
+                            <!-- Reservations will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            <button class="logout-button" onclick="location.href='/'">LOGOUT</button>
+        </main>
+
+        <!-- Profile Overview Section -->
+        <main class="main-content" id="overview-section" style="display: none;">
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="profile-picture-large">
+                        <img id="profile-image" src="img/default-profile.png" alt="Profile Picture">
+                    </div>
+                    <h2 id="profile-name">Lab Technician Name</h2>
+                </div>
+
+                <div class="profile-details">
+                    <div class="detail-row">
+                        <span class="label">Email:</span>
+                        <span class="value" id="profile-email">email@example.com</span>
+                        <span class="tag">[Faculty]</span>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="label">Department:</span>
+                        <span class="value" id="profile-department">Department</span>
+                    </div>
+
+                    <div class="biography-section">
+                        <h3>Biography</h3>
+                        <p class="biography-text" id="profile-bio">
+                            No biography provided yet.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Edit Profile Section -->
+        <main class="main-content" id="edit-section" style="display: none;">
+            <div class="profile-card">
+                <h2>Edit Profile</h2>
+                <form id="profile-edit-form">
+                    <div class="profile-header">
+                        <div class="profile-picture-large">
+                            <img id="edit-profile-image" src="img/default-profile.png" alt="Profile Picture">
+                            <div class="upload-overlay">
+                                <label for="profile-image-input" class="upload-button">
+                                    <img src="img/upload.svg" alt="Upload">
+                                </label>
+                                <input type="file" id="profile-image-input" accept="image/*" style="display: none;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="firstName">First Name</label>
+                        <input type="text" id="firstName" name="firstName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <input type="text" id="lastName" name="lastName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="department">Department</label>
+                        <input type="text" id="department" name="department">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="biography">Biography</label>
+                        <textarea id="biography" name="biography" rows="4"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="current-password">Current Password</label>
+                        <input type="password" id="current-password" name="currentPassword" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="new-password">New Password (leave blank to keep current)</label>
+                        <input type="password" id="new-password" name="newPassword">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirm-password">Confirm New Password</label>
+                        <input type="password" id="confirm-password" name="confirmPassword">
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="save-btn">Save Changes</button>
+                        <button type="button" class="cancel-btn" onclick="cancelEdit()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+
+        <!-- Delete Account Section -->
+        <main class="main-content" id="delete-section" style="display: none;">
+            <div class="profile-card">
+                <h2>Delete Account</h2>
+                <div class="delete-account-warning">
+                    <p>Warning: Deleting your account is permanent and cannot be undone. All your data will be permanently removed.</p>
+                    <p>Please enter your password to confirm account deletion:</p>
+                </div>
+
+                <form id="delete-account-form">
+                    <div class="form-group">
+                        <label for="delete-password">Password</label>
+                        <input type="password" id="delete-password" name="password" required>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" id="delete-account-btn" class="delete-btn">Delete Account</button>
+                        <button type="button" class="cancel-btn" onclick="cancelDelete()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Navigation between sections
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get all navigation items
+            const navItems = document.querySelectorAll('.nav-item');
+            
+            // Get all content sections
+            const sections = {
+                'dashboard-nav': document.getElementById('dashboard-section'),
+                'overview-nav': document.getElementById('overview-section'),
+                'edit-nav': document.getElementById('edit-section'),
+                'delete-nav': document.getElementById('delete-section')
+            };
+            
+            // Add click event listeners to navigation items
+            navItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // Remove active class from all navigation items
+                    navItems.forEach(nav => nav.classList.remove('active'));
+                    
+                    // Add active class to clicked item
+                    this.classList.add('active');
+                    
+                    // Hide all sections
+                    Object.values(sections).forEach(section => {
+                        if (section) section.style.display = 'none';
+                    });
+                    
+                    // Show the corresponding section
+                    const sectionId = this.id;
+                    if (sections[sectionId]) {
+                        sections[sectionId].style.display = 'block';
+                    }
+                });
+            });
+            
+            // Set dashboard as active by default
+            document.getElementById('dashboard-nav').classList.add('active');
+            
+            // Check if URL has a hash and navigate to that section
+            const hash = window.location.hash;
+            if (hash) {
+                const targetNav = document.querySelector(`[href="${hash}"]`).closest('.nav-item');
+                if (targetNav) {
+                    targetNav.click();
+                }
+            }
+            
+            // Load user profile data
+            loadProfileData();
+        });
+        
+        function loadProfileData() {
+            // This function would fetch the user's profile data from the server
+            // For now, we'll use placeholder data
+            const userData = {
+                firstName: 'Lab',
+                lastName: 'Technician',
+                email: 'labtech@example.com',
+                department: 'Computer Science',
+                biography: 'Lab technician responsible for managing laboratory resources.',
+                image: 'img/default-profile.png'
+            };
+            
+            // Populate profile overview
+            document.getElementById('profile-name').textContent = userData.lastName + ', ' + userData.firstName;
+            document.getElementById('profile-email').textContent = userData.email;
+            document.getElementById('profile-department').textContent = userData.department;
+            document.getElementById('profile-bio').textContent = userData.biography;
+            document.getElementById('profile-image').src = userData.image;
+            
+            // Populate edit form
+            document.getElementById('firstName').value = userData.firstName;
+            document.getElementById('lastName').value = userData.lastName;
+            document.getElementById('email').value = userData.email;
+            document.getElementById('department').value = userData.department;
+            document.getElementById('biography').value = userData.biography;
+            document.getElementById('edit-profile-image').src = userData.image;
+        }
+        
+        function cancelEdit() {
+            // Reset form and navigate back to overview
+            document.getElementById('profile-edit-form').reset();
+            document.getElementById('overview-nav').click();
+        }
+        
+        function cancelDelete() {
+            // Reset form and navigate back to overview
+            document.getElementById('delete-account-form').reset();
+            document.getElementById('overview-nav').click();
+        }
+    </script>
+</body>
+</html>

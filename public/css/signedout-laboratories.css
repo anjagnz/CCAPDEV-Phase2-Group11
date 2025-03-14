@@ -1,0 +1,245 @@
+/* CSS for signedout-laboratories.html */
+
+:root {
+    --primary-color: #23c686;
+    --secondary-color: #1d3853;
+    --background-color: #fbfcf6;
+
+    --primary-font-fam: 'Roboto';
+    --secondary-font-fam: 'DM Sans';
+    --text-color: #1b1b1b;
+}
+
+body{
+    background-color: var(--background-color);
+    margin: 0;
+    padding: 0;
+}
+
+.frame{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.header{
+    position: relative;
+    text-align: center;
+    font-family: var(--secondary-font-fam);
+    font-weight: 600;
+    font-size: 35px;
+    color: var(--secondary-color);
+    padding: 80px 100px 50px 100px;
+}
+
+.dropdown, #chart{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border: none;
+    border-radius: 25px;
+    padding: 40px 40px 10px 40px;
+}
+
+.dropdown-header, #chart-header{
+    color: var(--secondary-color);
+    font-family: var(--secondary-font-fam);
+    font-size: 15px;
+    font-weight: 500;
+    padding-bottom: 10px;
+}
+
+#labs, #dates, #endtimes{
+    width: 1000px;
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    background: url(../img/arrow-down.png) no-repeat 99% center, #FFFFFF;
+    background-size: 20px;
+    border: 1px solid var(--secondary-color);
+    border-radius: 8px;
+    color: var(--secondary-color);
+    font-family: var(--primary-font-fam);
+    padding: 8px 500px 8px 15px;
+    color: rgba(29, 56, 83, 0.8);
+}
+
+#labs:focus, #dates:focus, #endtimes:focus{
+    background: url(../img/arrow-up.png) no-repeat 99% center, #FFFFFF;
+    background-size: 20px;
+}
+
+#chart-body{
+    width: 1000px;
+    overflow-x: auto;
+    background: #FFFFFF;
+    border: 1px solid var(--secondary-color);
+    border-radius: 8px;
+    color: var(--secondary-color);
+    font-family: var(--primary-font-fam);
+    margin-bottom: 10px;
+}
+
+table{
+    padding: 8px;
+    border-collapse: separate;
+}
+
+th{
+    text-align: center;
+    white-space: nowrap;
+    padding: 20px;
+    font-weight: 500;
+    font-size: 13px;
+}
+
+#seat-header{
+    white-space: nowrap;
+    padding: 20px;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+td{
+    text-align: center;
+    white-space: nowrap;
+    font-weight: 400;
+    font-size: 12px;
+    border-radius: 8px;
+    padding: 5px;
+}
+
+.clickable-seat{
+    height: 50px;
+    width: 50px;
+    background: #D9D9D9;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.taken-seat{
+    height: 50px;
+    width: 50px;
+    background: #FF7878;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+#seats{
+    background: none;
+    font-weight: 500;
+}
+
+#legend{
+    display: flex;
+    flex-direction: row;
+    align-items: center;   
+    margin-bottom: 20px;
+}
+
+.legend-text{
+    color: var(--secondary-color);
+    font-size: 14px;
+    padding-left: 8px;
+    padding-right: 24px;
+}
+
+#legend-available{
+    height: 25px;
+    width: 25px;
+    background-color: #D9D9D9;
+    border-radius: 4px;
+}
+
+#legend-selected{
+    height: 25px;
+    width: 25px;
+    background-color: #FC9D45;
+    border-radius: 4px;
+}
+
+#legend-unavailable{
+    height: 25px;
+    width: 25px;
+    background-color: #FF7878;
+    border-radius: 4px;
+}
+
+#legend-booking{
+    height: 25px;
+    width: 25px;
+    background-color: #23c686;
+    border-radius: 4px;
+}
+
+#reserve-button{
+    width: 150px;
+    background-color: var(--secondary-color);
+    color: var(--background-color);
+    font-family: var(--primary-font-fam);
+    font-size: 15px;
+    font-weight: 500;
+    border: none;
+    border-radius: 10px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+#reserve-button:hover{
+    transform: scale(1.05);
+}
+
+.popup2{
+    display: none;
+    flex-direction: column;
+    opacity: 0;
+    margin-top: 50px;
+}
+
+.popup-box{
+    background-color: #fff;
+    width: 200px;
+    height: 120px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--secondary-color);
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+}
+
+.popup-header{
+    font-size: 14px;
+    font-family: var(--primary-font-fam);
+    color: var(--secondary-color);
+    font-weight: 500;
+    margin: 10px 0px 10px 0px;
+}
+
+.user-img{
+    width: 40px;
+    height: 40px;
+    border-radius: 25px;
+}
+
+.user-name{
+    font-size: 13px;
+    font-family: var(--primary-font-fam);
+    color: var(--secondary-color);
+    margin: 5px 0px 10px 0px;
+}
+
+.popup2.show{
+    display: flex;
+    opacity: 1;
+}
+
+.nav-header {
+    background-color: var(--primary-color) !important;
+}
