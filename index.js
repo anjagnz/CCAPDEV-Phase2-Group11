@@ -376,9 +376,10 @@ app.post("/signup", async (req, res) => {
                 lastName,
                 email,
                 password: newPass, // Using plain text as per user preference
-                profilePicture: '/img/default-profile.png',
+                image: '/img/default-profile.png', // Changed from profilePicture to image to match model
                 department: '',
-                biography: ''
+                biography: '',
+                type: 'Student'
             });
             
             await newUser.save();
@@ -399,9 +400,11 @@ app.post("/signup", async (req, res) => {
                 lastName,
                 email,
                 password: newPass, // Using plain text as per user preference
-                profilePicture: '/img/default-profile.png',
+                image: '/img/default-profile.png', // Changed from profilePicture to image to match model
                 department: '',
-                biography: ''
+                biography: '',
+                type: 'Faculty',
+                laboratories: [] // Adding the laboratories array field
             });
             
             await newLabTech.save();
