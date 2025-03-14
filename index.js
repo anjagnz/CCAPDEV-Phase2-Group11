@@ -8,8 +8,9 @@ const mongoose = require("mongoose");
 const hbs = require("hbs")
 const path = require("path");
 
-//app.engine("hbs", engine({ extname: ".hbs", defaultLayout: "main"}))
-app.set('view engine', 'hbs'); 
+app.engine("hbs", engine({ extname: ".hbs", defaultLayout: "main"}))
+app.set("view engine", "hbs");
+app.set("views", path.join(__dirname, "views"));
 
 mongoose.connect('mongodb://localhost/LabMateDB')
 const Reservation = require('./database/models/Reservation');
@@ -91,6 +92,28 @@ app.patch("/api/reservation/:id", async(req,res) => {
     }
 })
 
+//getting labs
+app.get("/labtech-laboratories", async(req, res) => {
+    try{
+        const labs = await Laboratory.find({}).lean();
+        res.render("labtech-laboratories", {labs});
+    } catch(error) {
+        res.status(500).json({ message: "Failed to get labs", error})
+    }
+})
+// getting a selected lab
+
+app.get("/getLab/:id", async(req, res) => {
+    const labId = req.params.id;
+
+    try{
+        const lab = await Lab.findById(labId);
+        res.json(lab);
+    } catch(error) {
+        res.status(500).json({ message: "Lab not found", error });
+    }
+})
+
 // Initial Reservation Population
 async function populateReservations(){
     const reservationsFound = await Reservation.find();
@@ -126,7 +149,7 @@ app.get("/labtech-demo-profile4", (req, res) => res.sendFile(path.join(__dirname
 
 // Labtech Pages
 app.get("/labtech-home", (req, res) => res.sendFile(path.join(__dirname, "labtech-home.html")));
-app.get("/labtech-laboratories", (req, res) => res.sendFile(path.join(__dirname, "labtech-laboratories.html")));
+app.get("/labtech-laboratories", (req, res) => res.render("labtech-laboratories"));
 app.get("/labtech-profile-overview", (req, res) => res.sendFile(path.join(__dirname, "labtech-profile_overview.html")));
 app.get("/labtech-profile-edit", (req, res) => res.sendFile(path.join(__dirname, "labtech-profile_edit.html")));
 app.get("/labtech-profile-delete", (req, res) => res.sendFile(path.join(__dirname, "labtech-profile_delete.html")));
