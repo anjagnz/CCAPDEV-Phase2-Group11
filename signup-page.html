@@ -294,6 +294,36 @@
                 }
             }
         </script>
+
+        <script>
+            document.querySelector("form").addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const form = event.target;
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch(form.action, {
+                    method: form.method,
+                    body: formData,
+                });
+
+                // element to display error message
+                const error = document.querySelector("#error");
+
+                // check if inputs are valid
+                if (response.ok) {
+                    form.submit();
+                    
+                } else {
+                    // Show error from server
+                    const data = await response.json();
+                    error.textContent = data.error || "An unexpected error occurred.";
+                }
+            } catch (err) {
+                error.textContent = "Failed to connect to the server.";
+            }});
+        </script>
         
     </body>
 </html>
