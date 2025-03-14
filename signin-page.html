@@ -19,8 +19,7 @@
                 --secondary-font-fam: 'DM Sans';
                 color: #1b1b1b;
             }
-        
-
+    
             body{
                 background: var(--primary-color);
                 margin: 0;
@@ -127,6 +126,13 @@
                 border-color: var(--text-color);
                 padding: 0 5px;
             }
+
+            #error {
+                display: block;
+                color: red;
+                font-style: italic;
+                font-size: 0.9rem;
+            }
         </style>
 
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -140,21 +146,22 @@
         
         <div data-include="navbar-signedout"></div>
 
-        <form action ="/signin-page" method="post" id="container">
+        <form action ="/signin" method="post" id="container">
             <div id="signin"> 
                 <div class="left-column">
                     <h1>Account Sign-in</h1>
+                    <p id="error"></p>
                     <div class="inputWrapper">
                         <label for="email">DLSU Email Address</label>
-                        <input type="email" required>
+                        <input type="email" name="email" required>
                     </div>
                     <div class="inputWrapper">
                         <label for="password">Password</label>
-                        <input type="password" required>
+                        <input type="password" name="password" required>
                     </div>
                     <div class="inputWrapper">
                         <label>
-                            <input type="checkbox" title="Checking this box will let this website to remember your account for 3 weeks.">
+                            <input type="checkbox" name="rememberUser" title="Checking this box will let this website to remember your account for 3 weeks.">
                             Remember me
                         </label>
                     </div>
@@ -169,7 +176,42 @@
             </div>
         </form>
 
+        <script>
+            document.querySelector("form").addEventListener("submit", async (event) => {
+        event.preventDefault(); // Prevent default form submission
+
+        const form = event.target;
+        const formData = new FormData(form);
+
+        try {
+            const response = await fetch(form.action, {
+                method: form.method,
+                body: formData,
+            });
+
+            const error = document.querySelector("#error");
+
+            if (!response.ok) {
+                // Handle error response from the server
+                const data = await response.json();
+                error.textContent = data.error || "An unexpected error occurred.";
+            } else {
+                // Handle successful response
+                const data = await response.json();
+                if (data.redirect) {
+                    // Redirect to the specified URL
+                    window.location.href = data.redirect;
+                } else {
+                    error.textContent = "Login successful, but no redirection URL provided.";
+                }
+            }
+        } catch (err) {
+            document.querySelector("#error").textContent = "Failed to connect to the server.";
+        }
+    });
+        </script>
         
-        
+    
     </body>
+    
 </html>

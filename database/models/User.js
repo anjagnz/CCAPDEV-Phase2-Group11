@@ -1,7 +1,6 @@
 const mongoose = require('mongoose')
 
 const PostSchema = new mongoose.Schema({
-    userId: { type: Number, required: true },
     type: { type: String, enum: ['Student', 'Faculty'], required: true },
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
