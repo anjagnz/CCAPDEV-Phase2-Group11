@@ -283,6 +283,9 @@
 
                 <select name = "labs" id = "labs">
                     <option value = "" disabled selected>Select a Laboratory</option>
+                    {{#each labs}}
+                        <option value="{{this.laboratoryId}}">{{this.laboratoryName}}</option>
+                    {{/each}}
                 </select>
             </div>
 
