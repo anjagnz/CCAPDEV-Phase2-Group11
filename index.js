@@ -4,15 +4,13 @@ const bodyParser = require("body-parser");
 const { engine } = require("express-handlebars");
 const fileUpload = require('express-fileupload')
 const cron = require("node-cron");
-
+const path = require("path");
 const mongoose = require("mongoose");
-mongoose.connect('mongodb://localhost/LabMateDB')
 
-app.use(express.urlencoded({ extended : true}));
 app.engine("hbs", engine({ extname: ".hbs", defaultLayout: "main"}))
 app.set("view engine", "hbs");
 
-const path = require("path");
+mongoose.connect('mongodb://localhost/LabMateDB')
 const Reservation = require('./database/models/Reservation');
 const Laboratory = require("./database/models/Laboratory");
 const TimeSlot = require("./database/models/TimeSlot");
@@ -144,11 +142,11 @@ async function populateLaboratories() {
     
     if(labsFound.length === 0) {
         const labs = [
-            { laboratoryId: 1, laboratoryName: "GK404B", capacity: 20 },
-            { laboratoryId: 2, laboratoryName: "AG1904", capacity: 40 },
-            { laboratoryId: 3, laboratoryName: "GK201A", capacity: 20 },
-            { laboratoryId: 4, laboratoryName: "AG1706", capacity: 40 },
-            { laboratoryId: 5, laboratoryName: "GK302A", capacity: 20 }
+            { laboratoryName: "GK404B", capacity: 20 },
+            { laboratoryName: "AG1904", capacity: 40 },
+            { laboratoryName: "GK201A", capacity: 20 },
+            { laboratoryName: "AG1706", capacity: 40 },
+            { laboratoryName: "GK302A", capacity: 20 }
         ];
 
         await Laboratory.insertMany(labs);
@@ -201,29 +199,40 @@ async function populateTimeSlots() {
 
 /*** USERS ***/
 
-
 // request for form submission 
-app.get("/signin-page", (req,res) => {
+app.get("/signin", (req,res) => {
     // TODO: for sessions MCO3
 })
 
-// Sign in submission
-app.post("/signin-page", express.urlencoded({extended: true}), (req,res) => {
+// Sign-in form submission
+app.post("/signin", async (req,res) => {
     const {email, password, rememberUser} = req.body;
     
-    // search user credentials in db
-    // if exist, correct password -> homepage
-    // else, error in form
-
-    // hardcoded details
-    if (email === "the_goat@dlsu.edu.ph" && password === "admin" ) {
-        // direct session to this user
-        res.redirect("/student-home")
-    } else {
-        res.send("INVALID! </a>");
+    // validate entry
+    if (!email || !password) {
+        return res.status(400).json({ error: "Email and password are required." });
     }
-    res.send("Login: " + email + " " + password +" " + rememberUser)
+
+    let user = await User.findOne({ email: email.toLowerCase() }).lean();
+    
+    if (user) {
+        
+        if (user.password === password) {
+            // THIS WONT WORK!!! "FAILED TO CONNECT TO SERVER"
+            res.render('student-home',{user});
+        } else { 
+            // user password is wrong
+            res.status(401).json({ error: "Password is incorrect. Please try again" });
+    } 
+    } else {
+        // email is not in database 
+        res.status(401).json({ error: "Email does not match an existing account. Please try again or create an account." });
+    }    
 })
+
+// TODO: Sign-up submission
+
+// TODO: User (and reservations) deletion
 
 // Initial users
 async function populateUsers() {
@@ -231,11 +240,11 @@ async function populateUsers() {
     
     if(existingUsers.length === 0) {
         const users = [
-            { userId: 1, type: "Student", firstName: "Denise Liana", lastName: "Ho", image:"img/demo_data/sonoda.jpg", email: "denise_liana_ho@dlsu.edu.ph", password: "123", biography: "idk stream tsunami sea yeah", department: "Computer Science" },
-            { userId: 2, type: "Student", firstName: "Anja", lastName: "Gonzales", email: "anja_gonzales@dlsu.edu.ph", password: "234", biography: "i need sleep", department: "Computer Science" },
-            { userId: 3, type: "Student", firstName: "Angelo", lastName: "Rocha", email: "angelo_rocha@dlsu.edu.ph", password: "345", biography: "idk what to put here", department: "Computer Science" },
-            { userId: 4, type: "Student", firstName: "Grass", lastName: "Capote", email: "mary_grace_capote@dlsu.edu.ph", password: "456", biography: "send help", department: "Computer Science" },
-            { userId: 5, type: "Faculty", firstName: "The", lastName: "Goat", email: "the_goat@dlsu.edu.ph", password: "admin", department:"Computer Science" },
+            { type: "Student", firstName: "Denise Liana", lastName: "Ho", image:"img/demo_data/sonoda.jpg", email: "denise_liana_ho@dlsu.edu.ph", password: "123", biography: "idk stream tsunami sea yeah", department: "Computer Science" },
+            { type: "Student", firstName: "Anja", lastName: "Gonzales", email: "anja_gonzales@dlsu.edu.ph", password: "234", biography: "i need sleep", department: "Computer Science" },
+            { type: "Student", firstName: "Angelo", lastName: "Rocha", email: "angelo_rocha@dlsu.edu.ph", password: "345", biography: "idk what to put here", department: "Computer Science" },
+            { type: "Student", firstName: "Grass", lastName: "Capote", email: "mary_grace_capote@dlsu.edu.ph", password: "456", biography: "send help", department: "Computer Science" },
+            { type: "Faculty", firstName: "The", lastName: "Goat", email: "the_goat@dlsu.edu.ph", password: "admin", department:"Computer Science" },
         ];
 
         await User.insertMany(users);
