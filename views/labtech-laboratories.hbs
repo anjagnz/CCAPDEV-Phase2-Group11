@@ -8,8 +8,6 @@
         <link rel="stylesheet" href="css/pop-up.css">
         <link rel="stylesheet" href="css/theme-style.css">
         <link rel="stylesheet" href="css/navbar-style.css">
-        
-	    <script src="labtech-laboratories.js"></script>
 
         <style>
             :root {
@@ -281,12 +279,16 @@
             <div class = "dropdown">
                 <span class = "dropdown-header">Laboratory</span>
 
-                <select name = "labs" id = "labs">
-                    <option value = "" disabled selected>Select a Laboratory</option>
-                    {{#each labs}}
-                        <option value="{{this.laboratoryId}}">{{this.laboratoryName}}</option>
-                    {{/each}}
-                </select>
+                <form method = "GET" action = "/labtech-laboratories">
+                    <select name = "labs" id = "labs" onchange = "this.form.submit()">
+                        <option value = "" disabled selected>Select a Laboratory</option>
+                        {{#each labs}}
+                            <option value="{{this._id}}"
+                                {{#equal this._id ../selectedLabId}}selected = "selected"{{/equal}}
+                            >{{this.laboratoryName}} {{this._id}}</option>
+                        {{/each}}
+                    </select>
+                </form>
             </div>
 
             
@@ -295,13 +297,9 @@
 
                 <select name = "dates" id = "dates">
                     <option value = "" disabled selected>Select a Date</option>
-                    <option value = "date1">February 15, 2025</option>
-                    <option value = "date2">February 16, 2025</option>
-                    <option value = "date3">February 17, 2025</option>
-                    <option value = "date4">February 18, 2025</option>
-                    <option value = "date5">February 19, 2025</option>
-                    <option value = "date6">February 20, 2025</option>
-                    <option value = "date7">February 21, 2025</option>
+                    {{#each next7Days}}
+                        <option value="{{this.formattedDate}}">{{this.displayDate}}</option>
+                    {{/each}}
                 </select>
             </div>
 
@@ -349,20 +347,36 @@
                 <span id = "chart-header">Slot Availability</span>
 
                 <div id = "chart-body">
+                    {{#if capacity}}
                     <table id = "slot-chart">
                         <thead>
                             <tr>
                                 <th id = "seat-header">Seat</th>
                                 <div id = "time-header">
-                                    <!-- js will generate the time here -->
+                                   {{#each timeSlots}}
+                                        <th>{{this}}</th>
+                                   {{/each}}
                                 </div>
                             </tr>
                         </thead>
 
-                        <tbody id = "timetable">
-                            <!-- timetable will be generated here -->
+                        <tbody>
+                            {{#each range 1 capacity}}
+                            <tr>
+                                <td>Seat {{this}}</td>
+                                {{#each ../timeSlots}}
+                                    <td>
+                                        <button class = "clickable-seat"
+                                            seat-number = "{{@../index}}"
+                                            seat-time = "{{this}}">
+                                        </button>
+                                    </td>
+                                {{/each}}
+                            </tr>
+                            {{/each}}
                         </tbody>
                     </table>
+                    {{/if}}
                 </div>
 
             </div>

@@ -8,7 +8,7 @@ const mongoose = require("mongoose");
 const hbs = require("hbs")
 const path = require("path");
 
-app.engine("hbs", engine({ extname: ".hbs", defaultLayout: "main"}))
+//app.engine("hbs", engine({ extname: ".hbs", defaultLayout: "main"}))
 app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "views"));
 
@@ -92,25 +92,44 @@ app.patch("/api/reservation/:id", async(req,res) => {
     }
 })
 
-//getting labs
+//getting labs and days for labtech-labs
 app.get("/labtech-laboratories", async(req, res) => {
     try{
         const labs = await Laboratory.find({}).lean();
-        res.render("labtech-laboratories", {labs});
+        const selectedLabId = req.query.labs ? req.query.labs.toString() : null;
+        console.log("Selected Lab ID: ", selectedLabId);
+
+        let selectedLab = null;
+
+        if(selectedLabId) {
+            selectedLab = await Laboratory.findById(selectedLabId);
+        }
+
+        const today = new Date();
+        const timeSlots = [
+            "07:30 A.M.", "08:00 A.M.", "08:30 A.M.", "09:00 A.M.",
+            "09:30 A.M.", "10:00 A.M.", "10:30 A.M.", "11:00 A.M.",
+            "11:30 A.M.", "12:00 P.M.", "12:30 P.M.", "01:00 P.M.",
+            "01:30 P.M.", "02:00 P.M.", "02:30 P.M.", "03:00 P.M.",
+            "03:30 P.M.", "04:00 P.M.", "04:30 P.M.", "05:00 P.M.",
+            "05:30 P.M.", "06:00 P.M.", "06:30 P.M.", "07:00 P.M.",
+            "07:30 P.M.", "08:00 P.M.", "08:30 P.M.", "09:00 P.M."
+        ];
+        const next7Days = [];
+
+        for(let i = 0; i < 7; i++) {
+            const date = new Date();
+            date.setDate(today.getDate() + i);
+
+            next7Days.push({
+                formattedDate: date.toISOString().split('T')[0],
+                displayDate: date.toLocaleDateString('en-US', {weekday: 'long', month: 'long', day: 'numeric'})
+            });
+        }
+
+        res.render("labtech-laboratories", {labs, next7Days, timeSlots, selectedLabId, capacity: selectedLab ? selectedLab.capacity : 0});
     } catch(error) {
         res.status(500).json({ message: "Failed to get labs", error})
-    }
-})
-// getting a selected lab
-
-app.get("/getLab/:id", async(req, res) => {
-    const labId = req.params.id;
-
-    try{
-        const lab = await Lab.findById(labId);
-        res.json(lab);
-    } catch(error) {
-        res.status(500).json({ message: "Lab not found", error });
     }
 })
 
@@ -416,11 +435,24 @@ function populateDatabase() {
     populateUsers();
     populateLaboratories();
     populateReservations();
-    populateTimeSlots();
+    //populateTimeSlots();
 }
 
 // populate database (for demo)
 populateDatabase();
+
+hbs.registerHelper("range", function(start, end, block){
+    var result = '';
+    for(let i = start; i <= end; i++) {
+        result += block.fn(i)
+    }
+    return result;
+})
+
+hbs.registerHelper("equal", function(a, b, options) {
+    console.log(`Comparing ${a} and ${b}`);
+    return a === b ? options.fn(this) : options.inverse(this);
+});
 
 app.listen(3000, () => {
     console.log("Node server running at http://localhost:3000");
