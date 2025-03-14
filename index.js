@@ -158,13 +158,73 @@ async function populateLaboratories() {
     }
 }
 
+// Timeslot Update FUnction
+
+async function updateTimeSlots() {
+    const today = new Date().toISOString().split('T')[0];
+
+    const timeSlotsFound = await TimeSlot.find();
+
+    timeSlotsFound = timeSlotsFound.filter(slot => slot.date >= today);
+
+    const newDate = new Date();
+    newDate.setDate(new Date().getDate() + 6);
+    newDate.toISOString().split('T')[0];
+
+    const startTime = new Date();
+    startTime.setHours(7, 30, 0, 0);
+
+    const endTime = new Date();
+    endTime.setHours(21, 0, 0, 0);
+
+    const timeSlots = []
+    
+    if(timeSlotsFound.length > 0)
+    {
+        for(let i = 0; i < labs.length; i++)
+        {
+            for(let j = 1; j <= labs[i].capacity; j++)
+            {
+                for(let time = new Date(startTime); time <= endTime; time.setMinutes(time.getMinutes() + 30))
+                {
+                    const timeSlot = {
+                        laboratoryId: labs[i].laboratoryId,
+                        seatNumber: j,
+                        date: newDate,
+                        time: time.toLocaleTimeString('en-US', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            hour12: false,
+                            timezone: 'Asia/Singapore'
+                        }),
+                        isAvailable: true
+                    };
+
+                    timeSlots.push(timeSlot);
+                }
+            }
+        }
+    }   
+
+    await TimeSlot.insertMany(timeSlots);
+
+}
+
+cron.schedule('0 0 * * *', async() => {
+    try{
+        console.log("Updating time slots!");
+        await updateTimeSlots();
+    } catch(error) {
+        console.error("Error occurred while updating the time slots: ", error)
+    }
+}, {timezone: 'Asia/Manila'});
+
 // Initial Timeslot Population
 
 // !!! WILL CONTINUE AFTER IMPLEMENTING CRON SCHEDULING
 
-/* 
 async function populateTimeSlots() {
-    const timeSlotsFound = await TimeSlots.find();
+    const timeSlotsFound = await TimeSlot.find();
     const labs = await Laboratory.find();
 
     const startTime = new Date();
@@ -180,25 +240,37 @@ async function populateTimeSlots() {
         {
             for(let j = 1; j <= labs[i].capacity; j++)
             {
-                for(let time = new Date(startTime); time <= endTime; time.setMinutes(time.getMinutes() + 30))
+                for(let day = 0; day <= 6; day++)
                 {
-                    const timeSlot = {
-                        laboratoryId: labs[i].laboratoryId,
-                        timeSlotId: --,
-                        seatNumber: j,
-                        date: --,
-                        time: time.toTimeString().slice(0, 5),
-                        isAvailable: true
-                    };
 
-                    timeSlots.push(timeSlot);
+                    const currDate = new Date();
+                    currDate.setDate(new Date().getDate() + day);
+                    currDate.toISOString().split('T')[0]
+
+                    for(let time = new Date(startTime.getTime()); time <= endTime; time.setMinutes(time.getMinutes() + 30))
+                        {
+                            const timeSlot = {
+                                laboratoryId: labs[i].laboratoryId,
+                                seatNumber: j,
+                                date: currDate,
+                                time: time.toLocaleTimeString('en-US', {
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    hour12: false,
+                                    timezone: 'Asia/Singapore'
+                                }),
+                                isAvailable: true
+                            };
+        
+                            timeSlots.push(timeSlot);
+                        }
                 }
             }
         }
 
         await TimeSlot.insertMany(timeSlots);
     }
-}*/
+}
 
 
 
@@ -259,6 +331,7 @@ async function populateUsers() {
 populateLaboratories();
 populateUsers();
 populateReservations();
+populateTimeSlots();
 
 app.listen(3000, () => {
     console.log("Node server running at http://localhost:3000");
