@@ -77,7 +77,7 @@
         // Function to load and display reservations
         async function loadReservations() {
             try {
-                const response = await fetch("/api/reservations");
+                const response = await fetch("/api/reservations/user/101"); // hard coded for now until session implementation
                 const reservations = await response.json();
 
                 const tableBody = document.querySelector("tbody");
@@ -150,10 +150,11 @@
                 let reservationDetails = document.querySelector("#reservation-details");
 
                 // extract necessary details
-                var bookingDate = reservation.bookingDate.split('T')[0].trim(); // Extract only the date part
-                var bookingTime = reservation.bookingDate.split('T')[1].trim(); // Extract only the time part
                 var reservationDate = reservation.reservationDate.split('T')[0].trim(); // Extract only the date part
-
+                var formattedDate = formatDate(new Date(reservation.bookingDate)).split("T");
+                var bookingDate = formattedDate[0];
+                var bookingTime = formattedDate[1];
+            
                 reservationDetails.innerHTML = `
                     <h1 style="text-align: center; padding-top: 30px; padding-bottom: 18px; font-size: 28px;">Reservation Details</h1>
                     <div class="input-wrapper">
@@ -297,6 +298,7 @@
             } catch (error) {
                 console.error("Error confirming deletion:", error);
             }
+
         }
 
         function cancel() {
@@ -307,6 +309,7 @@
         function done(){
             details.classList.remove("open-popup");
             overlay.style.display = "none";
+        
         }
 
         async function edit(reservationId) {
@@ -447,7 +450,14 @@
             activePopup.classList.remove("open-popup");
             overlay.style.display = "none";
 
+
         }
+
+        // For date formatting
+        function formatDate(today) {  
+		    let formattedDate = today.getFullYear().toString() + '-' + (today.getMonth() + 1).toString().padStart(2, 0) + '-' + today.getDate().toString().padStart(2, 0) + 'T' + today.getHours().toString().padStart(2, 0) + ':' + today.getMinutes().toString().padStart(2, 0);
+		    return formattedDate;
+	    }
 
 
     </script>

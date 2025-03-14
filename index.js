@@ -36,6 +36,18 @@ app.get("/api/reservations", async(req,res) => {
     }
 })
 
+// Get reservations of a specific user
+app.get("/api/reservations/user/:userId", async(req,res)=> {
+    try{
+        const userId = parseInt(req.params.userId, 10);
+        const reservations = await Reservation.find({userId});
+        res.json(reservations);
+    } catch(error){
+        res.status(500).json({ message: "Server error", error });
+    }
+})
+
+
 // Get a specific reservation
 app.get("/api/reservations/:id", async(req,res) => {
     try{
@@ -74,6 +86,22 @@ app.patch("/api/reservation/:id", async(req,res) => {
         res.status(500).json({ message: "Server error", error });
     }
 })
+
+// Initial Reservation Population
+async function populateReservations(){
+    const reservationsFound = await Reservation.find();
+    if (reservationsFound.length == 0){
+        const reservations = [
+            { userId: 101, laboratoryRoom: "GK101B", seatNumber: 26, bookingDate: new Date(), reservationDate: new Date(2025, 2, 10), startTime: "7:30 A.M.", endTime: "9:00 A.M." },
+            { userId: 102, laboratoryRoom: "AG1904", seatNumber: 15, bookingDate: new Date(), reservationDate: new Date(2025, 2, 11), startTime: "10:00 A.M.", endTime: "11:30 A.M." },
+            { userId: 103, laboratoryRoom: "GK401A", seatNumber: 32, bookingDate: new Date(), reservationDate: new Date(2025, 2, 12), startTime: "1:00 P.M.", endTime: "2:30 P.M." },
+            { userId: 104, laboratoryRoom: "AG1701", seatNumber: 8, bookingDate: new Date(), reservationDate: new Date(2025, 2, 13), startTime: "3:00 P.M.", endTime: "4:30 P.M." },
+            { userId: 105, laboratoryRoom: "GK102A", seatNumber: 19, bookingDate: new Date(), reservationDate: new Date(2025, 2, 14), startTime: "5:00 P.M.", endTime: "6:30 P.M." }
+        ];
+        
+        await Reservation.insertMany(reservations);        
+    }
+}
 
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "index.html"))); 
 app.get("/signup-page", (req, res) => res.sendFile(path.join(__dirname, "signup-page.html"))); 
@@ -216,6 +244,7 @@ async function populateUsers() {
 
 populateLaboratories();
 populateUsers();
+populateReservations();
 
 app.listen(3000, () => {
     console.log("Node server running at http://localhost:3000");

@@ -23,7 +23,7 @@
     
     <div data-include="navbar-labtech-signedin"></div>
     
-    <h1>Upcoming Reservations</h1>
+    <h1>Your Reservations</h1>
 
     <!-- Reservations  -->
     <div class="reservations">
@@ -38,391 +38,22 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td style="text-align: right;"><input type="radio" name="select-option" class="select-btn"></td>
-                    <td>GK101A</td>
-                    <td>2025-02-16</td>
-                    <td> <span id="start"> 8:30 A.M. </span> - <span id="end"> 9:00 A.M.</span> </td>
-                    <td style="text-align: left;"><img src="img/reservation-details.jpeg" style="height: 25px; cursor: pointer;" onclick="openPopup2()"></td>
-                </tr>
-                <tr>
-                    <td style="text-align: right;"><input type="radio" name="select-option" class="select-btn"></td>
-                    <td>GK203B</td>
-                    <td>2025-02-17</td>
-                    <td> <span id="start"> 10:00 A.M. </span> - <span id="end"> 10:30 P.M.</span> </td>
-                    <td style="text-align: left;"><img src="img/reservation-details.jpeg" style="height: 25px; cursor: pointer;" onclick="openPopup3()"></td>
-                </tr>
-                <tr>
-                    <td style="text-align: right;"><input type="radio" name="select-option" class="select-btn"></td>
-                    <td>GK404B</td>
-                    <td>2025-02-18</td>
-                    <td> <span id="start"> 9:30 A.M. </span> - <span id="end"> 10:00 P.M.</span> </td>
-                    <td style="text-align: left;"><img src="img/reservation-details.jpeg" style="height: 25px; cursor: pointer;" onclick="openPopup4()"></td>
-                </tr>
-                <tr>
-                    <td style="text-align: right;"><input type="radio" name="select-option" class="select-btn"></td>
-                    <td>AG1706</td>
-                    <td>2025-02-19</td>
-                    <td> <span id="start"> 10:30 A.M. </span> - <span id="end"> 12:00 P.M.</span> </td>
-                    <td style="text-align: left;"><img src="img/reservation-details.jpeg" style="height: 25px; cursor: pointer;" onclick="openPopup5()"></td>
-                </tr>
-                <tr>
-                    <td style="text-align: right;"><input type="radio" name="select-option" class="select-btn"></td>
-                    <td>AG1904</td>
-                    <td>2025-02-20</td>
-                    <td> <span id="start"> 7:30 A.M. </span> - <span id="end"> 8:00 A.M.</span> </td>
-                    <td style="text-align: left;"><img src="img/reservation-details.jpeg" style="height: 25px; cursor: pointer;" onclick="openPopup6()"></td>
-                </tr>
+                <!-- Reservations will be inserted here -->
             </tbody>
         </table>
     </div>
-
+    
     <div class="remove-btn-wrapper">
         <button type="button" class="remove-btn" onclick="openPopup1()">Remove Reservation</button>
     </div>
-
+        
     <div id="overlay" class="overlay"></div>
 
     <!-- Reservation Details -->
-    <div class="popup" id="reservation-details-1" name="reservation-details" style="margin-top: 20px; height: 86vh; width: 50%; background-color: #fbfcf6;">
-        <h1 style="text-align: center; padding-top: 30px; padding-bottom: 18px; font-size: 28px;">Reservation Details</h1>
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="student-name">Student's Name:</label>
-            </div>
-            <input type="text" id="lab-room" class="text-field" value="Anja Gonzales" disabled> 
-        </div>
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="lab-room">Laboratory Room:</label>
-            </div>
-            <input type="text" id="lab-room" class="text-field" value="GK101A" disabled> 
-        </div>
-
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="seat-num">Seat Number:</label>
-            </div>
-            <input type="text" id="seat-num" class="text-field" value="1" disabled>
-        </div>
-
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="booking-date">Date of Booking:</label>
-            </div>
-            <input type="text" id="booking-date" class="text-field" value="2025-02-15" disabled>
-        </div>
+    <div class="popup" id="reservation-details" style="margin-top: 20px; height: 86vh; width: 50%; background-color: #fbfcf6;">
         
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="booking-time">Time of Booking:</label>
-            </div>
-            <input type="text" id="booking-time" class="text-field" value="08:39 P.M." disabled>
-        </div>
-
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="reserve-date">Reservation Date:</label>
-            </div>
-            <input type="text" id="reserve-date" class="text-field" value="2025-02-16" disabled>
-        </div>
-
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="start">Start Time:</label>
-            </div>
-            <input type="text" id="start-time" class="text-field" value="8:30 A.M." disabled>
-        </div>
-
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="end">End Time:</label>
-            </div>
-            <input type="text" id="end-time" class="text-field" name="editable" value="9:00 A.M." disabled>
-        </div>
-
-        <div class="footer">
-            <div class="button-wrapper">
-                <button type="edit" class="btn-1"  id="edit-btn" onclick="edit()">Edit Reservation</button>
-            </div>
-
-            <div class="button-wrapper">
-                <button type="done" class="btn-2" id="done-btn" onclick="done()">Done</button>
-            </div>
-        </div>
-    </div> 
-
-    <div class="popup" id="reservation-details-2" name="reservation-details" style="margin-top: 20px; height: 86vh; width: 50%; background-color: #fbfcf6;">
-        <h1 style="text-align: center; padding-top: 30px; padding-bottom: 18px; font-size: 28px;">Reservation Details</h1>
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="student-name">Student's Name:</label>
-            </div>
-            <input type="text" id="lab-room" class="text-field" value="Liana Ho" disabled> 
-        </div>
-
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="lab-room">Laboratory Room:</label>
-            </div>
-            <input type="text" id="lab-room" class="text-field" value="GK203B" disabled> 
-        </div>
-
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="seat-num">Seat Number:</label>
-            </div>
-            <input type="text" id="seat-num" class="text-field" value="2" disabled>
-        </div>
-
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="booking-date">Date of Booking:</label>
-            </div>
-            <input type="text" id="booking-date" class="text-field" value="2025-02-16" disabled>
-        </div>
+        <!-- Reservation details will be inserted here -->
         
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="booking-time">Time of Booking:</label>
-            </div>
-            <input type="text" id="booking-time" class="text-field" value="10:31 A.M." disabled>
-        </div>
-
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="reserve-date">Reservation Date:</label>
-            </div>
-            <input type="text" id="reserve-date" class="text-field" value="2025-02-17" disabled>
-        </div>
-
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="start">Start Time:</label>
-            </div>
-            <input type="text" id="start-time" class="text-field" value="010:00 A.M." disabled>
-        </div>
-
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="end">End Time:</label>
-            </div>
-            <input type="text" id="end-time" class="text-field" name="editable" value="11:00 A.M." disabled>
-        </div>
-
-        <div class="footer">
-            <div class="button-wrapper">
-                <button type="edit" class="btn-1" id="edit-btn" onclick="edit()">Edit Reservation</button>
-            </div>
-
-            <div class="button-wrapper">
-                <button type="done" class="btn-2" id="done-btn" onclick="done()">Done</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="popup" id="reservation-details-3" name="reservation-details" style="margin-top: 20px; height: 86vh; width: 50%; background-color: #fbfcf6;">
-        <h1 style="text-align: center; padding-top: 30px; padding-bottom: 18px; font-size: 28px;">Reservation Details</h1>
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="student-name">Student's Name:</label>
-            </div>
-            <input type="text" id="lab-room" class="text-field" value="Jane Doe" disabled> 
-        </div>
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="lab-room">Laboratory Room:</label>
-            </div>
-            <input type="text" id="lab-room" class="text-field" value="GK404B" disabled> 
-        </div>
-
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="seat-num">Seat Number:</label>
-            </div>
-            <input type="text" id="seat-num" class="text-field" value="3" disabled>
-        </div>
-
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="booking-date">Date of Booking:</label>
-            </div>
-            <input type="text" id="booking-date" class="text-field" value="2025-02-16" disabled>
-        </div>
-        
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="booking-time">Time of Booking:</label>
-            </div>
-            <input type="text" id="booking-time" class="text-field" value="01:43 P.M." disabled>
-        </div>
-
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="reserve-date">Reservation Date:</label>
-            </div>
-            <input type="text" id="reserve-date" class="text-field" value="2025-02-18" disabled>
-        </div>
-
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="start">Start Time:</label>
-            </div>
-            <input type="text" id="start-time" class="text-field" value="9:30 A.M." disabled>
-        </div>
-
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="end">End Time:</label>
-            </div>
-            <input type="text" id="end-time" class="text-field" name="editable" value="10:00 A.M." disabled>
-        </div>
-
-        <div class="footer">
-            <div class="button-wrapper">
-                <button type="edit" class="btn-1"  id="edit-btn" onclick="edit()">Edit Reservation</button>
-            </div>
-
-            <div class="button-wrapper">
-                <button type="done" class="btn-2" id="done-btn" onclick="done()">Done</button>
-            </div>
-        </div>
-    </div> 
-
-    <div class="popup" id="reservation-details-4" name="reservation-details" style="margin-top: 20px; height: 86vh; width: 50%; background-color: #fbfcf6;">
-        <h1 style="text-align: center; padding-top: 30px; padding-bottom: 18px; font-size: 28px;">Reservation Details</h1>
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="student-name">Student's Name:</label>
-            </div>
-            <input type="text" id="lab-room" class="text-field" value="Angelo Rocha" disabled> 
-        </div>
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="lab-room">Laboratory Room:</label>
-            </div>
-            <input type="text" id="lab-room" class="text-field" value="AG1706" disabled> 
-        </div>
-
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="seat-num">Seat Number:</label>
-            </div>
-            <input type="text" id="seat-num" class="text-field" value="4" disabled>
-        </div>
-
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="booking-date">Date of Booking:</label>
-            </div>
-            <input type="text" id="booking-date" class="text-field" value="2025-02-15" disabled>
-        </div>
-        
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="booking-time">Time of Booking:</label>
-            </div>
-            <input type="text" id="booking-time" class="text-field" value="09:02 P.M." disabled>
-        </div>
-
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="reserve-date">Reservation Date:</label>
-            </div>
-            <input type="text" id="reserve-date" class="text-field" value="2025-02-19" disabled>
-        </div>
-
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="start">Start Time:</label>
-            </div>
-            <input type="text" id="start-time" class="text-field" value="10:30 A.M." disabled>
-        </div>
-
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="end">End Time:</label>
-            </div>
-            <input type="text" id="end-time" class="text-field" name="editable" value="12:00 P.M." disabled>
-        </div>
-
-        <div class="footer">
-            <div class="button-wrapper">
-                <button type="edit" class="btn-1"  id="edit-btn" onclick="edit()">Edit Reservation</button>
-            </div>
-
-            <div class="button-wrapper">
-                <button type="done" class="btn-2" id="done-btn" onclick="done()">Done</button>
-            </div>
-        </div>
-    </div> 
-
-    <div class="popup" id="reservation-details-5" name="reservation-details" style="margin-top: 20px; height: 86vh; width: 50%; background-color: #fbfcf6;">
-        <h1 style="text-align: center; padding-top: 30px; padding-bottom: 18px; font-size: 28px;">Reservation Details</h1>
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="student-name">Student's Name:</label>
-            </div>
-            <input type="text" id="lab-room" class="text-field" value="Grass Capote" disabled> 
-        </div>
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="lab-room">Laboratory Room:</label>
-            </div>
-            <input type="text" id="lab-room" class="text-field" value="AG1904" disabled> 
-        </div>
-
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="seat-num">Seat Number:</label>
-            </div>
-            <input type="text" id="seat-num" class="text-field" value="5" disabled>
-        </div>
-
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="booking-date">Date of Booking:</label>
-            </div>
-            <input type="text" id="booking-date" class="text-field" value="2025-02-17" disabled>
-        </div>
-        
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="booking-time">Time of Booking:</label>
-            </div>
-            <input type="text" id="booking-time" class="text-field" value="04:20 P.M." disabled>
-        </div>
-
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="reserve-date">Reservation Date:</label>
-            </div>
-            <input type="text" id="reserve-date" class="text-field" value="2025-02-20" disabled>
-        </div>
-
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="start">Start Time:</label>
-            </div>
-            <input type="text" id="start-time" class="text-field" value="7:30 A.M." disabled>
-        </div>
-
-        <div class="input-wrapper">
-            <div class="label-wrapper">            
-                <label for="end">End Time:</label>
-            </div>
-            <input type="text" id="end-time" class="text-field" name="editable" value="8:00 A.M." disabled>
-        </div>
-
-        <div class="footer">
-            <div class="button-wrapper">
-                <button type="edit" class="btn-1"  id="edit-btn" onclick="edit()">Edit Reservation</button>
-            </div>
-
-            <div class="button-wrapper">
-                <button type="done" class="btn-2" id="done-btn" onclick="done()">Done</button>
-            </div>
-        </div>
     </div> 
 
     <!-- Remove Reservation -->
@@ -442,62 +73,231 @@
     </div>
 
     <script>
+        // Function to load and display reservations
+        async function loadReservations() {
+            try {
+                const response = await fetch("/api/reservations"); 
+                const reservations = await response.json();
+
+                const tableBody = document.querySelector("tbody");
+                tableBody.innerHTML = ""; // Clear existing content
+
+                reservations.forEach(reservation => {
+                    var reservationDate = reservation.reservationDate.split('T')[0].trim(); // Extract only the date part
+
+                    // Create radio button
+                    const radio = document.createElement("input");
+                    radio.type = "radio";
+                    radio.name = "select-option";
+                    radio.classList.add("select-btn");
+                    radio.value = reservation._id; // Assign reservation ID
+
+                    // Create reservation detail icon
+                    const icon = document.createElement("img");
+                    icon.src = "img/reservation-details.jpeg";
+                    icon.style = "height: 25px; cursor: pointer";
+                    icon.dataset.reservationId = reservation._id;
+                    icon.addEventListener("click", function () { 
+                        openPopup2(this.dataset.reservationId);
+                    });  
+                    icon.setAttribute("data-reservationId", reservation._id);
+
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td style="text-align: right;"></td> <!-- Empty cell for radio button -->
+                        <td>${reservation.laboratoryRoom}</td>
+                        <td>${reservationDate}</td>
+                        <td><span id="start"> ${reservation.startTime} </span> - <span id="end"> ${reservation.endTime} </span></td>
+                        <td style="text-align: left;">
+                            <!-- Empty cell for icon -->
+                        </td>
+                    `;
+
+                    // Append the radio button and reservation detail icon
+                    row.children[0].appendChild(radio);
+                    row.children[4].appendChild(icon);
+
+                    tableBody.appendChild(row);
+                });
+
+                let removeButton = document.querySelector(".remove-btn");
+                removeButton.disabled = true;
+
+                // Enable remove button when a radio button is selected
+                function enableRemoveButton() {
+                    removeButton.disabled = false;
+                }
+
+                document.querySelectorAll(".select-btn").forEach(radio => {
+                    radio.addEventListener('change', enableRemoveButton);
+                });
+            } catch (error) {
+                console.error("Error fetching reservations:", error);
+            }
+        }
+
+        // Initial call to load reservations when the page loads
+        document.addEventListener("DOMContentLoaded", () => {
+            loadReservations();
+        });
+
+        async function loadReservationDetails(reservationId) {
+            try {
+                const response = await fetch(`/api/reservations/${reservationId}`, { method: "GET" });
+                const reservation = await response.json();
+
+                let reservationDetails = document.querySelector("#reservation-details");
+
+                // extract necessary details
+                var reservationDate = reservation.reservationDate.split('T')[0].trim(); // Extract only the date part
+                var formattedDate = formatDate(new Date(reservation.bookingDate)).split("T");
+                var bookingDate = formattedDate[0];
+                var bookingTime = formattedDate[1];
+            
+                reservationDetails.innerHTML = `
+                    <h1 style="text-align: center; padding-top: 30px; padding-bottom: 18px; font-size: 28px;">Reservation Details</h1>
+                    <div class="input-wrapper">
+                        <div class="label-wrapper">            
+                            User ID:
+                        </div>
+                        <input type="text" id="user-id" class="text-field" value="${reservation.userId}" data-label="userId" disabled> 
+                    </div>
+                    <div class="input-wrapper">
+                        <div class="label-wrapper">            
+                           Laboratory Room:
+                        </div>
+                        <input type="text" id="lab-room" class="text-field" value="${reservation.laboratoryRoom}" data-label="laboratoryRoom"  disabled> 
+                    </div>
+
+                    <div class="input-wrapper">
+                        <div class="label-wrapper">            
+                            Seat Number:
+                        </div>
+                        <input type="text" id="seat-num" class="text-field" value="${reservation.seatNumber}" data-label="seatNumber"  disabled>
+                    </div>
+
+                    <div class="input-wrapper">
+                        <div class="label-wrapper">            
+                            Date of Booking:
+                        </div>
+                        <input type="text" id="booking-date" class="text-field" value="${bookingDate}" data-label="bookingDate"  disabled>
+                    </div>
+
+                    <div class="input-wrapper">
+                        <div class="label-wrapper">            
+                            Time of Booking:
+                        </div>
+                        <input type="text" id="booking-time" class="text-field" value="${bookingTime}" disabled>
+                    </div>
+
+                    <div class="input-wrapper">
+                        <div class="label-wrapper">            
+                            Reservation Date:
+                        </div>
+                        <input type="text" id="reserve-date" class="text-field" value="${reservationDate}" data-label="reservationDate"  disabled>
+                    </div>
+
+                    <div class="input-wrapper">
+                        <div class="label-wrapper">            
+                            Start Time:
+                        </div>
+                        <input type="text" id="start-time" class="text-field" value="${reservation.startTime}"  data-label="startTime" disabled>
+                    </div>
+
+                    <div class="input-wrapper">
+                        <div class="label-wrapper">            
+                            End Time:
+                        </div>
+                        <input type="text" id="end-time" class="text-field" name="editable" value="${reservation.endTime}" data-label="endTime"  disabled>
+                    </div>
+
+                    <div class="footer">
+                        <div class="button-wrapper">
+                            <button type="button" class="btn-1" id="edit-btn" onclick="edit('${reservationId}')">Edit Reservation</button>
+                        </div>
+
+                        <div class="button-wrapper">
+                            <button type="done" class="btn-2" id="done-btn" onclick="done()">Done</button>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                console.error("Error fetching reservations:", error);
+            }
+        }
+
         let remove= document.getElementById("remove-reservation");
-        let details1= document.getElementById("reservation-details-1");
-        let details2= document.getElementById("reservation-details-2");
-        let details3= document.getElementById("reservation-details-3");
-        let details4= document.getElementById("reservation-details-4");
-        let details5= document.getElementById("reservation-details-5");
-        let details = document.querySelectorAll('[name="reservation-details"]');
+        let details = document.querySelector("#reservation-details");
         let overlay = document.getElementById("overlay");
         let radioButtons = document.querySelectorAll(".select-btn");
         let removeButton = document.querySelector(".remove-btn");
         let editableButtons = document.querySelectorAll('[name="editable-buttons"]');
-
-        removeButton.disabled = true;
-
-        function enableRemoveButton(){
-            removeButton.disabled = false;
-        }
-
-        <!-- Enables remove reservation button when a reservation is selected -->
-        radioButtons.forEach(radio =>{
-            radio.addEventListener('change', enableRemoveButton);
-        });
 
         function openPopup1() {
             remove.classList.add("open-popup");
             overlay.style.display = "block"; 
         }
 
-        function openPopup2(){
-            details1.classList.add("open-popup")
-            overlay.style.display = "block"; 
+        async function openPopup2(reservationId) {
+            if (!reservationId) {
+                console.error("No reservation selected.");
+                return;
+            }
+
+            await loadReservationDetails(reservationId);
+            details.classList.add("open-popup");
+            overlay.style.display = "block";
         }
 
-        function openPopup3(){
-            details2.classList.add("open-popup")
-            overlay.style.display = "block"; 
+
+        // Function to delete a reservation
+        async function deleteReservation() {
+            try {
+                let selectedReservation = null;
+
+                // Find the selected reservation
+                document.querySelectorAll(".select-btn").forEach(radio => {
+                    if (radio.checked) {
+                        selectedReservation = radio.value;  // Get the selected reservation's ID
+                    }
+                });
+
+                // If no reservation is selected, show an alert and exit
+                if (!selectedReservation) {
+                    alert("Please select a reservation to delete.");
+                    return;
+                }
+
+                // Send DELETE request to the server
+                const response = await fetch(`/api/reservations/${selectedReservation}`, { method: 'DELETE' });
+
+                // Check if the deletion was successful
+                if (!response.ok) {
+                    throw new Error("Failed to delete reservation.");
+                }
+
+                console.log("Reservation deleted successfully!");
+            } catch (error) {
+                console.error("Error deleting reservation:", error);
+            }
         }
 
-        function openPopup4(){
-            details3.classList.add("open-popup")
-            overlay.style.display = "block"; 
-        }
+        // Confirm deletion
+        async function confirm() {
+            try {
+                // Close the popup and hide the overlay
+                remove.classList.remove("open-popup");
+                overlay.style.display = "none"; 
 
-        function openPopup5(){
-            details4.classList.add("open-popup")
-            overlay.style.display = "block"; 
-        }
+                // Wait for the deletion to complete before refreshing the list
+                await deleteReservation();
 
-        function openPopup6(){
-            details5.classList.add("open-popup")
-            overlay.style.display = "block"; 
-        }
+                // Refresh the reservations list after deletion
+                loadReservations();
+            } catch (error) {
+                console.error("Error confirming deletion:", error);
+            }
 
-        function confirm() {
-            remove.classList.remove("open-popup");
-            overlay.style.display = "none"; 
         }
 
         function cancel() {
@@ -506,13 +306,13 @@
         }
 
         function done(){
-            details.forEach(details =>{
-                details.classList.remove("open-popup");
-            });
+            details.classList.remove("open-popup");
             overlay.style.display = "none";
+        
         }
 
-        function edit() {
+        async function edit(reservationId) {
+            console.log(reservationId);
             // Find the currently active popup
             let popups = document.querySelectorAll(".popup");
             let activePopup = Array.from(popups).find(popup => 
@@ -524,9 +324,10 @@
 
             editableFields.forEach(inputField => {
                 let select = document.createElement("select"); 
-                select.className = inputField.className; 
+                select.className = inputField.className;
+                select.name = inputField.dataset.label;
 
-                let options = [inputField.value, "08:00 A.M.", "08:30 A.M.", "09:00 A.M.", "09:30 A.M.", "10:00 A.M.", "10:30 A.M.", "11:00 A.M.", "11:30 A.M.", "12:00 P.M."];
+                let options = [inputField.value, "05:00 P.M.", "05:30 P.M.", "06:00 P.M."];
 
                 options.forEach(optionText => {
                     let option = document.createElement("option");
@@ -548,14 +349,13 @@
             let doneButton = activePopup.querySelector("#done-btn");
 
             doneButton.textContent = "Save Changes";
-            doneButton.setAttribute("onclick", "saveChanges()");
+            doneButton.setAttribute("onclick", `saveChanges('${reservationId}')`);
 
             editButton.textContent = "Cancel";
-            editButton.setAttribute("onclick", "cancelChanges()");
+            editButton.setAttribute("onclick", `cancelChanges('${reservationId}')`);
         }
 
-
-        function cancelChanges(){
+        function cancelChanges(reservationId) {
             // Find the currently active popup
             let popups = document.querySelectorAll(".popup");
             let activePopup = Array.from(popups).find(popup => 
@@ -580,14 +380,13 @@
             let doneButton = activePopup.querySelector("#done-btn");
 
             doneButton.textContent = "Done";
-            doneButton.setAttribute("onclick", "saveChanges()");
+            doneButton.setAttribute("onclick", `saveChanges('${reservationId}')`);
 
             editButton.textContent = "Edit Reservation";
-            editButton.setAttribute("onclick", "edit()"); // Reset edit function
+            editButton.setAttribute("onclick", `edit('${reservationId}')`);
         }
 
-
-        function saveChanges(){
+        async function saveChanges(reservationId) {
             // Find the currently active popup
             let popups = document.querySelectorAll(".popup");
             let activePopup = Array.from(popups).find(popup => 
@@ -597,22 +396,46 @@
 
             let editableFields = activePopup.querySelectorAll("select");
 
+            let updateData = {}; // Object to store updated fields
+
             editableFields.forEach(selectField => {
                 let newValue = selectField.value; // Get the selected value
+                let fieldName = selectField.name; 
+
+                updateData[fieldName] = newValue; // Store new value
 
                 let textField = document.createElement("input");
                 textField.className = selectField.className;
-                textField.value = newValue; // Set new value
+                textField.value = newValue;
                 textField.type = "text";
                 textField.name = "editable";
 
-                selectField.replaceWith(textField); // Replace select with input field
+                selectField.replaceWith(textField);
                 textField.disabled = true;
-
-                let endTime = activePopup.querySelector("#end");
-
             });
 
+            // Send the PATCH request with updated values
+            try {
+                let response = await fetch(`/api/reservation/${reservationId}`, {
+                    method: "PATCH",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(updateData),
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed to update reservation");
+                }
+
+                console.log("Reservation updated successfully");
+
+                // Load updated reservation
+                await loadReservations();
+
+            } catch (error) {
+                console.error("Error updating reservation:", error);
+            }
 
             let editButton = activePopup.querySelector("#edit-btn");
             let doneButton = activePopup.querySelector("#done-btn");
@@ -625,8 +448,15 @@
 
             activePopup.classList.remove("open-popup");
             overlay.style.display = "none";
-
         }
+
+        // For date formatting
+        function formatDate(today) {  
+		    let formattedDate = today.getFullYear().toString() + '-' + (today.getMonth() + 1).toString().padStart(2, 0) + '-' + today.getDate().toString().padStart(2, 0) + 'T' + today.getHours().toString().padStart(2, 0) + ':' + today.getMinutes().toString().padStart(2, 0);
+		    return formattedDate;
+	    }
+
+
 
     </script>
 </body>
