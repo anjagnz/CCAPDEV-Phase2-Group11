@@ -223,6 +223,7 @@ cron.schedule('0 0 * * *', async() => {
 
 // !!! WILL CONTINUE AFTER IMPLEMENTING CRON SCHEDULING
 
+/* 
 async function populateTimeSlots() {
     const timeSlotsFound = await TimeSlot.find();
     const labs = await Laboratory.find();
@@ -248,10 +249,11 @@ async function populateTimeSlots() {
                     currDate.toISOString().split('T')[0]
 
                     for(let time = new Date(startTime.getTime()); time <= endTime; time.setMinutes(time.getMinutes() + 30))
-                        {
-                            const timeSlot = {
-                                laboratoryId: labs[i].laboratoryId,
-                                seatNumber: j,
+                {
+                    const timeSlot = {
+                        laboratoryId: labs[i].laboratoryId,
+                        timeSlotId: --,
+                        seatNumber: j,
                                 date: currDate,
                                 time: time.toLocaleTimeString('en-US', {
                                     hour: '2-digit',
@@ -259,10 +261,10 @@ async function populateTimeSlots() {
                                     hour12: false,
                                     timezone: 'Asia/Singapore'
                                 }),
-                                isAvailable: true
-                            };
-        
-                            timeSlots.push(timeSlot);
+                        isAvailable: true
+                    };
+
+                    timeSlots.push(timeSlot);
                         }
                 }
             }
