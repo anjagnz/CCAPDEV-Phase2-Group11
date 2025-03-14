@@ -137,12 +137,13 @@ app.get("/labtech-laboratories", async(req, res) => {
 async function populateReservations(){
     const reservationsFound = await Reservation.find();
     if (reservationsFound.length == 0){
+        // query db for userIds
         const reservations = [
-            { userId: new mongoose.Types.ObjectId("67d3a9fbd6b982b14c8adf6c"), studentName: "Jane", laboratoryRoom: "GK101B", seatNumber: 26, bookingDate: new Date(), reservationDate: new Date(2025, 2, 10), startTime: "7:30 A.M.", endTime: "9:00 A.M." },
-            { userId: new mongoose.Types.ObjectId("67d3a9fbd6b982b14c8adf6d"), laboratoryRoom: "AG1904", seatNumber: 15, bookingDate: new Date(), reservationDate: new Date(2025, 2, 11), startTime: "10:00 A.M.", endTime: "11:30 A.M." },
-            { userId: new mongoose.Types.ObjectId("67d3a9fbd6b982b14c8adf6c"), laboratoryRoom: "GK401A", seatNumber: 32, bookingDate: new Date(), reservationDate: new Date(2025, 2, 12), startTime: "1:00 P.M.", endTime: "2:30 P.M." },
-            { userId: new mongoose.Types.ObjectId("67d3a9fbd6b982b14c8adf6e"), studentName: "Art", laboratoryRoom: "AG1701", seatNumber: 8, bookingDate: new Date(), reservationDate: new Date(2025, 2, 13), startTime: "3:00 P.M.", endTime: "4:30 P.M." },
-            { userId: new mongoose.Types.ObjectId("67d3a9fbd6b982b14c8adf6b"), laboratoryRoom: "GK102A", seatNumber: 19, bookingDate: new Date(), reservationDate: new Date(2025, 2, 14), startTime: "5:00 P.M.", endTime: "6:30 P.M." }
+            { userId: await User.findOne({ lastName: "Ho" })._id, laboratoryRoom: "GK101B", seatNumber: 26, bookingDate: new Date(), reservationDate: new Date(2025, 2, 10), startTime: "7:30 A.M.", endTime: "9:00 A.M." },
+            { userId: await User.findOne({ lastName: "Capote" })._id, laboratoryRoom: "AG1904", seatNumber: 15, bookingDate: new Date(), reservationDate: new Date(2025, 2, 11), startTime: "10:00 A.M.", endTime: "11:30 A.M." },
+            { userId: await User.findOne({ lastName: "Gonzales" })._id, laboratoryRoom: "GK401A", seatNumber: 32, bookingDate: new Date(), reservationDate: new Date(2025, 2, 12), startTime: "1:00 P.M.", endTime: "2:30 P.M." },
+            { userId: await User.findOne({ lastName: "Rocha" })._id, laboratoryRoom: "AG1701", seatNumber: 8, bookingDate: new Date(), reservationDate: new Date(2025, 2, 13), startTime: "3:00 P.M.", endTime: "4:30 P.M." },
+            { userId: await User.findOne({ lastName: "Rocha" })._id, laboratoryRoom: "GK102A", seatNumber: 19, bookingDate: new Date(), reservationDate: new Date(2025, 2, 14), startTime: "5:00 P.M.", endTime: "6:30 P.M." }
         ];
         
         await Reservation.insertMany(reservations);        
@@ -349,7 +350,12 @@ app.post("/signin", async (req,res) => {
                 department: user.department,
                 image: user.image,
             }
-            res.render("student-home", { userData });
+            if (user.type === "Student"){
+                res.render("student-home", { userData });
+            } else{
+                res.render("labtech-home", { userData });
+            }
+
         } else { 
             // user passwords do not match
             res.status(401).json({ error: "Password is incorrect. Please try again" });
@@ -413,10 +419,10 @@ async function populateUsers() {
     if(existingUsers.length === 0) {
         const users = [
             { type: "Student", firstName: "Denise Liana", lastName: "Ho", image:"img/demo_data/sonoda.jpg", email: "denise_liana_ho@dlsu.edu.ph", password: "123", biography: "idk stream tsunami sea yeah", department: "Computer Science" },
-            { type: "Student", firstName: "Anja", lastName: "Gonzales", email: "anja_gonzales@dlsu.edu.ph", password: "234", biography: "i need sleep", department: "Computer Science" },
-            { type: "Student", firstName: "Angelo", lastName: "Rocha", email: "angelo_rocha@dlsu.edu.ph", password: "345", biography: "idk what to put here", department: "Computer Science" },
-            { type: "Student", firstName: "Grass", lastName: "Capote", email: "mary_grace_capote@dlsu.edu.ph", password: "456", biography: "send help", department: "Computer Science" },
-            { type: "Faculty", firstName: "The", lastName: "Goat", email: "the_goat@dlsu.edu.ph", password: "admin", department:"Computer Science" },
+            { type: "Student", firstName: "Anja", lastName: "Gonzales", image:"img/demo_data/ayase.jpg", email: "anja_gonzales@dlsu.edu.ph",  password: "234", biography: "i need sleep", department: "Computer Science" },
+            { type: "Student", firstName: "Angelo", lastName: "Rocha", image:"img/demo_data/nozomi.jpg", email: "angelo_rocha@dlsu.edu.ph", password: "345", biography: "idk what to put here", department: "Computer Science" },
+            { type: "Student", firstName: "Grass", lastName: "Capote", image:"img/demo_data/kousaka.jpg",email: "mary_grace_capote@dlsu.edu.ph", password: "456", biography: "send help", department: "Computer Science" },
+            { type: "Faculty", firstName: "The", lastName: "Goat", image:"img/demo_data/kotori.jpg",email: "the_goat@dlsu.edu.ph", password: "admin", department:"Computer Science" },
         ];
 
         await User.insertMany(users);
