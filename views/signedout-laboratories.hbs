@@ -240,29 +240,6 @@
                     option.text = displayDate;
                     dateSelect.appendChild(option);
                 }
-                
-                // Add our seeded reservation dates (March 15-29, 2025)
-                const seedStartDate = new Date('2025-03-15');
-                const seedEndDate = new Date('2025-03-29');
-                
-                // Add an option group for seeded dates
-                const optgroup = document.createElement('optgroup');
-                optgroup.label = "Demo Data (March 2025)";
-                dateSelect.appendChild(optgroup);
-                
-                for (let date = new Date(seedStartDate); date <= seedEndDate; date.setDate(date.getDate() + 1)) {
-                    const formattedDate = date.toISOString().split('T')[0];
-                    const displayDate = date.toLocaleDateString('en-US', {
-                        weekday: 'long',
-                        month: 'long',
-                        day: 'numeric'
-                    });
-                    
-                    const option = document.createElement('option');
-                    option.value = formattedDate;
-                    option.text = displayDate;
-                    optgroup.appendChild(option);
-                }
             }
 
             // Update the view when lab or date changes
