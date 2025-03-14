@@ -105,12 +105,13 @@
             table{
                 padding: 8px;
                 border-collapse: separate;
+                width: 100%;
             }
 
             th{
                 text-align: center;
                 white-space: nowrap;
-                padding: 20px;
+                padding: 10px;
                 font-weight: 500;
                 font-size: 13px;
             }
@@ -128,7 +129,7 @@
                 font-weight: 400;
                 font-size: 12px;
                 border-radius: 8px;
-                padding: 5px;
+                padding: 10px;
             }
 
             .clickable-seat{
@@ -196,6 +197,22 @@
                 border-radius: 4px;
             }
 
+            #view-button{
+                width: 150px;
+                background-color: var(--secondary-color);
+                color: var(--background-color);
+                font-family: var(--primary-font-fam);
+                font-size: 13px;
+                font-weight: 500;
+                border: none;
+                border-radius: 10px;
+                padding: 10px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                margin-top: 50px;
+                margin-bottom: 10px;
+            }
+
             #reserve-button{
                 width: 250px;
                 background-color: var(--secondary-color);
@@ -212,7 +229,7 @@
                 margin-bottom: 50px;
             }
 
-            #reserve-button:hover{
+            #reserve-button:hover, #view-button:hover{
                 transform: scale(1.05);
             }
 
@@ -260,6 +277,10 @@
                 display: flex;
                 opacity: 1;
             }
+
+            .selected {
+                background-color: #FC9D45;
+            }
         </style>
 
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -279,16 +300,13 @@
             <div class = "dropdown">
                 <span class = "dropdown-header">Laboratory</span>
 
-                <form method = "GET" action = "/labtech-laboratories">
-                    <select name = "labs" id = "labs" onchange = "this.form.submit()">
-                        <option value = "" disabled selected>Select a Laboratory</option>
-                        {{#each labs}}
-                            <option value="{{this._id}}"
-                                {{#equal this._id ../selectedLabId}}selected = "selected"{{/equal}}
-                            >{{this.laboratoryName}} {{this._id}}</option>
-                        {{/each}}
-                    </select>
-                </form>
+                <select name = "labs" id = "labs">
+                    <option value = "" disabled selected>Select a Laboratory</option>
+                    {{#each labs}}
+                        <option value="{{this._id}}" data-capacity = {{this.capacity}}>{{this.laboratoryName}}</option>
+                    {{/each}}
+                </select>
+
             </div>
 
             
@@ -302,6 +320,8 @@
                     {{/each}}
                 </select>
             </div>
+
+            <button id = "view-button">View Slots</button>
 
             <div class = "popup2" id = "popup-frame-1">
                 <div class = "popup-box">
@@ -347,7 +367,6 @@
                 <span id = "chart-header">Slot Availability</span>
 
                 <div id = "chart-body">
-                    {{#if capacity}}
                     <table id = "slot-chart">
                         <thead>
                             <tr>
@@ -360,23 +379,10 @@
                             </tr>
                         </thead>
 
-                        <tbody>
-                            {{#each range 1 capacity}}
-                            <tr>
-                                <td>Seat {{this}}</td>
-                                {{#each ../timeSlots}}
-                                    <td>
-                                        <button class = "clickable-seat"
-                                            seat-number = "{{@../index}}"
-                                            seat-time = "{{this}}">
-                                        </button>
-                                    </td>
-                                {{/each}}
-                            </tr>
-                            {{/each}}
+                        <tbody id = "timetable">
+                            
                         </tbody>
                     </table>
-                    {{/if}}
                 </div>
 
             </div>
@@ -441,9 +447,68 @@
 
         </div>
 
-        <!-- On Click Listener -->
+        <!-- View Button -->
 
         <script>
+            document.getElementById("view-button").addEventListener("click", function() {
+                const selectedLab = document.getElementById("labs").options[document.getElementById("labs").selectedIndex]
+                console.log(selectedLab);
+
+                const selectedDate = document.getElementById("dates").value;
+                const capacity = selectedLab.getAttribute("data-capacity");
+
+                const timeSlots = [
+                    "07:30 A.M.", "08:00 A.M.", "08:30 A.M.", "09:00 A.M.",
+                    "09:30 A.M.", "10:00 A.M.", "10:30 A.M.", "11:00 A.M.",
+                    "11:30 A.M.", "12:00 P.M.", "12:30 P.M.", "01:00 P.M.",
+                    "01:30 P.M.", "02:00 P.M.", "02:30 P.M.", "03:00 P.M.",
+                    "03:30 P.M.", "04:00 P.M.", "04:30 P.M.", "05:00 P.M.",
+                    "05:30 P.M.", "06:00 P.M.", "06:30 P.M.", "07:00 P.M.",
+                    "07:30 P.M.", "08:00 P.M.", "08:30 P.M.", "09:00 P.M."
+                ];
+
+                const timetable = document.getElementById("timetable");
+
+                if(!capacity || !selectedDate) {
+                    timetable.innerHTML = "<p>No laboratory selected.</p>";
+                    return;
+                }
+
+                let timetableHTML = "";
+
+                for (let seat = 1; seat <= capacity; seat++) {
+                    timetableHTML += `<tr><td>Seat ${seat}</td>`;
+                    timeSlots.forEach((time, index) => {
+                        timetableHTML +=
+                            `<td>
+                                <button class = "clickable-seat"
+                                    seat-number = "${seat}"
+                                    seat-time = "${time}">
+                                </button>
+                            </td>`;
+                    });
+                    timetableHTML += `</tr>`;
+                }
+
+                timetable.innerHTML = timetableHTML;
+                
+                const availableSeats = document.querySelectorAll(".clickable-seat");
+                availableSeats.forEach(function(button) {
+                    button.addEventListener("click", function() {
+                        console.log("Clicked button");
+                        this.classList.toggle("clicked");
+
+                        const seatNumber = this.getAttribute("seat-number");
+                        const seatTime = this.getAttribute("seat-time");
+                    })
+                })
+            })
+        </script>
+
+        <!-- Available Seats -->
+
+        <script>
+            
             var seats = document.getElementsByClassName('clickable-seat');
 
             for(var i = 0; i < seats.length; i++) {
