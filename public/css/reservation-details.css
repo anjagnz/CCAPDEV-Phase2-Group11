@@ -70,15 +70,19 @@ label{
     color: var(--secondary-color);
 }
 .footer{
-    padding-top: 20px;
+    padding-top: 8px;
     padding-bottom: 20px;
     text-align: right;
-    
 }
 
-.button-wrapper{
+.button-wrapper1{
     display: inline;
-    padding-right: 27px;    
+    padding-right: 20px;    
+}
+
+.button-wrapper2{
+    display: inline;
+    padding-right: 0px;    
 }
 
 .btn-1{

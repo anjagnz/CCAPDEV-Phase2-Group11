@@ -293,7 +293,7 @@
                 const popup = document.getElementById(popupId);
                 popup.classList.toggle('show');
             }
-
+            
             let confirmPopup = document.getElementById("confirm-popup");
             let overlay = document.getElementById("overlay");
 
@@ -312,7 +312,7 @@
                 }
 
                 confirmPopup.classList.add("open-popup");
-                overlay.classList.add("active");
+                overlay.style.display = "block";
             }
 
             function submitReservation() {
@@ -324,10 +324,10 @@
                 const selectedSeat = document.querySelector('.selected-seat');
                 if (!selectedSeat) {
                     alert("Please select a seat first!");
-                    confirmPopup.classList.remove("open-popup");
-                    overlay.classList.remove("active");
                     return;
                 }
+                
+                confirmPopup.classList.remove("open-popup");
                 
                 const seatNumber = selectedSeat.getAttribute('data-seat-number');
                 const startTime = selectedSeat.getAttribute('data-time-slot');
@@ -336,8 +336,7 @@
                 // Validate that all required fields are selected
                 if (!lab || !date || !endTime || !seatNumber || !startTime) {
                     alert("Please select a laboratory, date, end time, and seat before reserving.");
-                    confirmPopup.classList.remove("open-popup");
-                    overlay.classList.remove("active");
+                    hideConfirmPopup();
                     return;
                 }
 
@@ -357,22 +356,20 @@
                             // Submit the form
                             document.getElementById("reservationForm").submit();
                         } else {
-                            alert('This seat is no longer available. Please select another seat or time slot.');
-                            confirmPopup.classList.remove("open-popup");
-                            overlay.classList.remove("active");
-                        }
+                            setTimeout(() => {
+                                alert('This seat is no longer available. Please select another seat or time slot.');
+                                overlay.style.display = "none";  
+                            }, 0);
+                        } 
                     })
                     .catch(error => {
                         console.error('Error checking seat availability:', error);
                         alert('Failed to check seat availability. Please try again.');
-                        confirmPopup.classList.remove("open-popup");
-                        overlay.classList.remove("active");
                     });
             }
 
             function cancel(){
-                confirmPopup.classList.remove("open-popup");
-                overlay.classList.remove("active");
+                hideConfirmPopup();
             }
 
             // Generate the next 7 days dynamically
@@ -633,6 +630,13 @@
                     }
                 }
             }
+
+            // Function to hide the overlay and confirm popup
+            function hideConfirmPopup() {
+                confirmPopup.classList.remove("open-popup");
+                overlay.style.display = "none";            
+            }
+
         </script>
     </body>
 </html>

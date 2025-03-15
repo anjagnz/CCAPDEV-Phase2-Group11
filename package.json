@@ -18,7 +18,7 @@
     "url": "https://github.com/anjagnz/CCAPDEV-S16/issues"
   },
   "homepage": "https://github.com/anjagnz/CCAPDEV-S16#readme",
-  "description": "",
+  "description": "CCAPDEV - S16 (Capote, Gonzales Ho, Rocha)",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.3",
@@ -28,6 +28,7 @@
     "hbs": "^4.2.0",
     "mongoose": "^8.12.1",
     "node-cron": "^3.0.3",
-    "nodemon": "^3.1.9"
+    "nodemon": "^3.1.9",
+    "path": "^0.12.7"
   }
 }

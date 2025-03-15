@@ -104,11 +104,11 @@
             </div>
 
             <div class="footer">
-                <div class="button-wrapper">
+                <div class="button-wrapper1">
                     <button type="button" class="btn-1" id="edit-btn">Edit Reservation</button>
                 </div>
 
-                <div class="button-wrapper">
+                <div class="button-wrapper2">
                     <button type="done" class="btn-2" id="done-btn" onclick="done()">Done</button>
                 </div>
             </div>
@@ -213,7 +213,7 @@
 
         async function loadReservationDetails(reservationId) {
             try {
-                const response = await fetch(`/api/reservations/${reservationId}`, { method: "GET" });
+                const response = await fetch(`/api/reservation/${reservationId}`, { method: "GET" });
                 const reservation = await response.json();
 
                 // Extract necessary details
@@ -324,7 +324,7 @@
         function done(){
             details.classList.remove("open-popup");
             overlay.style.display = "none";
-        
+            details.scrollTop = 0;
         }
 
         async function edit(reservationId) {
@@ -467,6 +467,8 @@
             // Close the popup
             details.classList.remove("open-popup");
             overlay.style.display = "none";
+            details.scrollTop = 0;
+
         }
 
         // For date formatting
