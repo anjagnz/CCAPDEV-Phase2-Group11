@@ -529,6 +529,46 @@ app.get("/profile-:section", (req, res) => {
     res.redirect(`/user-profile${hash}`);
 });
 
+// User Profiles
+
+app.get("/profile/:id", async (req, res) => {
+    try {
+        console.log(`Fetching user with ID: ${req.params.id}`);
+        
+        // Try to find the user in the User first
+        let user = await User.findById(req.params.id);
+        
+        // If not found in User, try LabTech
+        if (!user) {
+            user = await LabTech.findById(req.params.id);
+        }
+        
+        if (!user) {
+            console.log(`User not found with ID: ${req.params.id}`);
+            return res.status(404).json({ message: "User not found" });
+        }
+        
+        // Return user data without sensitive information
+        const userData = {
+            _id: user._id,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            image: user.image,
+            email: user.email,
+            biography: user.biography,
+            department: user.department,
+            type: user.type
+        };
+        
+        res.render("popup-profile", {userData});
+
+        console.log(`Found user: ${JSON.stringify(userData)}`);
+    } catch (error) {
+        console.error(`Error finding user: ${error.message}`);
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+})
+
 // Labtech Profile Section Routes
 app.get("/labtech-profile-:section", (req, res) => {
     const section = req.params.section;

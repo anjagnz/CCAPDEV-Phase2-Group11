@@ -43,7 +43,7 @@
             }
             
             .taken-seat {
-                background-color: #f44336;
+                background-color: #FF7878;
                 color: white;
                 border: none;
                 padding: 10px;
@@ -52,7 +52,7 @@
                 display: inline-block;
                 font-size: 16px;
                 margin: 4px 2px;
-                cursor: not-allowed;
+                cursor: pointer;
                 border-radius: 5px;
             }
             
@@ -71,7 +71,7 @@
             }
             
             .my-booking-seat {
-                background-color: #9C27B0;
+                background-color: #23c686;
                 color: white;
                 border: none;
                 padding: 10px;
@@ -139,6 +139,7 @@
             <button id = "view-button">View Slots</button>
 
             {{!-- Dynamic popups for reservations --}}
+            {{!--
             {{#each reservations}}
             <div class="popup2" id="popup-frame-{{@index}}">
                 <div class="popup-box">
@@ -146,12 +147,13 @@
                     {{#if this.isAnonymous}}
                         <span class="user-name">Anonymous Reservation</span>
                     {{else}}
-                        <img class="user-img" src="{{this.user.profilePicture}}" onclick="location.href='/profile/{{this.user._id}}'"></img>
-                        <span class="user-name">{{#if this.isCurrentUser}}Your Reservation{{else}}{{this.user.name}}{{/if}}</span>
+                        <img class="user-img" src="{{this.userId.image}}" onclick="location.href='/profile/{{this.userId._id}}'"></img>
+                        <span class="user-name">{{#if this.isCurrentUser}}Your Reservation{{else}}{{this.userId.name}}{{/if}}</span>
                     {{/if}}
                 </div>
             </div>
             {{/each}}
+            --}}
 
             <div id="chart">
                 <span id="chart-header">Slot Availability</span>
@@ -224,6 +226,30 @@
         <!-- View Button -->
 
         <script>
+
+            function isTimeInRange(time, startTime, endTime) {
+                const toMinutes = (t) => {
+                    const match = t.match(/(\d+):(\d+)\s+(A\.M\.|P\.M\.)/);
+                    if (!match) return 0;
+                    
+                    let [_, hour, minute, period] = match;
+                    hour = parseInt(hour);
+                    minute = parseInt(minute);
+                    
+                    let totalMinutes = hour * 60 + minute;
+                    
+                    if (period === "P.M." && hour !== 12) totalMinutes += 12 * 60;
+                    if (period === "A.M." && hour === 12) totalMinutes = minute;        
+                    return totalMinutes;
+                };
+
+                const currentTime = toMinutes(time);
+                const start = toMinutes(startTime);
+                const end = toMinutes(endTime);
+
+                return currentTime >= start && currentTime < end;
+            }
+
             document.getElementById("view-button").addEventListener("click", function()
             {
                 const selectedLab = document.getElementById("labs").options[document.getElementById("labs").selectedIndex]
@@ -231,6 +257,7 @@
 
                 const selectedDate = document.getElementById("dates").value;
                 const capacity = selectedLab.getAttribute("data-capacity");
+                const userId = localStorage.getItem('userId');
 
                 const timeSlots = [
                     "07:30 A.M.", "08:00 A.M.", "08:30 A.M.", "09:00 A.M.",
@@ -239,7 +266,7 @@
                     "01:30 P.M.", "02:00 P.M.", "02:30 P.M.", "03:00 P.M.",
                     "03:30 P.M.", "04:00 P.M.", "04:30 P.M.", "05:00 P.M.",
                     "05:30 P.M.", "06:00 P.M.", "06:30 P.M.", "07:00 P.M.",
-                    "07:30 P.M.", "08:00 P.M.", "08:30 P.M.", "09:00 P.M."
+                    "07:30 P.M.", "08:00 P.M.", "08:30 P.M."
                 ];
 
                 const timetable = document.getElementById("timetable");
@@ -249,37 +276,84 @@
                     return;
                 }
 
-                let timetableHTML = "";
+                let reservations = [];
+
+                fetch(`/api/reservations/lab/${selectedLab.value}/date/${selectedDate}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const reservations = data.reservations || [];
+
+                        createReservationPopups(reservations);
+
+                        let timetableHTML = "";
                 
-                timetableHTML += `<th id = "seat-header">Seat</th>`;
+                        timetableHTML += `<th id = "seat-header">Seat</th>`;
 
-                timeSlots.forEach((time) => {
-                    timetableHTML +=
-                        `<div id = "time-header">
-                            <th>${time}</th>
-                        </div>`                    
-                });
+                        timeSlots.forEach((time) => {
+                            timetableHTML +=
+                                `<div id = "time-header">
+                                    <th>${time}</th>
+                                </div>`                    
+                        });
 
-                for (let seat = 1; seat <= capacity; seat++) {
-                    timetableHTML += `<tr><td>Seat ${seat}</td>`;
-                    timeSlots.forEach((time, index) => {
-                        timetableHTML +=
-                            `<td>
-                                <button class = "clickable-seat"
-                                    seat-number = "${seat}"
-                                    seat-time = "${time}">
-                                </button>
-                            </td>`;
+                        for (let seat = 1; seat <= capacity; seat++) {
+                            timetableHTML += `<tr><td>Seat ${seat}</td>`;
+                            timeSlots.forEach((time, index) => {
+                                const matchingReservation = reservations.find(
+                                reservation => reservation.seatNumber === seat && isTimeInRange(time, reservation.startTime, reservation.endTime)
+                                );
+
+                                let seatClass = "clickable-seat";
+                                let popupId = "";
+
+                                if(matchingReservation) {
+                                    if(matchingReservation.userId._id.toString() === userId) {
+                                        seatClass = "my-booking-seat";
+                                    } else {
+                                        seatClass = "taken-seat";
+                                        
+                                        const reservationIndex = reservations.findIndex(reservation => 
+                                            reservation._id === matchingReservation._id || 
+                                            (reservation.seatNumber === matchingReservation.seatNumber && 
+                                            reservation.startTime === matchingReservation.startTime && 
+                                            reservation.userId._id === matchingReservation.userId._id)
+                                        );
+
+                                        popupId = `popup-frame-${reservationIndex}`;
+                                    }
+                                }
+
+                                timetableHTML +=
+                                    `<td>
+                                        <button class = "${seatClass}"
+                                            seat-number = "${seat}"
+                                            seat-time = "${time}"
+                                            data-popup-id = "${popupId}">
+                                        </button>
+                                    </td>`;
+                            });
+                            timetableHTML += `</tr>`;
+                        }
+
+                        timetable.innerHTML = timetableHTML;
+
+                        document.querySelectorAll(".clickable-seat").forEach(seat => {
+                            seat.addEventListener("click", handleSeatClick)
+                        });
+
+                        document.querySelectorAll(".taken-seat").forEach(seat => {
+                            seat.addEventListener("click", function() {
+                                const popupId = seat.getAttribute("data-popup-id");
+                                if(popupId) {
+                                    togglePopup(popupId);
+                                }
+                            });
+                        });
+                    })
+                    .catch(error => {
+                        console.error("Error fetching reservations: ", error);
                     });
-                    timetableHTML += `</tr>`;
-                }
-
-                timetable.innerHTML = timetableHTML;
-
-                document.querySelectorAll(".clickable-seat").forEach(seat => {
-                    seat.addEventListener("click", handleSeatClick)
-                });
-            })
+            });
 
             function generateValidEndTimes(selectedSeat) {
                 const seatNumber = selectedSeat.getAttribute("seat-number");
@@ -317,7 +391,7 @@
                         if (data.reservations && data.reservations.length > 0) {
                             
                             const seatReservations = data.reservations.filter(res =>
-                                res.seatNumber === seatNumber &&
+                                res.seatNumber.toString() === seatNumber.toString() &&
                                 timeSlots.indexOf(res.startTime) > startIndex
                             );
 
@@ -354,6 +428,87 @@
                 });
             }
         
+            document.getElementById("endtimes").addEventListener("change", function() {
+
+                const timeSlots = [
+                    "07:30 A.M.", "08:00 A.M.", "08:30 A.M.", "09:00 A.M.",
+                    "09:30 A.M.", "10:00 A.M.", "10:30 A.M.", "11:00 A.M.",
+                    "11:30 A.M.", "12:00 P.M.", "12:30 P.M.", "01:00 P.M.",
+                    "01:30 P.M.", "02:00 P.M.", "02:30 P.M.", "03:00 P.M.",
+                    "03:30 P.M.", "04:00 P.M.", "04:30 P.M.", "05:00 P.M.",
+                    "05:30 P.M.", "06:00 P.M.", "06:30 P.M.", "07:00 P.M.",
+                    "07:30 P.M.", "08:00 P.M.", "08:30 P.M.", "09:00 P.M."
+                ];
+
+                const selectedEndTime = this.value;
+                const selectedSeat = document.querySelector(".selected-seat");
+                const selectedStartTime = selectedSeat.getAttribute("seat-time");
+
+                const startIndex = timeSlots.indexOf(selectedStartTime);
+                const endIndex = timeSlots.indexOf(selectedEndTime);
+
+                if(startIndex === -1 || endIndex === -1) {
+                    console.error("Invalid time range.");
+                    return;
+                }
+
+                document.querySelectorAll(`[seat-number="${selectedSeat.getAttribute("seat-number")}"]`).forEach(seat => {
+                    const seatTime = seat.getAttribute("seat-time");
+                    const seatIndex = timeSlots.indexOf(seatTime);
+
+                    if(seatIndex >= startIndex && seatIndex < endIndex)
+                    {
+                        seat.classList.add("selected-seat");
+                    } else {
+                        seat.classList.remove("selected-seat");
+                    }
+                })
+            })
+
+            function createReservationPopups(reservations) {
+                document.querySelectorAll(".popup2").forEach(popup => {
+                    popup.remove();
+                });
+
+                const frameContainer = document.querySelector(".frame");
+                reservations.forEach((reservation, index) => {
+                    const popupDiv = document.createElement("div");
+                    popupDiv.className = "popup2";
+                    popupDiv.id = `popup-frame-${index}`;
+                    
+                    const popupBox = document.createElement("div");
+                    popupBox.className = "popup-box";
+                    
+                    const timeSpan = document.createElement("span");
+                    timeSpan.className = "popup-header";
+                    timeSpan.textContent = `${reservation.startTime} - ${reservation.endTime}`;
+                    popupBox.appendChild(timeSpan);
+                    
+                    if (reservation.isAnonymous) {
+                        const nameSpan = document.createElement("span");
+                        nameSpan.className = "user-name";
+                        nameSpan.textContent = "Anonymous Reservation";
+                        popupBox.appendChild(nameSpan);
+                    } else {
+                        const userImg = document.createElement("img");
+                        userImg.className = "user-img";
+                        userImg.src = reservation.userId.image;
+                        userImg.onclick = function() {
+                            window.location.href = `/profile/${reservation.userId._id}`;
+                        };
+                        popupBox.appendChild(userImg);
+                        
+                        const nameSpan = document.createElement("span");
+                        nameSpan.className = "user-name";
+                        nameSpan.textContent = reservation.isCurrentUser ? "Your Reservation" : reservation.userId.firstName + " " + reservation.userId.lastName;
+                        popupBox.appendChild(nameSpan);
+                    }
+                    
+                    popupDiv.appendChild(popupBox);
+                    frameContainer.appendChild(popupDiv);
+                });
+            }
+
             function togglePopup(popupId) {
                 document.querySelectorAll(".popup2").forEach(popup => {
                     if(popup.id != popupId) {
@@ -617,6 +772,7 @@
                     updateSeatStatus();
                 }
                 
+                /*
                 // Then update every 10 seconds
                 setInterval(function() {
                     const lab = document.getElementById('labs').value;
@@ -626,7 +782,7 @@
                         date !== "" && date !== "disabled selected") {
                         updateSeatStatus();
                     }
-                }, 10000); // 10 seconds
+                }, 10000); // 10 seconds*/
             }
             
             // Call restoreSelections when the page loads
