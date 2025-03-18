@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const UserModel = require('./models/User');
+const User = require('./models/User');
 const Laboratory = require('./models/Laboratory');
 const Reservation = require('./models/Reservation');
 
@@ -68,7 +68,7 @@ const seedReservations = async () => {
         console.log('Previous reservations cleared');
         
         // Get all users and labs
-        const users = await UserModel.find({});
+        const users = await User.find({});
         const labs = await Laboratory.find({});
         
         if (users.length === 0) {

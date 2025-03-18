@@ -140,9 +140,18 @@
 
                 // check if inputs are valid
                 if (response.ok) {
-                    // Instead of form.submit() which would cause an infinite loop,
-                    // redirect the user directly
-                    window.location.href = "/signin-page";
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        // Store user info in localStorage if needed
+                        localStorage.setItem('userId', data.userId);
+                        localStorage.setItem('isLabTech', data.isLabTech);
+                        
+                        // Redirect to the appropriate page
+                        window.location.href = data.redirect;
+                    } else {
+                        error.textContent = data.error || "An unexpected error occurred.";
+                    }
                 } else {
                     // Show error from server
                     const data = await response.json();
@@ -167,21 +176,6 @@
 
                 $('#faculty').hide();
             });
-        </script>
-
-        <script>
-            // TODO: do faculty / labtech shit
-            function isFaculty() {
-                let selected = document.querySelector('input[name="type"]:checked');
-
-                if(selected.value === "Faculty") {
-                    window.location.href = "/labtech-home";
-                }
-                else {
-                    window.location.href = "/student-home";
-                }
-            }
-        </script>
-        
+        </script>        
     </body>
 </html>

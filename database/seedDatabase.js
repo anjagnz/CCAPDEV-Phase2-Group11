@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
-const UserModel = require('./models/User');
-const LabTechModel = require('./models/Labtech');
+const User = require('./models/User');
+const LabTech = require('./models/Labtech');
 const Laboratory = require('./models/Laboratory');
 const TimeSlot = require('./models/TimeSlot');
 
@@ -157,19 +157,19 @@ const createDate = (day) => {
 const seedDatabase = async () => {
     try {
         // Clear existing data
-        await UserModel.deleteMany({});
-        await LabTechModel.deleteMany({});
+        await User.deleteMany({});
+        await LabTech.deleteMany({});
         await Laboratory.deleteMany({});
         await TimeSlot.deleteMany({});
         
         console.log('Previous data cleared');
 
         // Insert demo students
-        await UserModel.insertMany(demoStudents);
+        await User.insertMany(demoStudents);
         console.log('Demo students added');
 
         // Insert demo lab techs
-        await LabTechModel.insertMany(demoLabTechs);
+        await LabTech.insertMany(demoLabTechs);
         console.log('Demo lab technicians added');
 
         // Insert demo laboratories

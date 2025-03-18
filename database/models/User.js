@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 const PostSchema = new mongoose.Schema({
-    type: { type: String, enum: ['Student', 'Faculty'], required: true },
+    type: { type: String, default: "Student", required: true },
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     image: { type: String, default: "img/default-profile.png" },

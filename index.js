@@ -17,13 +17,13 @@ app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "views"));
 
 // Check if demo profiles exist, if not, seed the database
-const UserModel = require('./database/models/User');
-const LabTechModel = require('./database/models/Labtech');
+const User = require('./database/models/User');
+const LabTech = require('./database/models/Labtech');
 
 const checkAndSeedDatabase = async () => {
     try {
-      const userCount = await UserModel.countDocuments();
-      const labTechCount = await LabTechModel.countDocuments();
+      const userCount = await User.countDocuments();
+      const labTechCount = await LabTech.countDocuments();
 
         // We'll use require to run the seed script directly
         require('./database/seedDatabase');
@@ -113,13 +113,13 @@ app.get("/api/user/details/:id", async (req, res) => {
     try {
         console.log(`Fetching detailed user info with ID: ${req.params.id}`);
         
-        // Try to find the user in the UserModel first
-        let user = await UserModel.findById(req.params.id);
+        // Try to find the user in the User first
+        let user = await User.findById(req.params.id);
         let isLabTech = false;
         
-        // If not found in UserModel, try LabTechModel
+        // If not found in User, try LabTech
         if (!user) {
-            user = await LabTechModel.findById(req.params.id);
+            user = await LabTech.findById(req.params.id);
             isLabTech = true;
         }
         
@@ -153,12 +153,12 @@ app.get("/api/user/:id", async (req, res) => {
     try {
         console.log(`Fetching user with ID: ${req.params.id}`);
         
-        // Try to find the user in the UserModel first
-        let user = await UserModel.findById(req.params.id);
+        // Try to find the user in the User first
+        let user = await User.findById(req.params.id);
         
-        // If not found in UserModel, try LabTechModel
+        // If not found in User, try LabTech
         if (!user) {
-            user = await LabTechModel.findById(req.params.id);
+            user = await LabTech.findById(req.params.id);
         }
         
         if (!user) {
@@ -200,11 +200,11 @@ app.put("/api/user/update/:id", async (req, res) => {
         console.log(`Updating user with ID: ${req.params.id}`, req.body);
         
         // Check which model the user belongs to
-        let user = await UserModel.findById(req.params.id);
+        let user = await User.findById(req.params.id);
         let isLabTech = false;
         
         if (!user) {
-            user = await LabTechModel.findById(req.params.id);
+            user = await LabTech.findById(req.params.id);
             isLabTech = true;
             
             if (!user) {
@@ -314,12 +314,12 @@ app.delete("/api/user/:id", async (req, res) => {
         
         console.log(`Attempting to delete user account with ID: ${userId}`);
         
-        // Try to find the user in the UserModel first
-        let user = await UserModel.findById(userId);
+        // Try to find the user in the User first
+        let user = await User.findById(userId);
         let isLabTech = false;
         
         if (!user) {
-            user = await LabTechModel.findById(userId);
+            user = await LabTech.findById(userId);
             isLabTech = true;
             
             if (!user) {
@@ -339,9 +339,9 @@ app.delete("/api/user/:id", async (req, res) => {
         
         // Delete the user account
         if (isLabTech) {
-            await LabTechModel.findByIdAndDelete(userId);
+            await LabTech.findByIdAndDelete(userId);
         } else {
-            await UserModel.findByIdAndDelete(userId);
+            await User.findByIdAndDelete(userId);
         }
         
         console.log(`Successfully deleted user account with ID: ${userId}`);
@@ -371,8 +371,10 @@ app.get("/signup-page", (req, res) => res.sendFile(path.join(__dirname, "signup-
 // Handle sign-up form submission
 app.post("/signup", async (req, res) => {
     try {
-        const { firstName, lastName, email, newPass, confirmPass, type } = req.body;
+        let { firstName, lastName, email, newPass, confirmPass, type } = req.body;
         
+        email = email.toLowerCase();
+
         console.log("Received sign-up request:", { firstName, lastName, email, type });
         
         // Validate input
@@ -386,8 +388,8 @@ app.post("/signup", async (req, res) => {
         }
         
         // Check if email is already in use
-        const existingUser = await UserModel.findOne({ email });
-        const existingLabTech = await LabTechModel.findOne({ email });
+        const existingUser = await User.findOne({ email });
+        const existingLabTech = await LabTech.findOne({ email });
         
         if (existingUser || existingLabTech) {
             return res.status(400).json({ error: "Email is already in use" });
@@ -395,47 +397,57 @@ app.post("/signup", async (req, res) => {
         
         // Create new user based on account type
         if (type === "Student") {
-            const newUser = new UserModel({
+            const newUser = new User({
                 firstName,
                 lastName,
                 email,
-                password: newPass, // Using plain text as per user preference
-                image: '/img/default-profile.png', // Changed from profilePicture to image to match model
-                department: '',
-                biography: '',
+                password: newPass,
                 type: 'Student'
             });
             
             await newUser.save();
             console.log("New student user created:", newUser._id);
-            
-            // Redirect to login page
-            res.redirect("/signin-page");
+                     
+            // Send success response with user info
+            res.json({
+                success: true,
+                userId: newUser._id,
+                isLabTech: false,
+                redirect: "/student-home" 
+            });
         } else if (type === "Faculty") {
             const facultyCode = req.body.facultyCode;
+            
+            // Faculty code is blank
+            if (!facultyCode) {
+                return res.status(400).json({ error: "Please enter a faculty code to proceed" });
+            }
             
             // Verify faculty code (for demo: i-am-faculty)
             if (facultyCode !== "i-am-faculty") {
                 return res.status(400).json({ error: "Invalid faculty code" });
             }
-            
-            const newLabTech = new LabTechModel({
+
+            const newLabTech = new LabTech({
                 firstName,
                 lastName,
                 email,
-                password: newPass, // Using plain text as per user preference
-                image: '/img/default-profile.png', // Changed from profilePicture to image to match model
-                department: '',
-                biography: '',
+                password: newPass,
                 type: 'Faculty',
                 laboratories: [] // Adding the laboratories array field
             });
             
             await newLabTech.save();
             console.log("New lab tech user created:", newLabTech._id);
-            
-            // Redirect to login page
-            res.redirect("/signin-page");
+               
+            // Send success response with user info
+            res.json({
+                success: true,
+                userId: newLabTech._id,
+                isLabTech: true,
+                redirect: "/labtech-home" 
+            });
+
         } else {
             return res.status(400).json({ error: "Invalid account type" });
         }
@@ -452,7 +464,9 @@ app.get("/signin-page", (req, res) => res.sendFile(path.join(__dirname, "signin-
 // Handle sign-in form submission
 app.post("/signin", async (req, res) => {
     try {
-        const { email, password } = req.body;
+        let { email, password } = req.body;
+        email = email.toLowerCase();
+
         console.log("Received sign-in request for email:", email);
         
         // Validate input
@@ -460,18 +474,18 @@ app.post("/signin", async (req, res) => {
             return res.status(400).json({ error: "Email and password are required" });
         }
         
-        // Try to find the user in the UserModel first
+        // Try to find the user in the User first
         if (mongoose.connection.readyState !== 1) {
             console.error("❌ Database not connected. Cannot process sign-in request.");
             return res.status(500).json({ error: "Database connection lost. Please try again later." });
         }
 
-        let user = await UserModel.findOne({ email });
+        let user = await User.findOne({ email });
         let isLabTech = false;
 
         if (!user) {
-            // If not found in UserModel, try LabTechModel
-            user = await LabTechModel.findOne({ email });
+            // If not found in User, try LabTech
+            user = await LabTech.findOne({ email });
             isLabTech = true;
             
             if (!user) {
