@@ -184,15 +184,6 @@
                 <span class="dropdown-header">Reserve until...</span>
                 <select name="endtimes" id="endtimes">
                     <option value="disabled selected">Select an End Time</option>
-                    <option value="8:00 AM">8:00 AM</option>
-                    <option value="8:30 AM">8:30 AM</option>
-                    <option value="9:00 AM">9:00 AM</option>
-                    <option value="9:30 AM">9:30 AM</option>
-                    <option value="10:00 AM">10:00 AM</option>
-                    <option value="10:30 AM">10:30 AM</option>
-                    <option value="11:00 AM">11:00 AM</option>
-                    <option value="11:30 AM">11:30 AM</option>
-                    <option value="12:00 PM">12:00 PM</option>
                 </select>
             </div>
 
@@ -286,7 +277,7 @@
                 timetable.innerHTML = timetableHTML;
 
                 document.querySelectorAll(".clickable-seat").forEach(seat => {
-                    seat.onclick = handleSeatClick;
+                    seat.addEventListener("click", handleSeatClick)
                 });
             })
 
@@ -315,10 +306,10 @@
                 }
 
                 const endTimesDropdown = document.getElementById("endtimes");
-                endTimesDropdown.innerHTML = "<option value="disabled selected">Select an End Time</option>";
+                endTimesDropdown.innerHTML = `<option value="disabled selected">Select an End Time</option>`;
 
                 // Fetch current reservations from the server
-                fetch(/api/reservations/lab/${selectedLab}/date/${selectedDate})
+                fetch(`/api/reservations/lab/${selectedLab}/date/${selectedDate}`)
                     .then(response => response.json())
                     .then(data => {
                         let nextReservationIndex = timeSlots.length;
@@ -511,7 +502,7 @@
                 }
                 
                 console.log(`Updating seat status for lab: ${selectedLab}, date: ${selectedDate}`);
-                
+
                 // Reset all seats to available (clickable)
                 document.querySelectorAll('.clickable-seat, .taken-seat, .selected-seat, .my-booking-seat').forEach(seat => {
                     seat.className = "clickable-seat";
@@ -660,6 +651,9 @@
 
             // Function to handle seat click
             function handleSeatClick(event) {
+
+                console.log("Seat clicked!");
+                
                 const userId = localStorage.getItem('userId');
                 if (!userId) {
                     alert('Please sign in to select a seat');
