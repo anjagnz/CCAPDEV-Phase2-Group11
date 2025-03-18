@@ -1,7 +1,5 @@
 const express = require("express");
 const app = new express();
-const bodyParser = require("body-parser");
-// const { engine } = require("express-handlebars");
 const fileUpload = require('express-fileupload')
 const path = require("path");
 const mongoose = require("mongoose");
@@ -12,8 +10,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(__dirname)); // Serve files from root directory
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
 app.use(fileUpload());
 
 // Configure handlebars
