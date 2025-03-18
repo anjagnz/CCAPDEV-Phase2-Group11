@@ -42,12 +42,15 @@ $.each(includes, function() {
                 document.getElementById("nav-lab")?.classList.add("active");
                 break;
             case 'student-home':
+            case 'labtech-home':
                 document.getElementById("nav-home")?.classList.add("active");
                 break;
             case 'see-reservations':
+            case 'labtech-reservations':
                 document.getElementById("nav-reserve")?.classList.add("active");
                 break;
             case 'student-laboratories':
+            case 'labtech-laboratories':
                 document.getElementById("nav-lab")?.classList.add("active");
                 break;
             default:

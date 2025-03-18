@@ -83,6 +83,10 @@
                 cursor: not-allowed;
                 border-radius: 5px;
             }
+
+            img.user-img:hover {
+                cursor:pointer;
+            }
         </style>
     </head>
 
@@ -125,7 +129,7 @@
                     {{#if this.isAnonymous}}
                         <span class="user-name">Anonymous Reservation</span>
                     {{else}}
-                        <img class="user-img" src="{{this.user.profilePicture}}" onclick="location.href='/profile/{{this.user._id}}'"></img>
+                        <img class="user-img" src="{{this.user.profilePicture}}" onclick="location.href='/profile/{{this.user._id}}'">
                         <span class="user-name">{{#if this.isCurrentUser}}Your Reservation{{else}}{{this.user.name}}{{/if}}</span>
                     {{/if}}
                 </div>
