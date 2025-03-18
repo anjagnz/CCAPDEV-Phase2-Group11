@@ -31,9 +31,9 @@
             <img src="img/Home.svg" alt="Dashboard" class="nav-icon">
             <a href="#dashboard">Dashboard</a>
         </div>
-        <div class="nav-item" id="settings-nav">
-            <img src="img/settings.svg" alt="Settings" class="nav-icon">
-            <a href="#settings">Settings</a>
+        <div class="nav-item" id="view-nav">
+            <img src="img/view.svg" alt="Settings" class="nav-icon">
+            <a href="#view">View Profile</a>
         </div>
         <div class="nav-item" id="edit-nav">
             <img src="img/pencil_edit.svg" alt="Edit" class="nav-icon">
@@ -99,18 +99,18 @@
                     <div class="profile-picture-large">
                         <img id="profile-image" src="img/default-profile.png" alt="Profile Picture">
                     </div>
-                    <h2 id="profile-name">User Name</h2>
+                    <h2 id="profile-name" style="color: var(--dark-blue)">User Name</h2>
                 </div>
 
                 <div class="profile-details">
                     <div class="detail-row">
-                        <span class="label" style="font-weight: bold; font-size: 22px; padding-top: 5px; padding-bottom: 5px; font-family:  'Roboto';">Email: </span>
+                        <span class="label" style="font-weight: bold; font-size: 22px; padding-top: 5px; padding-bottom: 5px; font-family:  'Roboto';">Email:&nbsp;</span>
                         <span class="value" id="profile-email">email@example.com</span>
                         <span class="tag" id="profile-type">[Student]</span>
                     </div>
 
                     <div class="detail-row">
-                        <span class="label" style="font-weight: bold; font-size: 22px; padding-top: 5px; padding-bottom: 5px; font-family: 'Roboto';">Department: </span>
+                        <span class="label" style="font-weight: bold; font-size: 22px; padding-top: 5px; padding-bottom: 5px; font-family: 'Roboto';">Department:&nbsp;</span>
                         <span class="value" id="profile-department">Department</span>
                     </div>
 
@@ -147,7 +147,7 @@
                         <li>
                             <div class="form-group">
                                 <label for="firstName">First Name</label>
-                                <input type="text" id="firstName" name="firstName" required>
+                                <input type="text" id="firstName" name="firstName" disabled>
                             </div>
                         </li>
 
@@ -155,14 +155,14 @@
                         <li>
                             <div class="form-group">
                                 <label for="lastName">Last Name</label>
-                                <input type="text" id="lastName" name="lastName" required>
+                                <input type="text" id="lastName" name="lastName" disabled>
                             </div>
                         </li>
 
                         <li>
                             <div class="form-group">
                                 <label for="email">Email</label>
-                                <input type="email" id="email" name="email" required>
+                                <input type="email" id="email" name="email" disabled>
                             </div>
                         </li>
 
@@ -176,28 +176,7 @@
                         <li>
                             <div class="form-group">
                                 <label for="biography">Biography</label>
-                                <input id="biography" name="biography" rows="4"></textarea>
-                            </div>
-                        </li>
-
-                        <li>
-                            <div class="form-group">
-                                <label for="current-password">Current Password</label>
-                                <input type="password" id="current-password" name="currentPassword" required>
-                            </div>
-                        </li>
-
-                        <li>
-                            <div class="form-group">
-                                <label for="new-password">New Password (leave blank to keep current)</label>
-                                <input type="password" id="new-password" name="newPassword">
-                            </div>
-                        </li>
-
-                        <li>
-                            <div class="form-group">
-                                <label for="confirm-password">Confirm New Password</label>
-                                <input type="password" id="confirm-password" name="confirmPassword">
+                                <textarea id="biography" name="biography" rows="4"></textarea>
                             </div>
                         </li>
 
@@ -217,7 +196,7 @@
             <div class="profile-card">
                 <h2>Delete Account</h2>
                 <div class="delete-account-warning">
-                    <p style="font-weight: bold; padding-top: 10px; padding-bottom: 10px">Warning: Deleting your account is permanent and cannot be undone. All your data will be permanently removed.</p>
+                    <p style="font-weight: bold; padding-top: 10px; padding-bottom: 10px; color: rgb(218, 33, 33)">Warning: Deleting your account is permanent and cannot be undone. All your data will be permanently removed.</p>
                     <p>Please enter your password to confirm account deletion:</p>
                 </div>
 
@@ -247,7 +226,7 @@
             // Get all content sections
             const sections = {
                 'dashboard-nav': document.getElementById('dashboard-section'),
-                'settings-nav': document.getElementById('overview-section'),
+                'view-nav': document.getElementById('overview-section'),
                 'edit-nav': document.getElementById('edit-section'),
                 'delete-nav': document.getElementById('delete-section')
             };
@@ -498,40 +477,13 @@
             }
             
             // Get form data
-            const firstName = document.getElementById('firstName').value;
-            const lastName = document.getElementById('lastName').value;
-            const email = document.getElementById('email').value;
             const department = document.getElementById('department').value;
             const biography = document.getElementById('biography').value;
-            const currentPassword = document.getElementById('current-password').value;
-            const newPassword = document.getElementById('new-password').value;
-            const confirmPassword = document.getElementById('confirm-password').value;
-            
-            // Validate form data
-            if (!firstName || !lastName || !email || !currentPassword) {
-                alert('Please fill in all required fields.');
-                return;
-            }
-            
-            // Check if new password and confirm password match
-            if (newPassword && newPassword !== confirmPassword) {
-                alert('New password and confirm password do not match.');
-                return;
-            }
             
             // Create form data object for API request
             const formData = new FormData();
-            formData.append('firstName', firstName);
-            formData.append('lastName', lastName);
-            formData.append('email', email);
             formData.append('department', department);
             formData.append('biography', biography);
-            formData.append('currentPassword', currentPassword);
-            
-            // Add new password if provided
-            if (newPassword) {
-                formData.append('newPassword', newPassword);
-            }
             
             // Add profile image if selected
             const profileImageInput = document.getElementById('profile-image-input');

@@ -212,22 +212,9 @@ app.put("/api/user/update/:id", async (req, res) => {
             }
         }
         
-        // Verify current password (using plain text comparison as per user preference)
-        if (req.body.currentPassword !== user.password) {
-            return res.status(401).json({ message: "Current password is incorrect" });
-        }
-        
         // Update user fields
-        user.firstName = req.body.firstName || user.firstName;
-        user.lastName = req.body.lastName || user.lastName;
-        user.email = req.body.email || user.email;
         user.department = req.body.department || user.department;
         user.biography = req.body.biography || user.biography;
-        
-        // Update password if provided
-        if (req.body.newPassword) {
-            user.password = req.body.newPassword;
-        }
         
         // Handle image upload if provided
         if (req.files && req.files.profileImage) {
