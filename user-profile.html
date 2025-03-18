@@ -36,7 +36,7 @@
             <a href="#settings">Settings</a>
         </div>
         <div class="nav-item" id="edit-nav">
-            <img src="img/edit.svg" alt="Edit" class="nav-icon">
+            <img src="img/pencil_edit.svg" alt="Edit" class="nav-icon">
             <a href="#edit">Edit Profile</a>
         </div>
         <div class="nav-item" id="delete-nav">
@@ -81,7 +81,6 @@
                                 <th>Time</th>
                                 <th>Seat</th>
                                 <th>Status</th>
-                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody id="reservations-body">
@@ -105,13 +104,13 @@
 
                 <div class="profile-details">
                     <div class="detail-row">
-                        <span class="label">Email:</span>
+                        <span class="label" style="font-weight: bold; font-size: 22px; padding-top: 5px; padding-bottom: 5px; font-family:  'Roboto';">Email: </span>
                         <span class="value" id="profile-email">email@example.com</span>
                         <span class="tag" id="profile-type">[Student]</span>
                     </div>
 
                     <div class="detail-row">
-                        <span class="label">Department:</span>
+                        <span class="label" style="font-weight: bold; font-size: 22px; padding-top: 5px; padding-bottom: 5px; font-family: 'Roboto';">Department: </span>
                         <span class="value" id="profile-department">Department</span>
                     </div>
 
@@ -128,64 +127,87 @@
         <!-- Edit Profile Section -->
         <main class="main-content" id="edit-section" style="display: none;">
             <div class="profile-card">
-                <h2>Edit Profile</h2>
+                <h2 style="padding-left: 10px;">Edit Profile</h2>
                 <form id="profile-edit-form">
-                    <div class="profile-header">
+                    <div class="profile-header" style="padding-left: 10px;">
                         <div class="profile-picture-large">
                             <img id="edit-profile-image" src="img/default-profile.png" alt="Profile Picture">
-                            <div class="upload-overlay">
+                        </div>
+                        <div class="upload-overlay">
+                            <div class="upload-wrapper">
                                 <label for="profile-image-input" class="upload-button">
-                                    <img src="img/upload.svg" alt="Upload">
+                                    <img src="img/upload.png" class="upload-img" alt="Upload">
                                 </label>
-                                <input type="file" id="profile-image-input" accept="image/*" style="display: none;">
                             </div>
+                            <input type="file" id="profile-image-input" accept="image/*" style="display: none;">
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="firstName">First Name</label>
-                        <input type="text" id="firstName" name="firstName" required>
-                    </div>
+                    <ul>
+                        <li>
+                            <div class="form-group">
+                                <label for="firstName">First Name</label>
+                                <input type="text" id="firstName" name="firstName" required>
+                            </div>
+                        </li>
 
-                    <div class="form-group">
-                        <label for="lastName">Last Name</label>
-                        <input type="text" id="lastName" name="lastName" required>
-                    </div>
+                    </ul>
+                        <li>
+                            <div class="form-group">
+                                <label for="lastName">Last Name</label>
+                                <input type="text" id="lastName" name="lastName" required>
+                            </div>
+                        </li>
 
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
+                        <li>
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                        </li>
 
-                    <div class="form-group">
-                        <label for="department">Department</label>
-                        <input type="text" id="department" name="department">
-                    </div>
+                        <li>
+                            <div class="form-group">
+                                <label for="department">Department</label>
+                                <input type="text" id="department" name="department">
+                            </div>    
+                        </li>
 
-                    <div class="form-group">
-                        <label for="biography">Biography</label>
-                        <textarea id="biography" name="biography" rows="4"></textarea>
-                    </div>
+                        <li>
+                            <div class="form-group">
+                                <label for="biography">Biography</label>
+                                <input id="biography" name="biography" rows="4"></textarea>
+                            </div>
+                        </li>
 
-                    <div class="form-group">
-                        <label for="current-password">Current Password</label>
-                        <input type="password" id="current-password" name="currentPassword" required>
-                    </div>
+                        <li>
+                            <div class="form-group">
+                                <label for="current-password">Current Password</label>
+                                <input type="password" id="current-password" name="currentPassword" required>
+                            </div>
+                        </li>
 
-                    <div class="form-group">
-                        <label for="new-password">New Password (leave blank to keep current)</label>
-                        <input type="password" id="new-password" name="newPassword">
-                    </div>
+                        <li>
+                            <div class="form-group">
+                                <label for="new-password">New Password (leave blank to keep current)</label>
+                                <input type="password" id="new-password" name="newPassword">
+                            </div>
+                        </li>
 
-                    <div class="form-group">
-                        <label for="confirm-password">Confirm New Password</label>
-                        <input type="password" id="confirm-password" name="confirmPassword">
-                    </div>
+                        <li>
+                            <div class="form-group">
+                                <label for="confirm-password">Confirm New Password</label>
+                                <input type="password" id="confirm-password" name="confirmPassword">
+                            </div>
+                        </li>
 
-                    <div class="form-actions">
-                        <button type="submit" class="save-btn">Save Changes</button>
-                        <button type="button" class="cancel-btn" onclick="cancelEdit()">Cancel</button>
-                    </div>
+                        <li>
+                            <div class="form-actions">
+                                <button type="submit" class="save-btn">Save Changes</button>
+                                <button type="button" class="cancel-btn" onclick="cancelEdit()">Cancel</button>
+                            </div>
+                        </li>
+
                 </form>
             </div>
         </main>
@@ -195,18 +217,18 @@
             <div class="profile-card">
                 <h2>Delete Account</h2>
                 <div class="delete-account-warning">
-                    <p>Warning: Deleting your account is permanent and cannot be undone. All your data will be permanently removed.</p>
+                    <p style="font-weight: bold; padding-top: 10px; padding-bottom: 10px">Warning: Deleting your account is permanent and cannot be undone. All your data will be permanently removed.</p>
                     <p>Please enter your password to confirm account deletion:</p>
                 </div>
 
                 <form id="delete-account-form">
-                    <div class="form-group">
+                    <div class="form-group", style="padding-top : 10px; padding-bottom: 10px;">
                         <label for="delete-password">Password</label>
                         <input type="password" id="delete-password" name="password" required>
                     </div>
 
                     <div class="form-actions">
-                        <button type="button" id="delete-account-btn" class="delete-btn">Delete Account</button>
+                        <button type="submit" id="delete-account-btn" class="delete-btn">Delete Account</button>
                         <button type="button" class="cancel-btn" onclick="cancelDelete()">Cancel</button>
                     </div>
                 </form>
@@ -215,6 +237,8 @@
     </div>
 
     <script>
+        let selectedProfileImage = null; // stores the selected profile pic file
+
         // Navigation between sections
         document.addEventListener('DOMContentLoaded', function() {
             // Get all navigation items
@@ -316,6 +340,9 @@
                     } else {
                         document.getElementById('profile-image').src = 'img/default-profile.png';
                     }
+
+                    console.log(userDetails.image);
+
                     
                     // Populate edit form
                     document.getElementById('firstName').value = userDetails.firstName || '';
@@ -383,7 +410,7 @@
                         reservations.forEach(reservation => {
                             const reservationDate = new Date(reservation.reservationDate).toISOString().split('T')[0];
                             const row = document.createElement('tr');
-                            
+
                             // For debugging - display the reservation ID
                             console.log('Adding reservation to table:', reservation._id);
                             
@@ -393,10 +420,8 @@
                                 <td>${reservation.startTime} - ${reservation.endTime}</td>
                                 <td>${reservation.seatNumber}</td>
                                 <td>Upcoming</td>
-                                <td>
-                                    <button type="button" class="cancel-btn" onclick="cancelReservation('${reservation._id}')">CANCEL</button>
-                                </td>
                             `;
+
                             tableBody.appendChild(row);
                         });
                     }
@@ -415,7 +440,7 @@
                 });
         }
         
-        async function cancelReservation(reservationId) {
+        async function cancelReservation(event, reservationId) {
             console.log('Attempting to cancel reservation with ID:', reservationId);
             
             if (!confirm('Are you sure you want to cancel this reservation?')) {
@@ -427,26 +452,31 @@
                 const response = await fetch(`/api/reservation/${reservationId}`, { 
                     method: 'DELETE' 
                 });
-                
+
                 // Check if the deletion was successful
                 if (!response.ok) {
                     throw new Error("Failed to delete reservation.");
                 }
-                
+
                 console.log("Reservation deleted successfully!");
-                
-                // Refresh the reservations list after deletion
-                loadReservationsData();
+
+                // Remove the row dynamically without refreshing the page
+                const button = event.target;
+                const row = button.closest('tr'); // Find the parent row
+                if (row) {
+                    row.remove(); // Remove the row from the table
+                }
+
                 alert('Reservation cancelled successfully!');
             } catch (error) {
                 console.error("Error deleting reservation:", error);
                 alert('An error occurred while cancelling the reservation.');
             }
         }
-        
+
         function cancelEdit() {
             // Reset form and navigate back to dashboard
-            document.getElementById('profile-edit-form').reset();
+            loadProfileData(); 
             document.getElementById('dashboard-nav').click();
         }
         
@@ -545,6 +575,55 @@
                 reader.readAsDataURL(file);
             }
         });
+
+        // Handle profile delete form submission
+        document.getElementById('delete-account-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            
+            // Get the current user ID from localStorage
+            const userId = localStorage.getItem('userId');
+            if (!userId) {
+                alert('You must be logged in to delete your account.');
+                return;
+            }
+            
+            // Get form data
+            const password = document.getElementById('delete-password').value;
+            
+            // Validate form data
+            if (!password) {
+                alert('Please enter your password');
+                return;
+            }
+
+            // Send delete request to the server
+            try {
+                const response = await fetch(`/api/user/${userId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ password })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to delete account');
+                }
+
+                const data = await response.json();
+                console.log('Account deleted successfully:', data);
+                alert('Account deleted successfully!');
+
+                // Logout the user and redirect to login page
+                localStorage.removeItem('userId');
+                window.location.href = '/';
+            } catch (error) {
+                console.error('Error deleting account:', error);
+                alert(error.message);
+            }
+        });
+
     </script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const UserModel = require('./models/User');
-const LabTechModel = require('./models/labtech');
+const LabTechModel = require('./models/Labtech');
 const Laboratory = require('./models/Laboratory');
 const TimeSlot = require('./models/TimeSlot');
 
@@ -18,7 +18,6 @@ const demoStudents = [
         type: 'Student',
         firstName: 'John',
         lastName: 'Doe',
-        image: 'img/profile1.jpg',
         email: 'john.doe@example.com',
         password: 'password123',
         biography: 'Computer Science student with a passion for web development and AI.',
@@ -28,7 +27,6 @@ const demoStudents = [
         type: 'Student',
         firstName: 'Jane',
         lastName: 'Smith',
-        image: 'img/profile2.jpg',
         email: 'jane.smith@example.com',
         password: 'password123',
         biography: 'Biology major focusing on molecular genetics and biotechnology.',
@@ -38,7 +36,6 @@ const demoStudents = [
         type: 'Student',
         firstName: 'Alex',
         lastName: 'Johnson',
-        image: 'img/profile3.jpg',
         email: 'alex.johnson@example.com',
         password: 'password123',
         biography: 'Physics student researching quantum mechanics and particle physics.',
@@ -48,7 +45,6 @@ const demoStudents = [
         type: 'Student',
         firstName: 'Emily',
         lastName: 'Brown',
-        image: 'img/profile4.jpg',
         email: 'emily.brown@example.com',
         password: 'password123',
         biography: 'Chemistry student specializing in organic chemistry and material science.',
@@ -58,7 +54,6 @@ const demoStudents = [
         type: 'Student',
         firstName: 'Anja',
         lastName: 'Gonzales',
-        image: 'img/demo_data/ayase.jpg',
         email: 'anja_gonzales@dlsu.edu.ph',
         password: '234',
         biography: 'i need sleep',
@@ -68,7 +63,6 @@ const demoStudents = [
         type: 'Student',
         firstName: 'Liana',
         lastName: 'Ho',
-        image: 'img/demo_data/sonoda.jpg',
         email: 'denise_liana_ho@dlsu.edu.ph',
         password: '123',
         biography: 'idk stream tsunami sea yeah',
@@ -82,7 +76,6 @@ const demoLabTechs = [
         type: 'Faculty',
         firstName: 'Robert',
         lastName: 'Williams',
-        image: 'img/labtech1.jpg',
         email: 'robert.williams@example.com',
         password: 'password123',
         biography: 'Senior lab technician with 10+ years of experience in computer science laboratories.',
@@ -93,7 +86,6 @@ const demoLabTechs = [
         type: 'Faculty',
         firstName: 'Sarah',
         lastName: 'Davis',
-        image: 'img/labtech2.jpg',
         email: 'sarah.davis@example.com',
         password: 'password123',
         biography: 'Lab technician specializing in molecular biology and genetic engineering techniques.',
@@ -104,7 +96,6 @@ const demoLabTechs = [
         type: 'Faculty',
         firstName: 'Michael',
         lastName: 'Wilson',
-        image: 'img/labtech3.jpg',
         email: 'michael.wilson@example.com',
         password: 'password123',
         biography: 'Physics lab technician with expertise in experimental physics and equipment maintenance.',
@@ -115,7 +106,6 @@ const demoLabTechs = [
         type: 'Faculty',
         firstName: 'Lisa',
         lastName: 'Taylor',
-        image: 'img/labtech4.jpg',
         email: 'lisa.taylor@example.com',
         password: 'password123',
         biography: 'Chemistry lab technician specializing in analytical techniques and laboratory safety.',
@@ -126,7 +116,6 @@ const demoLabTechs = [
         type: 'Faculty',
         firstName: 'The',
         lastName: 'Goat',
-        image: 'img/demo_data/kotori.jpg',
         email: 'the_goat@dlsu.edu.ph',
         password: 'admin',
         department: 'Computer Science'
@@ -135,23 +124,6 @@ const demoLabTechs = [
 
 // Demo laboratories
 const demoLaboratories = [
-    {
-        laboratoryName: 'G301',
-        capacity: 30
-    },
-    {
-        laboratoryName: 'G302',
-        capacity: 25
-    },
-    {
-        laboratoryName: 'G303',
-        capacity: 20
-    },
-    {
-        laboratoryName: 'G304',
-        capacity: 35
-    },
-    // Adding the additional labs from index.js
     {
         laboratoryName: 'GK404B',
         capacity: 20
@@ -182,7 +154,6 @@ const createDate = (day) => {
     return date;
 };
 
-// Seed the database
 const seedDatabase = async () => {
     try {
         // Clear existing data
@@ -192,89 +163,61 @@ const seedDatabase = async () => {
         await TimeSlot.deleteMany({});
         
         console.log('Previous data cleared');
-        
+
         // Insert demo students
-        const insertedStudents = await UserModel.insertMany(demoStudents);
+        await UserModel.insertMany(demoStudents);
         console.log('Demo students added');
-        
+
         // Insert demo lab techs
-        const insertedLabTechs = await LabTechModel.insertMany(demoLabTechs);
+        await LabTechModel.insertMany(demoLabTechs);
         console.log('Demo lab technicians added');
-        
+
         // Insert demo laboratories
         const insertedLabs = await Laboratory.insertMany(demoLaboratories);
         console.log('Demo laboratories added');
-        
+
         // Create demo time slots
         const timeSlots = [];
-        
-        // Get references to inserted students for reservations
-        const anjaUser = insertedStudents.find(s => s.firstName === 'Anja');
-        const lianaUser = insertedStudents.find(s => s.firstName === 'Liana');
-        
-        // For each lab, create some time slots
-        for (const lab of insertedLabs) {
-            // Create time slots for February 15, 2025
-            const feb15 = createDate(15);
-            feb15.setMonth(1); // February (0-indexed)
-            feb15.setFullYear(2025);
-            
-            // Morning slots
-            timeSlots.push({
-                laboratoryRoom: lab.laboratoryName,
-                seatNumber: 1,
-                date: new Date(feb15),
-                time: '8:30 AM - 9:00 AM',
-                isAvailable: false,
-                userId: anjaUser._id
-            });
-            
-            timeSlots.push({
-                laboratoryRoom: lab.laboratoryName,
-                seatNumber: 2,
-                date: new Date(feb15),
-                time: '9:30 AM - 10:00 AM',
-                isAvailable: false,
-                userId: null // Anonymous user
-            });
-            
-            timeSlots.push({
-                laboratoryRoom: lab.laboratoryName,
-                seatNumber: 3,
-                date: new Date(feb15),
-                time: '10:00 AM - 11:00 AM',
-                isAvailable: false,
-                userId: lianaUser._id
-            });
-            
-            // Add some available slots
-            timeSlots.push({
-                laboratoryRoom: lab.laboratoryName,
-                seatNumber: 4,
-                date: new Date(feb15),
-                time: '11:00 AM - 12:00 PM',
-                isAvailable: true,
-                userId: null
-            });
-            
-            timeSlots.push({
-                laboratoryRoom: lab.laboratoryName,
-                seatNumber: 5,
-                date: new Date(feb15),
-                time: '1:00 PM - 2:00 PM',
-                isAvailable: true,
-                userId: null
-            });
-        }
-        
+        const today = new Date(); // Get today's date
+
+        // Create the time slots for the next 7 days
+        insertedLabs.forEach(lab => {
+            for (let i = 0; i < 7; i++) {  
+                const currentDate = new Date(today);
+                currentDate.setDate(today.getDate() + i); // Increment by i days
+                
+                // Loop for seat numbers 1-5
+                for (let j = 1; j <= 5; j++) {
+                    const slots = [
+                        { seatNumber: j, time: '7:30 AM - 8:00 AM' },
+                        { seatNumber: j, time: '8:00 AM - 8:30 AM' },
+                        { seatNumber: j, time: '8:30 AM - 9:00 AM' },
+                        { seatNumber: j, time: '9:30 AM - 10:00 AM' },
+                        { seatNumber: j, time: '10:00 AM - 11:00 AM' },
+                        { seatNumber: j, time: '11:00 AM - 11:30 AM' },
+                        { seatNumber: j, time: '11:30 AM - 12:00 PM' }
+                    ];
+
+                    // Add time slots for the current lab and date
+                    for (const slot of slots) {
+                        timeSlots.push({
+                            laboratoryRoom: lab.laboratoryName,
+                            seatNumber: slot.seatNumber,
+                            date: new Date(currentDate),
+                            time: slot.time,
+                            isAvailable: true,
+                        });
+                    }
+                }
+            }
+        })
+
         await TimeSlot.insertMany(timeSlots);
         console.log('Demo time slots added');
-        
+
         console.log('Database seeded successfully');
-        mongoose.connection.close();
     } catch (error) {
         console.error('Error seeding database:', error);
-        mongoose.connection.close();
     }
 };
 

@@ -1,0 +1,23 @@
+<!-- Delete Account Section -->
+        <main class="main-content" id="delete-section" style="display: none;">
+            <div class="profile-card">
+                <h2>Delete Account</h2>
+                <div class="delete-account-warning">
+                    <p>Warning: Deleting your account is permanent and cannot be undone. All your data will be permanently removed.</p>
+                    <p>Please enter your password to confirm account deletion:</p>
+                </div>
+
+                <form id="delete-account-form">
+                    <div class="form-group">
+                        <label for="delete-password">Password</label>
+                        <input type="password" id="delete-password" name="password" required>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="delete" id="delete-account-btn" class="delete-btn">Delete Account</button>
+                        <button type="button" class="cancel-btn" onclick="cancelDelete()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>

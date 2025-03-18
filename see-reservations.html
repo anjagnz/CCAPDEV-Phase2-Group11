@@ -56,6 +56,13 @@
         <div class="details-container">
             <div class="input-wrapper field-group">
                 <div class="label-wrapper field-label">            
+                    Student Name:
+                </div>
+                <input type="text" id="student-name" class="text-field" data-label="studentName" disabled> 
+            </div>
+
+            <div class="input-wrapper field-group">
+                <div class="label-wrapper field-label">            
                     Laboratory Room:
                 </div>
                 <input type="text" id="lab-room" class="text-field" data-label="laboratoryRoom" disabled> 
@@ -165,13 +172,14 @@
                     // Create reservation detail icon
                     const icon = document.createElement("img");
                     icon.src = "img/reservation-details.jpeg";
-                    icon.style = "height: 25px; cursor: pointer";
                     icon.dataset.reservationId = reservation._id;
                     icon.addEventListener("click", function () { 
                         openPopup2(this.dataset.reservationId);
                     });  
                     icon.setAttribute("data-reservationId", reservation._id);
-
+                    icon.classList.add("details");
+                    
+            
                     const row = document.createElement("tr");
                     row.innerHTML = `
                         <td style="text-align: right;"></td> <!-- Empty cell for radio button -->
@@ -221,8 +229,18 @@
                 var formattedDate = formatDate(new Date(reservation.bookingDate)).split("T");
                 var bookingDate = formattedDate[0];
                 var bookingTime = formattedDate[1];
+                const userId = localStorage.getItem('userId');
+                console.log(userId);
+                const response2 = await fetch(`/api/user/${userId}`);
+                const user = await response2.json();
+                const studentName = user.firstName + " " + user.lastName;
 
                 // Update form field values
+                if (reservation.studentName){
+                    document.getElementById("student-name").value = reservation.studentName;
+                } else{
+                    document.getElementById("student-name").value = studentName;
+                }
                 document.getElementById("lab-room").value = reservation.laboratoryRoom;
                 document.getElementById("seat-num").value = reservation.seatNumber;
                 document.getElementById("booking-date").value = bookingDate;
@@ -328,7 +346,6 @@
         }
 
         async function edit(reservationId) {
-            console.log(reservationId);
             // Find the currently active popup
             let popups = document.querySelectorAll(".popup");
             let activePopup = Array.from(popups).find(popup => 
@@ -344,6 +361,20 @@
             select.className = endTimeField.className;
             select.id = "end-time-select";
             select.name = "endTime";
+            select.style = "cursor: pointer";
+
+            const response = await fetch(`/api/reservation/${reservationId}`, { method: "GET" });
+            const reservation = await response.json();
+
+            const date = reservation.reservationDate;
+            const lab = reservation.laboratoryRoom;
+            const seat = reservation.seatNumber;
+
+            console.log(date, lab, seat);
+
+            const response2 = await fetch(`/api/timeslots/${date}/${lab}/${seat}`, { method: "GET" });
+
+            
 
             let options = [endTimeField.value, "05:00 P.M.", "05:30 P.M.", "06:00 P.M."];
 

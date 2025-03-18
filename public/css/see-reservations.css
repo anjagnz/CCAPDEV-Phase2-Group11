@@ -87,6 +87,17 @@ td{
     transform: scale(1.05);
 }
 
+.details{
+    height: 25px;
+    cursor: pointer; 
+    transition: all 0.3s ease
+}
+
+.details:hover{
+    transform: scale(1.10);
+}
+
+
 /* Added styles from inline CSS */
 #reservation-details {
     margin-top: 3px;

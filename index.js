@@ -17,44 +17,39 @@ app.use(bodyParser.json());
 app.use(fileUpload());
 
 // Configure handlebars
-//app.engine("hbs", engine({ extname: ".hbs", defaultLayout: "main"}))
 app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "views"));
 
 // Check if demo profiles exist, if not, seed the database
 const UserModel = require('./database/models/User');
-const LabTechModel = require('./database/models/labtech');
+const LabTechModel = require('./database/models/Labtech');
 
 const checkAndSeedDatabase = async () => {
-  try {
-    const userCount = await UserModel.countDocuments();
-    const labTechCount = await LabTechModel.countDocuments();
-    
-    if (userCount === 0 || labTechCount === 0) {
-      console.log('No profiles found. Seeding database with demo profiles...');
-      // We'll use require to run the seed script directly
-      require('./database/seedDatabase');
-    } else {
-      console.log(`Database already contains ${userCount} users and ${labTechCount} lab technicians.`);
-    }
-  } catch (error) {
-    console.error('Error checking database:', error);
-  }
-}
+    try {
+      const userCount = await UserModel.countDocuments();
+      const labTechCount = await LabTechModel.countDocuments();
 
+        // We'll use require to run the seed script directly
+        require('./database/seedDatabase');
+
+    } catch (error) {
+      console.error('Error checking database:', error);
+    }
+}
+  
 // Connect to MongoDB and check for demo profiles
-mongoose.connect('mongodb://localhost/LabMateDB', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-.then(() => {
-  console.log('Connected to MongoDB successfully');
-  // After successful connection, check and seed the database if needed
-  checkAndSeedDatabase();
-})
-.catch(err => {
-  console.error('MongoDB connection error:', err);
-});
+  mongoose.connect('mongodb://localhost/LabMateDB', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  })
+  .then(() => {
+    console.log('Connected to MongoDB successfully');
+    // After successful connection, check and seed the database if needed
+    checkAndSeedDatabase();
+  })
+  .catch(err => {
+    console.error('MongoDB connection error:', err);
+  });
 
 const Reservation = require('./database/models/Reservation');
 const Laboratory = require("./database/models/Laboratory");
@@ -64,11 +59,9 @@ const { timeSlots, endTimeOptions, morningTimeSlots } = require('./database/mode
 // Basic routes
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
 app.get("/signup-page", (req, res) => res.sendFile(path.join(__dirname, "signup-page.html")));
-app.get("/signin-page", (req, res) => res.sendFile(path.join(__dirname, "signin-page.html")));
-app.get("/student-home", (req, res) => res.sendFile(path.join(__dirname, "student-home.html")));
 app.get("/popup-profile", (req, res) => res.sendFile(path.join(__dirname, "popup-profile.html")));
 
-// API Endpoints for Reservations
+// Get reservations across all users
 app.get("/api/reservations", async (req, res) => {
     try {
         const reservations = await Reservation.find();
@@ -104,6 +97,20 @@ app.get("/api/reservation/:id", async (req, res) => {
         res.status(500).json({ message: "Server error", error: error.message });
     }
 });
+
+// Update availability of time slots based on reservations
+async function updateAvailability (){
+    try{
+        const reservation = Reservation.find();
+
+        if (!reservations || reservations.length === 0) {
+            console.log("No reservations found.");
+            return { success: false, message: "No reservations found" };
+        }
+    } catch (error){
+
+    }
+}
 
 // Get detailed user information by ID (must be defined BEFORE the more general route)
 app.get("/api/user/details/:id", async (req, res) => {
@@ -259,6 +266,27 @@ app.put("/api/user/update/:id", async (req, res) => {
         res.status(500).json({ message: "Server error", error: error.message });
     }
 });
+
+// Get time slots for a specific date, lab, and seat
+app.get("/api/timeslots/:date/:lab/:seat", async (req, res) => {
+    try {
+        const { date, lab, seat } = req.params;
+        const seatNumber = Number(seat);
+        const queryDate = new Date(date);
+
+        const timeslots = await TimeSlot.find({ queryDate, lab, seatNumber });
+
+        if (!timeslots.length) {
+            return res.status(404).json({ message: "No timeslots found for the given criteria." });
+        }
+
+        res.json(timeslots);
+    } catch (error) {
+        console.error(`Error fetching timeslots: ${error.message}`);
+        res.status(500).json({ message: "Server error", error: error.message });
+    }
+});
+
 
 // Delete a specific reservation
 app.delete("/api/reservation/:id", async (req, res) => {
@@ -424,11 +452,11 @@ app.post("/signup", async (req, res) => {
 // Serve the login page
 app.get("/signin-page", (req, res) => res.sendFile(path.join(__dirname, "signin-page.html")));
 
+
 // Handle sign-in form submission
 app.post("/signin", async (req, res) => {
     try {
         const { email, password } = req.body;
-        
         console.log("Received sign-in request for email:", email);
         
         // Validate input
@@ -437,9 +465,14 @@ app.post("/signin", async (req, res) => {
         }
         
         // Try to find the user in the UserModel first
+        if (mongoose.connection.readyState !== 1) {
+            console.error("❌ Database not connected. Cannot process sign-in request.");
+            return res.status(500).json({ error: "Database connection lost. Please try again later." });
+        }
+
         let user = await UserModel.findOne({ email });
         let isLabTech = false;
-        
+
         if (!user) {
             // If not found in UserModel, try LabTechModel
             user = await LabTechModel.findOne({ email });
@@ -449,12 +482,12 @@ app.post("/signin", async (req, res) => {
                 return res.status(401).json({ error: "Invalid email or password" });
             }
         }
-        
+
         // Verify password (using plain text comparison as per user preference)
         if (password !== user.password) {
             return res.status(401).json({ error: "Invalid email or password" });
         }
-        
+
         // Determine redirect URL based on user type
         const redirectUrl = isLabTech ? "/labtech-home" : "/student-home";
         
@@ -467,13 +500,15 @@ app.post("/signin", async (req, res) => {
         });
         
     } catch (error) {
-        console.error("Error during sign-in:", error);
+        console.error("Error during sign-in:", error.message, error.stack);
         res.status(500).json({ error: "An error occurred during sign-in" });
     }
 });
 
-// Serve the student home page
+// Serve the student and labtech page
 app.get("/student-home", (req, res) => res.sendFile(path.join(__dirname, "student-home.html")));
+app.get("/labtech-home", (req, res) => res.sendFile(path.join(__dirname, "labtech-home.html")));
+
 
 // Profile Pages
 app.get("/popup-profile", (req, res) => {
@@ -540,6 +575,7 @@ async function populateDatabase() {
         console.error("Error populating database:", error);
     }
 }
+
 
 // populate database (for demo)
 populateDatabase();
@@ -665,6 +701,10 @@ app.post("/create-reservation", async (req, res) => {
         });
         
         await newReservation.save();
+
+        // Update the availability of the timeslots selected
+        const timeslots = await TimeSlot.find();
+        
         
         // Redirect to see-reservations.html after successful booking
         res.redirect('/see-reservations');
