@@ -43,7 +43,7 @@
             }
             
             .taken-seat {
-                background-color: #f44336;
+                background-color: #FF7878;
                 color: white;
                 border: none;
                 padding: 10px;
@@ -52,7 +52,7 @@
                 display: inline-block;
                 font-size: 16px;
                 margin: 4px 2px;
-                cursor: not-allowed;
+                cursor: pointer;
                 border-radius: 5px;
             }
             
@@ -71,7 +71,7 @@
             }
             
             .my-booking-seat {
-                background-color: #9C27B0;
+                background-color: #23c686;
                 color: white;
                 border: none;
                 padding: 10px;
@@ -83,6 +83,27 @@
                 cursor: not-allowed;
                 border-radius: 5px;
             }
+
+            #view-button{
+                width: 150px;
+                background-color: var(--secondary-color);
+                color: var(--background-color);
+                font-family: var(--primary-font-fam);
+                font-size: 13px;
+                font-weight: 500;
+                border: none;
+                border-radius: 10px;
+                padding: 10px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                margin-top: 50px;
+                margin-bottom: 10px;
+            }
+
+            #view-button:hover{
+                transform: scale(1.05);
+            }
+
         </style>
     </head>
 
@@ -100,13 +121,11 @@
 
             <div class="dropdown">
                 <span class="dropdown-header">Laboratory</span>
-                <select name="labs" id="labs">
-                    <option value="" disabled selected>Select a Laboratory</option>
-                    <option value="GK101A">GK101A</option>
-                    <option value="GK203B">GK203B</option>
-                    <option value="GK404B">GK404B</option>
-                    <option value="AG1706">AG1706</option>
-                    <option value="AG1904">AG1904</option>
+                <select name = "labs" id = "labs">
+                    <option value = "disabled selected">Select a Laboratory</option>
+                    {{#each labs}}
+                        <option value="{{this._id}}" data-capacity = {{this.capacity}}>{{this.laboratoryName}}</option>
+                    {{/each}}
                 </select>
             </div>
 
@@ -117,20 +136,7 @@
                 </select>
             </div>
 
-            {{!-- Dynamic popups for reservations --}}
-            {{#each reservations}}
-            <div class="popup2" id="popup-frame-{{@index}}">
-                <div class="popup-box">
-                    <span class="popup-header">{{this.startTime}} - {{this.endTime}}</span>
-                    {{#if this.isAnonymous}}
-                        <span class="user-name">Anonymous Reservation</span>
-                    {{else}}
-                        <img class="user-img" src="{{this.user.profilePicture}}" onclick="location.href='/profile/{{this.user._id}}'"></img>
-                        <span class="user-name">{{#if this.isCurrentUser}}Your Reservation{{else}}{{this.user.name}}{{/if}}</span>
-                    {{/if}}
-                </div>
-            </div>
-            {{/each}}
+            <button id = "view-button">View Slots</button>
 
             <div id="chart">
                 <span id="chart-header">Slot Availability</span>
@@ -138,85 +144,11 @@
                     <table id="slot-chart">
                         <thead>
                             <tr>
-                                <th id="seat-header">Seat</th>
-                                <th>7:30 AM</th>
-                                <th>8:00 AM</th>
-                                <th>8:30 AM</th>
-                                <th>9:00 AM</th>
-                                <th>9:30 AM</th>
-                                <th>10:00 AM</th>
-                                <th>10:30 AM</th>
-                                <th>11:00 AM</th>
-                                <th>11:30 AM</th>
-                                <th>12:00 PM</th>
+                                
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <th id="seats">Seat 1</th>
-                                <td><button class="clickable-seat" data-seat-number="1" data-time-slot="7:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="1" data-time-slot="8:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="1" data-time-slot="8:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="1" data-time-slot="9:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="1" data-time-slot="9:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="1" data-time-slot="10:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="1" data-time-slot="10:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="1" data-time-slot="11:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="1" data-time-slot="11:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="1" data-time-slot="12:00 PM" onclick="handleSeatClick(event)"></button></td>
-                            </tr>
-                            <tr>
-                                <th id="seats">Seat 2</th>
-                                <td><button class="clickable-seat" data-seat-number="2" data-time-slot="7:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="2" data-time-slot="8:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="2" data-time-slot="8:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="2" data-time-slot="9:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="2" data-time-slot="9:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="2" data-time-slot="10:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="2" data-time-slot="10:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="2" data-time-slot="11:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="2" data-time-slot="11:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="2" data-time-slot="12:00 PM" onclick="handleSeatClick(event)"></button></td>
-                            </tr>
-                            <tr>
-                                <th id="seats">Seat 3</th>
-                                <td><button class="clickable-seat" data-seat-number="3" data-time-slot="7:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="3" data-time-slot="8:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="3" data-time-slot="8:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="3" data-time-slot="9:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="3" data-time-slot="9:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="3" data-time-slot="10:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="3" data-time-slot="10:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="3" data-time-slot="11:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="3" data-time-slot="11:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="3" data-time-slot="12:00 PM" onclick="handleSeatClick(event)"></button></td>
-                            </tr>
-                            <tr>
-                                <th id="seats">Seat 4</th>
-                                <td><button class="clickable-seat" data-seat-number="4" data-time-slot="7:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="4" data-time-slot="8:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="4" data-time-slot="8:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="4" data-time-slot="9:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="4" data-time-slot="9:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="4" data-time-slot="10:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="4" data-time-slot="10:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="4" data-time-slot="11:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="4" data-time-slot="11:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="4" data-time-slot="12:00 PM" onclick="handleSeatClick(event)"></button></td>
-                            </tr>
-                            <tr>
-                                <th id="seats">Seat 5</th>
-                                <td><button class="clickable-seat" data-seat-number="5" data-time-slot="7:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="5" data-time-slot="8:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="5" data-time-slot="8:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="5" data-time-slot="9:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="5" data-time-slot="9:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="5" data-time-slot="10:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="5" data-time-slot="10:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="5" data-time-slot="11:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="5" data-time-slot="11:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="5" data-time-slot="12:00 PM" onclick="handleSeatClick(event)"></button></td>
-                            </tr>
+                        <tbody id = "timetable">
+                            
                         </tbody>
                     </table>
                 </div>
@@ -237,15 +169,6 @@
                 <span class="dropdown-header">Reserve until...</span>
                 <select name="endtimes" id="endtimes">
                     <option value="disabled selected">Select an End Time</option>
-                    <option value="8:00 AM">8:00 AM</option>
-                    <option value="8:30 AM">8:30 AM</option>
-                    <option value="9:00 AM">9:00 AM</option>
-                    <option value="9:30 AM">9:30 AM</option>
-                    <option value="10:00 AM">10:00 AM</option>
-                    <option value="10:30 AM">10:30 AM</option>
-                    <option value="11:00 AM">11:00 AM</option>
-                    <option value="11:30 AM">11:30 AM</option>
-                    <option value="12:00 PM">12:00 PM</option>
                 </select>
             </div>
 
@@ -260,7 +183,7 @@
                 <label for="anonymous">Book anonymously?</label>
             </div>
 
-            <button id="reserve-button" onclick="openPopup()">Create Booking</button>
+            <button id="reserve-button" onclick="openPopup()">Create Booking for Walk-In</button>
         </div>
 
         <div id="overlay" class="overlay"></div>
@@ -289,7 +212,292 @@
             <input type="hidden" id="userId" name="userId" value="">
         </form>
 
+        <!-- View Button -->
+
         <script>
+
+            function isTimeInRange(time, startTime, endTime) {
+                const toMinutes = (t) => {
+                    const match = t.match(/(\d+):(\d+)\s+(A\.M\.|P\.M\.)/);
+                    if (!match) return 0;
+                    
+                    let [_, hour, minute, period] = match;
+                    hour = parseInt(hour);
+                    minute = parseInt(minute);
+                    
+                    let totalMinutes = hour * 60 + minute;
+                    
+                    if (period === "P.M." && hour !== 12) totalMinutes += 12 * 60;
+                    if (period === "A.M." && hour === 12) totalMinutes = minute;        
+                    return totalMinutes;
+                };
+
+                const currentTime = toMinutes(time);
+                const start = toMinutes(startTime);
+                const end = toMinutes(endTime);
+
+                return currentTime >= start && currentTime < end;
+            }
+
+            document.getElementById("view-button").addEventListener("click", function()
+            {
+                const selectedLab = document.getElementById("labs").options[document.getElementById("labs").selectedIndex]
+                console.log(selectedLab);
+
+                const selectedDate = document.getElementById("dates").value;
+                const capacity = selectedLab.getAttribute("data-capacity");
+                const userId = localStorage.getItem('userId');
+
+                const timeSlots = [
+                    "07:30 A.M.", "08:00 A.M.", "08:30 A.M.", "09:00 A.M.",
+                    "09:30 A.M.", "10:00 A.M.", "10:30 A.M.", "11:00 A.M.",
+                    "11:30 A.M.", "12:00 P.M.", "12:30 P.M.", "01:00 P.M.",
+                    "01:30 P.M.", "02:00 P.M.", "02:30 P.M.", "03:00 P.M.",
+                    "03:30 P.M.", "04:00 P.M.", "04:30 P.M.", "05:00 P.M.",
+                    "05:30 P.M.", "06:00 P.M.", "06:30 P.M.", "07:00 P.M.",
+                    "07:30 P.M.", "08:00 P.M.", "08:30 P.M."
+                ];
+
+                const timetable = document.getElementById("timetable");
+
+                if(!capacity || !selectedDate) {
+                    timetable.innerHTML = "";
+                    return;
+                }
+
+                let reservations = [];
+
+                fetch(`/api/reservations/lab/${selectedLab.value}/date/${selectedDate}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const reservations = data.reservations || [];
+
+                        createReservationPopups(reservations);
+
+                        let timetableHTML = "";
+                
+                        timetableHTML += `<th id = "seat-header">Seat</th>`;
+
+                        timeSlots.forEach((time) => {
+                            timetableHTML +=
+                                `<div id = "time-header">
+                                    <th>${time}</th>
+                                </div>`                    
+                        });
+
+                        for (let seat = 1; seat <= capacity; seat++) {
+                            timetableHTML += `<tr><td>Seat ${seat}</td>`;
+                            timeSlots.forEach((time, index) => {
+                                const matchingReservation = reservations.find(
+                                reservation => reservation.seatNumber === seat && isTimeInRange(time, reservation.startTime, reservation.endTime)
+                                );
+
+                                let seatClass = "clickable-seat";
+                                let popupId = "";
+
+                                if(matchingReservation) {
+                                    if(matchingReservation.userId._id.toString() === userId) {
+                                        seatClass = "my-booking-seat";
+                                    } else {
+                                        seatClass = "taken-seat";
+                                        
+                                        const reservationIndex = reservations.findIndex(reservation => 
+                                            reservation._id === matchingReservation._id || 
+                                            (reservation.seatNumber === matchingReservation.seatNumber && 
+                                            reservation.startTime === matchingReservation.startTime && 
+                                            reservation.userId._id === matchingReservation.userId._id)
+                                        );
+
+                                        popupId = `popup-frame-${reservationIndex}`;
+                                    }
+                                }
+
+                                timetableHTML +=
+                                    `<td>
+                                        <button class = "${seatClass}"
+                                            seat-number = "${seat}"
+                                            seat-time = "${time}"
+                                            data-popup-id = "${popupId}">
+                                        </button>
+                                    </td>`;
+                            });
+                            timetableHTML += `</tr>`;
+                        }
+
+                        timetable.innerHTML = timetableHTML;
+
+                        document.querySelectorAll(".clickable-seat").forEach(seat => {
+                            seat.addEventListener("click", handleSeatClick)
+                        });
+
+                        document.querySelectorAll(".taken-seat").forEach(seat => {
+                            seat.addEventListener("click", function() {
+                                const popupId = seat.getAttribute("data-popup-id");
+                                if(popupId) {
+                                    togglePopup(popupId);
+                                }
+                            });
+                        });
+                    })
+                    .catch(error => {
+                        console.error("Error fetching reservations: ", error);
+                    });
+            });
+
+            function generateValidEndTimes(selectedSeat) {
+                const seatNumber = selectedSeat.getAttribute("seat-number");
+                const seatTime = selectedSeat.getAttribute("seat-time");
+
+                const selectedLab = document.getElementById("labs").value;
+                const selectedDate = document.getElementById("dates").value;
+
+                const timeSlots = [
+                    "07:30 A.M.", "08:00 A.M.", "08:30 A.M.", "09:00 A.M.",
+                    "09:30 A.M.", "10:00 A.M.", "10:30 A.M.", "11:00 A.M.",
+                    "11:30 A.M.", "12:00 P.M.", "12:30 P.M.", "01:00 P.M.",
+                    "01:30 P.M.", "02:00 P.M.", "02:30 P.M.", "03:00 P.M.",
+                    "03:30 P.M.", "04:00 P.M.", "04:30 P.M.", "05:00 P.M.",
+                    "05:30 P.M.", "06:00 P.M.", "06:30 P.M.", "07:00 P.M.",
+                    "07:30 P.M.", "08:00 P.M.", "08:30 P.M.", "09:00 P.M."
+                ];
+
+                const startIndex = timeSlots.indexOf(seatTime);
+                
+                if(startIndex === -1) {
+                    console.error("Invalid start time: ", seatTime);
+                    return;
+                }
+
+                const endTimesDropdown = document.getElementById("endtimes");
+                endTimesDropdown.innerHTML = `<option value="disabled selected">Select an End Time</option>`;
+
+                // Fetch current reservations from the server
+                fetch(`/api/reservations/lab/${selectedLab}/date/${selectedDate}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        let nextReservationIndex = timeSlots.length;
+                        
+                        if (data.reservations && data.reservations.length > 0) {
+                            
+                            const seatReservations = data.reservations.filter(res =>
+                                res.seatNumber.toString() === seatNumber.toString() &&
+                                timeSlots.indexOf(res.startTime) > startIndex
+                            );
+
+                            if(seatReservations.length > 0) {
+                                const earliestNextReservation = seatReservations.reduce((earliest, current) => {
+                                    const earliestIndex = timeSlots.indexOf(earliest.startTime);
+                                    const currentIndex = timeSlots.indexOf(current.startTime);
+                                    return (currentIndex < earliestIndex) ? current : earliest;
+                                });
+
+                            nextReservationIndex = timeSlots.indexOf(earliestNextReservation.startTime);
+                            }
+                        }
+
+                        for(let i = startIndex + 1; i <= nextReservationIndex; i++) {
+                            if(i < timeSlots.length) {
+                                const option = document.createElement("option");
+                                option.value = timeSlots[i];
+                                option.text = timeSlots[i];
+                                endTimesDropdown.appendChild(option);
+                            }
+                        }
+
+                        if(endTimesDropdown.options.length === 1) {
+                            const option = document.createElement("option");
+                            option.value = "";
+                            option.text = "No available end times";
+                            option.disabled = true;
+                            endTimesDropdown.appendChild(option);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching reservations:', error);
+                });
+            }
+        
+            document.getElementById("endtimes").addEventListener("change", function() {
+
+                const timeSlots = [
+                    "07:30 A.M.", "08:00 A.M.", "08:30 A.M.", "09:00 A.M.",
+                    "09:30 A.M.", "10:00 A.M.", "10:30 A.M.", "11:00 A.M.",
+                    "11:30 A.M.", "12:00 P.M.", "12:30 P.M.", "01:00 P.M.",
+                    "01:30 P.M.", "02:00 P.M.", "02:30 P.M.", "03:00 P.M.",
+                    "03:30 P.M.", "04:00 P.M.", "04:30 P.M.", "05:00 P.M.",
+                    "05:30 P.M.", "06:00 P.M.", "06:30 P.M.", "07:00 P.M.",
+                    "07:30 P.M.", "08:00 P.M.", "08:30 P.M.", "09:00 P.M."
+                ];
+
+                const selectedEndTime = this.value;
+                const selectedSeat = document.querySelector(".selected-seat");
+                const selectedStartTime = selectedSeat.getAttribute("seat-time");
+
+                const startIndex = timeSlots.indexOf(selectedStartTime);
+                const endIndex = timeSlots.indexOf(selectedEndTime);
+
+                if(startIndex === -1 || endIndex === -1) {
+                    console.error("Invalid time range.");
+                    return;
+                }
+
+                document.querySelectorAll(`[seat-number="${selectedSeat.getAttribute("seat-number")}"]`).forEach(seat => {
+                    const seatTime = seat.getAttribute("seat-time");
+                    const seatIndex = timeSlots.indexOf(seatTime);
+
+                    if(seatIndex >= startIndex && seatIndex < endIndex)
+                    {
+                        seat.classList.add("selected-seat");
+                    } else {
+                        seat.classList.remove("selected-seat");
+                    }
+                })
+            })
+
+            function createReservationPopups(reservations) {
+                document.querySelectorAll(".popup2").forEach(popup => {
+                    popup.remove();
+                });
+
+                const frameContainer = document.querySelector(".frame");
+                reservations.forEach((reservation, index) => {
+                    const popupDiv = document.createElement("div");
+                    popupDiv.className = "popup2";
+                    popupDiv.id = `popup-frame-${index}`;
+                    
+                    const popupBox = document.createElement("div");
+                    popupBox.className = "popup-box";
+                    
+                    const timeSpan = document.createElement("span");
+                    timeSpan.className = "popup-header";
+                    timeSpan.textContent = `${reservation.startTime} - ${reservation.endTime}`;
+                    popupBox.appendChild(timeSpan);
+                    
+                    if (reservation.isAnonymous) {
+                        const nameSpan = document.createElement("span");
+                        nameSpan.className = "user-name";
+                        nameSpan.textContent = "Anonymous Reservation";
+                        popupBox.appendChild(nameSpan);
+                    } else {
+                        const userImg = document.createElement("img");
+                        userImg.className = "user-img";
+                        userImg.src = reservation.userId.image;
+                        userImg.onclick = function() {
+                            window.location.href = `/profile/${reservation.userId._id}`;
+                        };
+                        popupBox.appendChild(userImg);
+                        
+                        const nameSpan = document.createElement("span");
+                        nameSpan.className = "user-name";
+                        nameSpan.textContent = reservation.isCurrentUser ? "Your Reservation" : reservation.userId.firstName + " " + reservation.userId.lastName;
+                        popupBox.appendChild(nameSpan);
+                    }
+                    
+                    popupDiv.appendChild(popupBox);
+                    frameContainer.appendChild(popupDiv);
+                });
+            }
+
             function togglePopup(popupId) {
                 document.querySelectorAll(".popup2").forEach(popup => {
                     if(popup.id != popupId) {
@@ -335,8 +543,8 @@
                 
                 confirmPopup.classList.remove("open-popup");
                 
-                const seatNumber = selectedSeat.getAttribute('data-seat-number');
-                const startTime = selectedSeat.getAttribute('data-time-slot');
+                const seatNumber = selectedSeat.getAttribute('seat-number');
+                const startTime = selectedSeat.getAttribute('seat-time');
                 const isAnonymous = document.getElementById('anonymous') ? document.getElementById('anonymous').checked : false;
 
                 // Validate that all required fields are selected
@@ -438,7 +646,7 @@
                 }
                 
                 console.log(`Updating seat status for lab: ${selectedLab}, date: ${selectedDate}`);
-                
+
                 // Reset all seats to available (clickable)
                 document.querySelectorAll('.clickable-seat, .taken-seat, .selected-seat, .my-booking-seat').forEach(seat => {
                     seat.className = "clickable-seat";
@@ -474,7 +682,7 @@
                                 const startTime = reservation.startTime;
                                 
                                 // Find the seat button with matching seat number and time slot
-                                const seatButton = document.querySelector(`.clickable-seat[data-seat-number="${seatNumber}"][data-time-slot="${startTime}"]`);
+                                const seatButton = document.querySelector(`.clickable-seat[seat-number="${seatNumber}"][seat-time="${startTime}"]`);
                                 if (seatButton) {
                                     // If this is the current user's booking, mark it differently
                                     if (reservation.userId === userId) {
@@ -492,8 +700,8 @@
                     })
                     .catch(error => {
                         console.error('Error fetching reservations:', error);
-                    });
-                
+                });
+
                 // Set up the reserve button click handler
                 document.getElementById('reserve-button').onclick = function() {
                     const selectedSeat = document.querySelector('.selected-seat');
@@ -553,6 +761,7 @@
                     updateSeatStatus();
                 }
                 
+                /*
                 // Then update every 10 seconds
                 setInterval(function() {
                     const lab = document.getElementById('labs').value;
@@ -562,7 +771,7 @@
                         date !== "" && date !== "disabled selected") {
                         updateSeatStatus();
                     }
-                }, 10000); // 10 seconds
+                }, 10000); // 10 seconds*/
             }
             
             // Call restoreSelections when the page loads
@@ -587,6 +796,9 @@
 
             // Function to handle seat click
             function handleSeatClick(event) {
+
+                console.log("Seat clicked!");
+                
                 const userId = localStorage.getItem('userId');
                 if (!userId) {
                     alert('Please sign in to select a seat');
@@ -605,11 +817,12 @@
                 seat.classList.add('selected-seat');
                 
                 // Store the selected seat info
-                localStorage.setItem('selectedSeatNumber', seat.getAttribute('data-seat-number'));
-                localStorage.setItem('selectedTimeSlot', seat.getAttribute('data-time-slot'));
+                localStorage.setItem('selectedSeatNumber', seat.getAttribute('seat-number'));
+                localStorage.setItem('selectedTimeSlot', seat.getAttribute('seat-time'));
 
                 // Update end time options based on selected time slot
-                updateEndTimeOptions(seat.getAttribute('data-time-slot'));
+                
+                generateValidEndTimes(seat);
             }
             
             // Function to update end time options based on selected start time

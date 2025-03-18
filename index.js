@@ -811,10 +811,9 @@ app.get("/signedout-laboratories", async (req, res) => {
 });
 
 app.get("/labtech-laboratories", async (req, res) => {
+
     try {
         const labs = await Laboratory.find({}).lean();
-        const selectedLabId = req.query.labs ? req.query.labs.toString() : null;
-        
         const today = new Date();
         const next7Days = [];
         for(let i = 0; i < 7; i++) {
@@ -829,13 +828,11 @@ app.get("/labtech-laboratories", async (req, res) => {
         // Get any existing reservations
         const reservations = await Reservation.find().lean().populate('userId', 'firstName lastName');
 
-        res.render("labtech-laboratories", {
+        res.render('labtech-laboratories', { 
             labs, 
             next7Days, 
-            timeSlots, 
-            endTimeOptions,
-            selectedLabId,
-            reservations
+            timeSlots,
+            reservations 
         });
     } catch (error) {
         console.error('Error fetching laboratories:', error);
