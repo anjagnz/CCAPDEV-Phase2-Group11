@@ -83,6 +83,27 @@
                 cursor: not-allowed;
                 border-radius: 5px;
             }
+
+            #view-button{
+                width: 150px;
+                background-color: var(--secondary-color);
+                color: var(--background-color);
+                font-family: var(--primary-font-fam);
+                font-size: 13px;
+                font-weight: 500;
+                border: none;
+                border-radius: 10px;
+                padding: 10px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                margin-top: 50px;
+                margin-bottom: 10px;
+            }
+
+            #view-button:hover{
+                transform: scale(1.05);
+            }
+
         </style>
     </head>
 
@@ -100,13 +121,11 @@
 
             <div class="dropdown">
                 <span class="dropdown-header">Laboratory</span>
-                <select name="labs" id="labs">
-                    <option value="" disabled selected>Select a Laboratory</option>
-                    <option value="GK101A">GK101A</option>
-                    <option value="GK203B">GK203B</option>
-                    <option value="GK404B">GK404B</option>
-                    <option value="AG1706">AG1706</option>
-                    <option value="AG1904">AG1904</option>
+                <select name = "labs" id = "labs">
+                    <option value = "" disabled selected>Select a Laboratory</option>
+                    {{#each labs}}
+                        <option value="{{this._id}}" data-capacity = {{this.capacity}}>{{this.laboratoryName}}</option>
+                    {{/each}}
                 </select>
             </div>
 
@@ -116,6 +135,8 @@
                     <option value="disabled selected">Select a Date</option>
                 </select>
             </div>
+
+            <button id = "view-button">View Slots</button>
 
             {{!-- Dynamic popups for reservations --}}
             {{#each reservations}}
@@ -138,85 +159,11 @@
                     <table id="slot-chart">
                         <thead>
                             <tr>
-                                <th id="seat-header">Seat</th>
-                                <th>7:30 AM</th>
-                                <th>8:00 AM</th>
-                                <th>8:30 AM</th>
-                                <th>9:00 AM</th>
-                                <th>9:30 AM</th>
-                                <th>10:00 AM</th>
-                                <th>10:30 AM</th>
-                                <th>11:00 AM</th>
-                                <th>11:30 AM</th>
-                                <th>12:00 PM</th>
+                                
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <th id="seats">Seat 1</th>
-                                <td><button class="clickable-seat" data-seat-number="1" data-time-slot="7:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="1" data-time-slot="8:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="1" data-time-slot="8:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="1" data-time-slot="9:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="1" data-time-slot="9:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="1" data-time-slot="10:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="1" data-time-slot="10:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="1" data-time-slot="11:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="1" data-time-slot="11:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="1" data-time-slot="12:00 PM" onclick="handleSeatClick(event)"></button></td>
-                            </tr>
-                            <tr>
-                                <th id="seats">Seat 2</th>
-                                <td><button class="clickable-seat" data-seat-number="2" data-time-slot="7:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="2" data-time-slot="8:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="2" data-time-slot="8:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="2" data-time-slot="9:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="2" data-time-slot="9:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="2" data-time-slot="10:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="2" data-time-slot="10:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="2" data-time-slot="11:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="2" data-time-slot="11:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="2" data-time-slot="12:00 PM" onclick="handleSeatClick(event)"></button></td>
-                            </tr>
-                            <tr>
-                                <th id="seats">Seat 3</th>
-                                <td><button class="clickable-seat" data-seat-number="3" data-time-slot="7:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="3" data-time-slot="8:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="3" data-time-slot="8:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="3" data-time-slot="9:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="3" data-time-slot="9:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="3" data-time-slot="10:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="3" data-time-slot="10:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="3" data-time-slot="11:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="3" data-time-slot="11:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="3" data-time-slot="12:00 PM" onclick="handleSeatClick(event)"></button></td>
-                            </tr>
-                            <tr>
-                                <th id="seats">Seat 4</th>
-                                <td><button class="clickable-seat" data-seat-number="4" data-time-slot="7:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="4" data-time-slot="8:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="4" data-time-slot="8:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="4" data-time-slot="9:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="4" data-time-slot="9:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="4" data-time-slot="10:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="4" data-time-slot="10:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="4" data-time-slot="11:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="4" data-time-slot="11:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="4" data-time-slot="12:00 PM" onclick="handleSeatClick(event)"></button></td>
-                            </tr>
-                            <tr>
-                                <th id="seats">Seat 5</th>
-                                <td><button class="clickable-seat" data-seat-number="5" data-time-slot="7:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="5" data-time-slot="8:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="5" data-time-slot="8:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="5" data-time-slot="9:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="5" data-time-slot="9:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="5" data-time-slot="10:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="5" data-time-slot="10:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="5" data-time-slot="11:00 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="5" data-time-slot="11:30 AM" onclick="handleSeatClick(event)"></button></td>
-                                <td><button class="clickable-seat" data-seat-number="5" data-time-slot="12:00 PM" onclick="handleSeatClick(event)"></button></td>
-                            </tr>
+                        <tbody id = "timetable">
+                            
                         </tbody>
                     </table>
                 </div>
@@ -282,6 +229,62 @@
             <input type="hidden" id="endTime" name="endTime" value="">
             <input type="hidden" id="userId" name="userId" value="">
         </form>
+
+        <!-- View Button -->
+
+        <script>
+            document.getElementById("view-button").addEventListener("click", function() {
+                const selectedLab = document.getElementById("labs").options[document.getElementById("labs").selectedIndex]
+                console.log(selectedLab);
+
+                const selectedDate = document.getElementById("dates").value;
+                const capacity = selectedLab.getAttribute("data-capacity");
+
+                const timeSlots = [
+                    "07:30 A.M.", "08:00 A.M.", "08:30 A.M.", "09:00 A.M.",
+                    "09:30 A.M.", "10:00 A.M.", "10:30 A.M.", "11:00 A.M.",
+                    "11:30 A.M.", "12:00 P.M.", "12:30 P.M.", "01:00 P.M.",
+                    "01:30 P.M.", "02:00 P.M.", "02:30 P.M.", "03:00 P.M.",
+                    "03:30 P.M.", "04:00 P.M.", "04:30 P.M.", "05:00 P.M.",
+                    "05:30 P.M.", "06:00 P.M.", "06:30 P.M.", "07:00 P.M.",
+                    "07:30 P.M.", "08:00 P.M.", "08:30 P.M.", "09:00 P.M."
+                ];
+
+                const timetable = document.getElementById("timetable");
+
+                if(!capacity || !selectedDate) {
+                    timetable.innerHTML = "<p>No laboratory selected.</p>";
+                    return;
+                }
+
+                let timetableHTML = "";
+
+                timetableHTML += `<th id = "seat-header">Seat</th>`;
+
+                timeSlots.forEach((time) => {
+                    timetableHTML +=
+                        `<div id = "time-header">
+                            <th>${time}</th>
+                        </div>`                    
+                });
+
+                for (let seat = 1; seat <= capacity; seat++) {
+                    timetableHTML += `<tr><td>Seat ${seat}</td>`;
+                    timeSlots.forEach((time, index) => {
+                        timetableHTML +=
+                            `<td>
+                                <button class = "clickable-seat"
+                                    seat-number = "${seat}"
+                                    seat-time = "${time}">
+                                </button>
+                            </td>`;
+                    });
+                    timetableHTML += `</tr>`;
+                }
+
+                timetable.innerHTML = timetableHTML;
+            })
+        </script>
 
         <script>
             function togglePopup(popupId) {
