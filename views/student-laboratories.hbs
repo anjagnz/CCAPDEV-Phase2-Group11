@@ -138,23 +138,6 @@
 
             <button id = "view-button">View Slots</button>
 
-            {{!-- Dynamic popups for reservations --}}
-            {{!--
-            {{#each reservations}}
-            <div class="popup2" id="popup-frame-{{@index}}">
-                <div class="popup-box">
-                    <span class="popup-header">{{this.startTime}} - {{this.endTime}}</span>
-                    {{#if this.isAnonymous}}
-                        <span class="user-name">Anonymous Reservation</span>
-                    {{else}}
-                        <img class="user-img" src="{{this.userId.image}}" onclick="location.href='/profile/{{this.userId._id}}'"></img>
-                        <span class="user-name">{{#if this.isCurrentUser}}Your Reservation{{else}}{{this.userId.name}}{{/if}}</span>
-                    {{/if}}
-                </div>
-            </div>
-            {{/each}}
-            --}}
-
             <div id="chart">
                 <span id="chart-header">Slot Availability</span>
                 <div id="chart-body">
