@@ -4,7 +4,6 @@ const LabTech = require('./models/Labtech');
 const Laboratory = require('./models/Laboratory');
 const TimeSlot = require('./models/TimeSlot');
 
-// Connect to MongoDB
 mongoose.connect('mongodb://localhost/LabMateDB', {
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -16,39 +15,28 @@ mongoose.connect('mongodb://localhost/LabMateDB', {
 const demoStudents = [
     {
         type: 'Student',
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'john.doe@example.com',
-        password: 'password123',
-        biography: 'Computer Science student with a passion for web development and AI.',
+        firstName: 'Student',
+        lastName: 'Student',
+        email: 'student@dlsu.edu.ph',
+        password: 'student',
+    },
+    {
+        type: 'Student',
+        firstName: 'Angelo',
+        lastName: 'Rocha',
+        email: 'angelo_rocha@dlsu.edu.ph',
+        password: '345',
+        biography: 'idk what to put here',
         department: 'Computer Science'
     },
     {
         type: 'Student',
-        firstName: 'Jane',
-        lastName: 'Smith',
-        email: 'jane.smith@example.com',
-        password: 'password123',
-        biography: 'Biology major focusing on molecular genetics and biotechnology.',
-        department: 'Biology'
-    },
-    {
-        type: 'Student',
-        firstName: 'Alex',
-        lastName: 'Johnson',
-        email: 'alex.johnson@example.com',
-        password: 'password123',
-        biography: 'Physics student researching quantum mechanics and particle physics.',
-        department: 'Physics'
-    },
-    {
-        type: 'Student',
-        firstName: 'Emily',
-        lastName: 'Brown',
-        email: 'emily.brown@example.com',
-        password: 'password123',
-        biography: 'Chemistry student specializing in organic chemistry and material science.',
-        department: 'Chemistry'
+        firstName: 'Grass',
+        lastName: 'Capote',
+        email: 'mary_grace_capote@dlsu.edu.ph',
+        password: '456',
+        biography: 'send help',
+        department: 'Computer Science'
     },
     {
         type: 'Student',
@@ -74,43 +62,33 @@ const demoStudents = [
 const demoLabTechs = [
     {
         type: 'Faculty',
-        firstName: 'Robert',
-        lastName: 'Williams',
-        email: 'robert.williams@example.com',
-        password: 'password123',
-        biography: 'Senior lab technician with 10+ years of experience in computer science laboratories.',
+        firstName: 'Faculty',
+        lastName: 'Faculty',
+        email: 'faculty@dlsu.edu.ph',
+        password: 'faculty',
+        biography: 'Lab technician for DLSU.',
         department: 'Computer Science',
-        laboratories: []
     },
     {
         type: 'Faculty',
-        firstName: 'Sarah',
+        firstName: 'Noah',
         lastName: 'Davis',
-        email: 'sarah.davis@example.com',
+        email: 'noah_davis@dlsu.edu.ph',
         password: 'password123',
-        biography: 'Lab technician specializing in molecular biology and genetic engineering techniques.',
-        department: 'Biology',
-        laboratories: []
     },
     {
         type: 'Faculty',
         firstName: 'Michael',
-        lastName: 'Wilson',
-        email: 'michael.wilson@example.com',
+        lastName: 'Myers',
+        email: 'michael_myers@dlsu.edu.ph',
         password: 'password123',
-        biography: 'Physics lab technician with expertise in experimental physics and equipment maintenance.',
-        department: 'Physics',
-        laboratories: []
     },
     {
         type: 'Faculty',
         firstName: 'Lisa',
         lastName: 'Taylor',
-        email: 'lisa.taylor@example.com',
+        email: 'lisa_taylor@dlsu.edu.ph',
         password: 'password123',
-        biography: 'Chemistry lab technician specializing in analytical techniques and laboratory safety.',
-        department: 'Chemistry',
-        laboratories: []
     },
     {
         type: 'Faculty',
@@ -164,19 +142,16 @@ const seedDatabase = async () => {
         
         console.log('Previous data cleared');
 
-        // Insert demo students
+        // Insert new demo data
         await User.insertMany(demoStudents);
         console.log('Demo students added');
 
-        // Insert demo lab techs
         await LabTech.insertMany(demoLabTechs);
         console.log('Demo lab technicians added');
 
-        // Insert demo laboratories
         const insertedLabs = await Laboratory.insertMany(demoLaboratories);
         console.log('Demo laboratories added');
 
-        // Create demo time slots
         const timeSlots = [];
         const today = new Date(); // Get today's date
 
@@ -221,5 +196,4 @@ const seedDatabase = async () => {
     }
 };
 
-// Run the seed function
 seedDatabase();
