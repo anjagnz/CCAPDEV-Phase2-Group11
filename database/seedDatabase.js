@@ -85,10 +85,10 @@ const demoLabTechs = [
     },
     {
         type: 'Faculty',
-        firstName: 'Lisa',
-        lastName: 'Taylor',
-        email: 'lisa_taylor@dlsu.edu.ph',
-        password: 'password123',
+        firstName: 'Admin',
+        lastName: 'Admin',
+        email: 'admin@dlsu.edu.ph',
+        password: 'admin',
     },
     {
         type: 'Faculty',
