@@ -666,7 +666,8 @@ app.get("/api/reservations/lab/:labId/date/:date", async (req, res) => {
             startTime: reservation.startTime,
             endTime: reservation.endTime,
             userId: reservation.userId,
-            studentName: reservation.isAnonymous ? "Anonymous" : reservation.studentName || (reservation.userId ? `${reservation.userId.firstName} ${reservation.userId.lastName}` : "Unknown")
+            studentName: reservation.studentName || (reservation.userId ? `${reservation.userId.firstName} ${reservation.userId.lastName}` : "Unknown"),
+            isAnonymous: reservation.isAnonymous,
         }));
         
         res.json({ reservations: formattedReservations });
