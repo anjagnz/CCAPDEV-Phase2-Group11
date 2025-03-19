@@ -356,7 +356,7 @@
                         // Sort reservations by date to get the upcoming one
                         reservations.sort((a, b) => new Date(a.reservationDate) - new Date(b.reservationDate));
                         const upcomingReservation = reservations[0];
-                        const reservationDate = new Date(upcomingReservation.reservationDate).toISOString().split('T')[0];
+                        const reservationDate = formatToGMT8(upcomingReservation.reservationDate);
                         document.getElementById('upcoming-lab-info').textContent = 
                             reservationDate + ', ' + upcomingReservation.laboratoryRoom;
                     } else {
@@ -378,7 +378,7 @@
                         tableBody.appendChild(emptyRow);
                     } else {
                         reservations.forEach(reservation => {
-                            const reservationDate = new Date(reservation.reservationDate).toISOString().split('T')[0];
+                            const reservationDate = formatToGMT8(reservation.reservationDate);
                             const row = document.createElement('tr');
 
                             // For debugging - display the reservation ID
@@ -408,6 +408,20 @@
                     errorRow.innerHTML = '<td colspan="6" style="text-align: center; color: red;">Error loading reservations</td>';
                     tableBody.appendChild(errorRow);
                 });
+        }
+
+        // Format to GMT +8 from UTC
+
+        function formatToGMT8(dateString) {
+            const date = new Date(dateString);
+
+            const gmt8Date = new Date(date.getTime() + (8*60*60*1000));
+
+            const year = gmt8Date.getFullYear();
+            const month = String(gmt8Date.getMonth() + 1).padStart(2, '0');
+            const day = String(gmt8Date.getDate()).padStart(2, '0');
+
+            return `${year}-${month}-${day}`;
         }
 
         // Function to delete past reservations
