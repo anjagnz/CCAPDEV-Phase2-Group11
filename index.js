@@ -663,7 +663,7 @@ app.get("/api/reservations/lab/:labId/date/:date", async (req, res) => {
                 $gte: startDate,
                 $lt: endDate
             }
-        }).populate('userId', 'firstName lastName');
+        }).populate('userId', 'firstName lastName image');
         
         console.log(`Found ${reservations.length} reservations`);
         
