@@ -149,15 +149,28 @@
                 const tableBody = document.querySelector("tbody");
                 tableBody.innerHTML = ""; // Clear existing content
 
-                reservations.forEach(reservation => {
-                    var reservationDate = reservation.reservationDate.split('T')[0].trim(); // Extract only the date part
+                let canBeDeleted = false;
 
-                    // Create radio button
-                    const radio = document.createElement("input");
-                    radio.type = "radio";
-                    radio.name = "select-option";
-                    radio.classList.add("select-btn");
-                    radio.value = reservation._id; // Assign reservation ID
+                reservations.forEach(reservation => {
+                    var reservationDate = formatToGMT8(reservation.reservationDate);
+                    const currentDate = new Date();
+                    const reservationDateTime = new Date(reservationDate);
+
+                    const startTimeStr = reservation.startTime;
+                    const [time, period] = startTimeStr.split(' ');
+                    let [hours, minutes] = time.split(':').map(Number);
+
+                    if (period === 'P.M.' && hours < 12) {
+                        hours += 12;
+                    } else if (period === 'A.M.' && hours === 12) {
+                        hours = 0;
+                    }
+
+                    reservationDateTime.setHours(hours, minutes, 0, 0);
+
+                    const timeDiff = (currentDate - reservationDateTime) / (1000 * 60);
+                    const currentDateGMT8 = formatToGMT8(currentDate.toISOString());
+                    const isAfter10Minutes = reservationDate === currentDateGMT8 && timeDiff >= 10;
 
                     // Create reservation detail icon
                     const icon = document.createElement("img");
@@ -181,9 +194,22 @@
                         </td>
                     `;
 
-                    // Append the radio button and reservation detail icon
-                    row.children[0].appendChild(radio);
+                    // Append the reservation detail icon
                     row.children[4].appendChild(icon);
+
+                    if(isAfter10Minutes) {
+                        canBeDeleted = true;
+
+                        // Create radio button
+                        const radio = document.createElement("input");
+                        radio.type = "radio";
+                        radio.name = "select-option";
+                        radio.classList.add("select-btn");
+                        radio.value = reservation._id; // Assign reservation ID
+
+                        // Append the radio button
+                        row.children[0].appendChild(radio);
+                    }
 
                     tableBody.appendChild(row);
                 });
@@ -217,7 +243,7 @@
                 const reservation = await response.json();
 
                 // Extract necessary details
-                var reservationDate = reservation.reservationDate.split('T')[0].trim(); // Extract only the date part
+                var reservationDate = formatToGMT8(reservation.reservationDate);
                 var formattedDate = formatDate(new Date(reservation.bookingDate)).split("T");
                 var bookingDate = formattedDate[0];
                 var bookingTime = formattedDate[1];
@@ -348,6 +374,20 @@
             } catch (error) {
                 console.error("Error checking past reservations:", error);
             }
+        }
+
+        // Format to GMT +8 from UTC
+
+        function formatToGMT8(dateString) {
+            const date = new Date(dateString);
+
+            const gmt8Date = new Date(date.getTime() + (8*60*60*1000));
+
+            const year = gmt8Date.getFullYear();
+            const month = String(gmt8Date.getMonth() + 1).padStart(2, '0');
+            const day = String(gmt8Date.getDate()).padStart(2, '0');
+
+            return `${year}-${month}-${day}`;
         }
 
         // Confirm deletion
