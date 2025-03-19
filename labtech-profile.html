@@ -380,6 +380,24 @@
                         reservations.forEach(reservation => {
                             const reservationDate = new Date(reservation.reservationDate).toISOString().split('T')[0];
                             const row = document.createElement('tr');
+                            const now = new Date();
+                            const todayDate = now.toISOString().split('T')[0];
+                            let statusText = "";
+
+                            const startTime = timeToNumber(convertTo24Hour(reservation.startTime));
+                            const endTime = timeToNumber(convertTo24Hour(reservation.endTime));
+
+                            const nowHours = now.getHours().toString().padStart(2, '0');
+                            const nowMinutes = now.getMinutes().toString().padStart(2, '0');
+                            const nowTime = parseInt(`${nowHours}${nowMinutes}`, 10); 
+
+                            if (todayDate == reservationDate &&nowTime >= startTime && nowTime <= endTime) {
+                                statusText = "Ongoing";
+                            } else {
+                                statusText = "Upcoming";
+                            }
+
+                            console.log(statusText);
 
                             // For debugging - display the reservation ID
                             console.log('Adding reservation to table:', reservation._id);
@@ -389,7 +407,7 @@
                                 <td>${reservationDate}</td>
                                 <td>${reservation.startTime} - ${reservation.endTime}</td>
                                 <td>${reservation.seatNumber}</td>
-                                <td>Upcoming</td>
+                                <td>${statusText}</td>
                             `;
 
                             tableBody.appendChild(row);
@@ -609,6 +627,23 @@
                 alert(error.message);
             }
         });
+
+        function convertTo24Hour(time12h) {
+            const [time, modifier] = time12h.split(" ");
+            let [hours, minutes] = time.split(":");
+
+            if (modifier === "P.M." && hours !== "12") {
+                hours = String(parseInt(hours, 10) + 12);
+            } else if (modifier === "A.M." && hours === "12") {
+                hours = "00";
+            }
+
+            return `${hours}:${minutes}`;
+        }
+
+        function timeToNumber(timeStr) {
+            return parseInt(timeStr.replace(':', ''), 10);
+        }
 
     </script>
 </body>
