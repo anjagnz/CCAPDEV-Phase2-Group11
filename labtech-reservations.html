@@ -170,7 +170,9 @@
 
                     const timeDiff = (currentDate - reservationDateTime) / (1000 * 60);
                     const currentDateGMT8 = formatToGMT8(currentDate.toISOString());
-                    const isAfter10Minutes = reservationDate === currentDateGMT8 && timeDiff >= 10;
+                    const isAfter10Minutes = timeDiff >= 10;
+
+                    console.log(`Time Diff: ${timeDiff} Reservation Date: ${reservationDateTime} Current Date: ${currentDate}Date (GMT+8): ${currentDateGMT8}`);
 
                     // Create reservation detail icon
                     const icon = document.createElement("img");

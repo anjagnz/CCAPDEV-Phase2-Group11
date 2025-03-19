@@ -111,7 +111,7 @@ const seedReservations = async () => {
                 reservations.push(reservation);
             }
         }
-        
+
         // Insert the reservations
         await Reservation.insertMany(reservations);
         console.log(`${reservations.length} demo reservations added`);
