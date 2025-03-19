@@ -47,7 +47,7 @@ const generateEndTime = (startTime) => {
         }
     }
     
-    return `${hour}:${minute === 0 ? '00' : minute} ${period}`;
+    return `${hour.toString().padStart(2, '0')}:${minute === 0 ? '00' : minute} ${period}`;
 };
 
 // Seed the database with reservations

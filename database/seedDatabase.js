@@ -165,11 +165,11 @@ const seedDatabase = async () => {
                 // Loop for seat numbers 1-5
                 for (let j = 1; j <= 5; j++) {
                     const slots = [
-                        { seatNumber: j, time: '7:30 AM - 8:00 AM' },
-                        { seatNumber: j, time: '8:00 AM - 8:30 AM' },
-                        { seatNumber: j, time: '8:30 AM - 9:00 AM' },
-                        { seatNumber: j, time: '9:30 AM - 10:00 AM' },
-                        { seatNumber: j, time: '10:00 AM - 11:00 AM' },
+                        { seatNumber: j, time: '07:30 AM - 08:00 AM' },
+                        { seatNumber: j, time: '08:00 AM - 8:30 AM' },
+                        { seatNumber: j, time: '08:30 AM - 09:00 AM' },
+                        { seatNumber: j, time: '09:30 AM - 10:00 AM' },
+                        { seatNumber: j, time: '010:00 AM - 11:00 AM' },
                         { seatNumber: j, time: '11:00 AM - 11:30 AM' },
                         { seatNumber: j, time: '11:30 AM - 12:00 PM' }
                     ];
