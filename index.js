@@ -116,8 +116,6 @@ app.get("/api/user/details/:id", async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        let isLabTech = user.type === "Faculty";
-        
         // Return detailed user data
         const userDetails = {
             _id: user._id,
@@ -127,7 +125,7 @@ app.get("/api/user/details/:id", async (req, res) => {
             department: user.department,
             biography: user.biography,
             image: user.image,
-            isLabTech: isLabTech
+            isLabTech: user.type === "Faculty"
         };
         
         console.log(`Found detailed user info: ${JSON.stringify(userDetails)}`);
@@ -190,7 +188,6 @@ app.put("/api/user/update/:id", async (req, res) => {
             return res.status(404).json({message: "User not found"});
         }
 
-        let isLabTech = user.type === "Faculty";
 
         // Update user fields
         user.department = req.body.department || user.department;
@@ -221,7 +218,7 @@ app.put("/api/user/update/:id", async (req, res) => {
                 department: user.department,
                 biography: user.biography,
                 image: user.image,
-                isLabTech: isLabTech
+                isLabTech: user.type === "Faculty"
             }
         });
     } catch (error) {
@@ -283,12 +280,6 @@ app.delete("/api/user/:id", async (req, res) => {
         
         // Try to find the user in the User first
         let user = await User.findById(userId);
-        let isLabTech = false;
-        
-        if(user) {
-            if(user.type === "Faculty")
-                isLabTech = true;
-        }
 
         if (!user) {
             return res.status(404).json({ message: "User not found" });
@@ -440,13 +431,7 @@ app.post("/signin", async (req, res) => {
         }
 
         let user = await User.findOne({ email });
-        let isLabTech = false;
 
-        if(user) {
-            if(user.type === "Faculty")
-                isLabTech = true;
-        }
-        
         if (!user) {
             return res.status(401).json({ error: "Invalid email or password" });
         }
