@@ -210,6 +210,7 @@
             <input type="hidden" id="startTime" name="startTime" value="">
             <input type="hidden" id="endTime" name="endTime" value="">
             <input type="hidden" id="userId" name="userId" value="">
+            <input type="hidden" id="isAnonymous" name="isAnonymous" value="">
         </form>
 
         <!-- View Button -->
@@ -566,6 +567,7 @@
                             document.getElementById("startTime").value = startTime;
                             document.getElementById("endTime").value = endTime;
                             document.getElementById("userId").value = localStorage.getItem('userId');
+                            document.getElementById("isAnonymous").value = isAnonymous;
                             
                             // Submit the form
                             document.getElementById("reservationForm").submit();

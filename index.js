@@ -650,9 +650,15 @@ app.get("/api/reservations/lab/:labId/date/:date", async (req, res) => {
         
         console.log(`Date range: ${startDate.toISOString()} to ${endDate.toISOString()}`);
         
+        // fetch lab data
+        const lab = await Laboratory.findById(labId);
+        if (!lab) {
+            return res.status(404).json({ error: "Laboratory not found" });
+        }
+
         // Find all reservations for the given lab and date
         const reservations = await Reservation.find({
-            laboratoryRoom: labId,
+            laboratoryRoom: lab.laboratoryName,
             reservationDate: {
                 $gte: startDate,
                 $lt: endDate
@@ -681,7 +687,7 @@ app.get("/api/reservations/lab/:labId/date/:date", async (req, res) => {
 // Create a new reservation
 app.post("/create-reservation", async (req, res) => {
     try {
-        const { labId, date, seatNumber, startTime, endTime, userId } = req.body;
+        const { labId, date, seatNumber, startTime, endTime, userId, isAnonymous } = req.body;
         
         // Validate inputs
         if (!labId || !date || !seatNumber || !startTime || !endTime || !userId) {
@@ -693,9 +699,16 @@ app.post("/create-reservation", async (req, res) => {
         // Format the reservation date
         const reservationDate = new Date(date);
         
+        // fetch lab data
+        const lab = await Laboratory.findById(labId);
+
+        if (!lab) {
+            return res.status(404).send("Laboratory not found");
+        }
+
         // Check if there's already a reservation for this seat, date, and time
         const existingReservation = await Reservation.findOne({
-            laboratoryRoom: labId,
+            laboratoryRoom: lab.laboratoryName,
             seatNumber: parseInt(seatNumber),
             reservationDate: reservationDate,
             startTime: startTime
@@ -708,12 +721,14 @@ app.post("/create-reservation", async (req, res) => {
         // Create and save the new reservation
         const newReservation = new Reservation({
             userId,
-            laboratoryRoom: labId,
+            studentName: `${userId.firstName} ${userId.lastName}`,
+            laboratoryRoom: lab.laboratoryName,
             seatNumber: parseInt(seatNumber),
             bookingDate: new Date(),
             reservationDate: reservationDate,
             startTime,
-            endTime
+            endTime,
+            isAnonymous
         });
         
         await newReservation.save();
