@@ -97,7 +97,7 @@
             <div class="profile-card">
                 <div class="profile-header">
                     <div class="profile-picture-large">
-                        <img id="profile-image" src="img/default-profile.png" alt="Profile Picture">
+                        <img id="profile-image" src="/img/default-profile.png" alt="Profile Picture">
                     </div>
                     <h2 id="profile-name" style="color: var(--dark-blue)">User Name</h2>
                 </div>
@@ -131,7 +131,7 @@
                 <form id="profile-edit-form">
                     <div class="profile-header" style="padding-left: 10px;">
                         <div class="profile-picture-large">
-                            <img id="edit-profile-image" src="img/default-profile.png" alt="Profile Picture">
+                            <img id="edit-profile-image" src="/img/default-profile.png" alt="Profile Picture">
                         </div>
                         <div class="upload-overlay">
                             <div class="upload-wrapper">
@@ -319,7 +319,7 @@
                     if (userDetails.image) {
                         document.getElementById('profile-image').src = userDetails.image;
                     } else {
-                        document.getElementById('profile-image').src = 'img/default-profile.png';
+                        document.getElementById('profile-image').src = '/img/default-profile.png';
                     }
 
                     console.log(userDetails.image);
@@ -331,7 +331,7 @@
                     document.getElementById('email').value = userDetails.email || '';
                     document.getElementById('department').value = userDetails.department || '';
                     document.getElementById('biography').value = userDetails.biography || '';
-                    document.getElementById('edit-profile-image').src = userDetails.image || 'img/default-profile.png';
+                    document.getElementById('edit-profile-image').src = userDetails.image || '/img/default-profile.png';
                 })
                 .catch(error => {
                     console.error('Error loading profile data:', error);
