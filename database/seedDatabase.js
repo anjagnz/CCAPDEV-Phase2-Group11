@@ -3,6 +3,7 @@ const User = require('./models/User');
 const LabTech = require('./models/Labtech');
 const Laboratory = require('./models/Laboratory');
 const TimeSlot = require('./models/TimeSlot');
+const { seedReservations } = require('./seedReservations'); // js for reservations
 
 mongoose.connect('mongodb://localhost/LabMateDB', {
     useNewUrlParser: true,
@@ -189,6 +190,10 @@ const seedDatabase = async () => {
 
         await TimeSlot.insertMany(timeSlots);
         console.log('Demo time slots added');
+
+        // seed reservations once users, labs, timeslots are added
+        await seedReservations();
+        console.log('Demo reservations added');
 
         console.log('Database seeded successfully');
     } catch (error) {

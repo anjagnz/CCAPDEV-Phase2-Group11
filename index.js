@@ -34,18 +34,15 @@ const checkAndSeedDatabase = async () => {
 }
   
 // Connect to MongoDB and check for demo profiles
-  mongoose.connect('mongodb://localhost/LabMateDB', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  })
-  .then(() => {
+mongoose.connect('mongodb://localhost/LabMateDB')
+.then(() => {
     console.log('Connected to MongoDB successfully');
     // After successful connection, check and seed the database if needed
     checkAndSeedDatabase();
-  })
-  .catch(err => {
+})
+.catch(err => {
     console.error('MongoDB connection error:', err);
-  });
+});
 
 const Reservation = require('./database/models/Reservation');
 const Laboratory = require("./database/models/Laboratory");
@@ -598,24 +595,6 @@ app.get("/labtech-:page", (req, res) => {
 
 // Reservations
 app.get("/see-reservations", (req, res) => res.sendFile(path.join(__dirname, "see-reservations.html")));
-
-// Initial Database Population
-async function populateDatabase() {
-    try {
-        // Check if reservations already exist
-        const reservationsFound = await Reservation.find();
-        if (reservationsFound.length === 0) {
-            // Only populate reservations if none exist
-            await populateReservations();
-        }
-    } catch (error) {
-        console.error("Error populating database:", error);
-    }
-}
-
-
-// populate database (for demo)
-populateDatabase();
 
 // API endpoint to check seat availability
 app.get("/api/reservations/check-availability", async (req, res) => {

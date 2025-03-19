@@ -3,33 +3,18 @@ const User = require('./models/User');
 const Laboratory = require('./models/Laboratory');
 const Reservation = require('./models/Reservation');
 
-// Connect to MongoDB
-mongoose.connect('mongodb://localhost/LabMateDB', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
-.then(() => console.log('Connected to MongoDB'))
-.catch(err => console.error('Could not connect to MongoDB', err));
-
 // Time slots available for reservations
 const timeSlots = [
-    '7:30 AM', '8:00 AM', '8:30 AM', '9:00 AM', '9:30 AM', 
-    '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM', 
-    '12:30 PM', '1:00 PM', '1:30 PM', '2:00 PM', '2:30 PM',
-    '3:00 PM', '3:30 PM', '4:00 PM', '4:30 PM'
+    '7:30 A.M.', '8:00 A.M.', '8:30 A.M.', '9:00 A.M.', '9:30 A.M.', 
+    '10:00 A.M.', '10:30 A.M.', '11:00 A.M.', '11:30 A.M.', '12:00 P.M.', 
+    '12:30 P.M.', '1:00 P.M.', '1:30 P.M.', '2:00 P.M.', '2:30 P.M.',
+    '3:00 P.M.', '3:30 P.M.', '4:00 P.M.', '4:30 P.M.'
 ];
-
-// Function to create a date object for a specific day
-const createDate = (year, month, day) => {
-    const date = new Date(year, month - 1, day); // month is 0-indexed in JS Date
-    date.setHours(0, 0, 0, 0);
-    return date;
-};
 
 // Function to generate a random end time based on start time
 const generateEndTime = (startTime) => {
     // Parse the time
-    const timeRegex = /(\d+):(\d+)\s+(AM|PM)/;
+    const timeRegex = /(\d+):(\d+)\s+(A\.M\.|P\.M\.)/;
     const match = startTime.match(timeRegex);
     
     if (!match) return startTime; // Return original if no match
@@ -47,14 +32,14 @@ const generateEndTime = (startTime) => {
     }
     
     // Handle period change
-    if (hour === 12 && minute === 0 && period === 'AM') {
-        period = 'PM';
-    } else if (hour === 12 && minute === 0 && period === 'PM') {
-        period = 'AM';
+    if (hour === 12 && minute === 0 && period === 'A.M.') {
+        period = 'P.M.';
+    } else if (hour === 12 && minute === 0 && period === 'P.M.') {
+        period = 'A.M.';
         hour = 1;
     } else if (hour > 12) {
         hour -= 12;
-        if (period === 'AM') period = 'PM';
+        if (period === 'A.M.') period = 'P.M.';
     }
     
     return `${hour}:${minute === 0 ? '00' : minute} ${period}`;
@@ -72,27 +57,28 @@ const seedReservations = async () => {
         const labs = await Laboratory.find({});
         
         if (users.length === 0) {
-            console.error('No users found in the database. Please run seedDatabase.js first.');
-            mongoose.connection.close();
-            return;
+            throw new Error('No users found in the database');
         }
         
         if (labs.length === 0) {
-            console.error('No laboratories found in the database. Please run seedDatabase.js first.');
-            mongoose.connection.close();
-            return;
+            throw new Error('No laboratories found in the database');
         }
         
         console.log(`Found ${users.length} users and ${labs.length} laboratories`);
         
         const reservations = [];
         
-        // Create reservations from March 15 to March 29, 2025
-        for (let day = 15; day <= 29; day++) {
-            const reservationDate = createDate(2025, 3, day); // March 2025
+        // current date based on when run
+        const currentDate = new Date();
+        
+        // create reservations from 2 days ago to 7 days ahead
+        for (let day = -2; day <= 7; day++) {
+            const reservationDate = new Date(currentDate);
+            reservationDate.setDate(currentDate.getDate() + day);
+            reservationDate.setHours(0, 0, 0, 0);
             
-            // Create 15 reservations per day
-            for (let i = 0; i < 15; i++) {
+            // Create 5 reservations per day
+            for (let i = 0; i < 5; i++) {
                 // Randomly select a user, lab, seat, and time slot
                 const randomUserIndex = Math.floor(Math.random() * users.length);
                 const randomLabIndex = Math.floor(Math.random() * labs.length);
@@ -126,12 +112,10 @@ const seedReservations = async () => {
         console.log(`${reservations.length} demo reservations added`);
         
         console.log('Reservations seeded successfully');
-        mongoose.connection.close();
     } catch (error) {
         console.error('Error seeding reservations:', error);
-        mongoose.connection.close();
+        throw error;
     }
 };
 
-// Run the seed function
-seedReservations();
+module.exports = { seedReservations };
