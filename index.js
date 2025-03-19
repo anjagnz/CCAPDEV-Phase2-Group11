@@ -737,6 +737,67 @@ app.post("/create-reservation", async (req, res) => {
     }
 });
 
+// Create a new reservation as labtech
+app.post("/create-reservation-labtech", async (req, res) => {
+    try {
+        const { labId, date, seatNumber, startTime, endTime, userId, isAnonymous , studentName} = req.body;
+        
+        // Validate inputs
+        if (!labId || !date || !seatNumber || !startTime || !endTime || !userId || !studentName) {
+            return res.status(400).send("All fields are required");
+        }
+        
+        console.log("Creating reservation with data:", req.body);
+        
+        // Format the reservation date
+        const reservationDate = new Date(date);
+        
+        // fetch lab data
+        const lab = await Laboratory.findById(labId);
+
+        if (!lab) {
+            return res.status(404).send("Laboratory not found");
+        }
+
+        // Check if there's already a reservation for this seat, date, and time
+        const existingReservation = await Reservation.findOne({
+            laboratoryRoom: lab.laboratoryName,
+            seatNumber: parseInt(seatNumber),
+            reservationDate: reservationDate,
+            startTime: startTime
+        });
+        
+        if (existingReservation) {
+            return res.status(400).send("This seat is already reserved for the selected time");
+        }
+        
+        // Create and save the new reservation
+        const newReservation = new Reservation({
+            userId,
+            studentName,
+            laboratoryRoom: lab.laboratoryName,
+            seatNumber: parseInt(seatNumber),
+            bookingDate: new Date(),
+            reservationDate: reservationDate,
+            startTime,
+            endTime,
+            isAnonymous
+        });
+        
+        await newReservation.save();
+
+        // Update the availability of the timeslots selected
+        const timeslots = await TimeSlot.find();
+    
+        // Redirect to labtech-reservations.html after successful booking
+        res.redirect('/labtech-reservations');
+    } catch (error) {
+        console.error("Error creating reservation:", error);
+        res.status(500).send("An error occurred while creating the reservation");
+    }
+});
+
+
 // Routes for laboratory pages with database loading
 app.get("/student-laboratories", async (req, res) => {
     try {

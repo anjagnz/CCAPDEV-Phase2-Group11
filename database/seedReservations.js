@@ -5,10 +5,10 @@ const Reservation = require('./models/Reservation');
 
 // Time slots available for reservations
 const timeSlots = [
-    '7:30 A.M.', '8:00 A.M.', '8:30 A.M.', '9:00 A.M.', '9:30 A.M.', 
+    '07:30 A.M.', '08:00 A.M.', '08:30 A.M.', '09:00 A.M.', '09:30 A.M.', 
     '10:00 A.M.', '10:30 A.M.', '11:00 A.M.', '11:30 A.M.', '12:00 P.M.', 
-    '12:30 P.M.', '1:00 P.M.', '1:30 P.M.', '2:00 P.M.', '2:30 P.M.',
-    '3:00 P.M.', '3:30 P.M.', '4:00 P.M.', '4:30 P.M.'
+    '12:30 P.M.', '01:00 P.M.', '01:30 P.M.', '02:00 P.M.', '02:30 P.M.',
+    '03:00 P.M.', '03:30 P.M.', '04:00 P.M.', '04:30 P.M.'
 ];
 
 // Function to generate a random end time based on start time

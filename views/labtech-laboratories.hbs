@@ -176,7 +176,6 @@
 
             <div class = "dropdown">
                 <span class = "dropdown-header">Student's Name</span>
-
                 <input type = "text" id = "student-name">
             </div>
 
@@ -205,7 +204,7 @@
             </div>
         </div>
 
-        <form id="reservationForm" action="/create-reservation" method="POST" style="display: none;">
+        <form id="reservationForm" action="/create-reservation-labtech" method="POST" style="display: none;">
             <input type="hidden" id="labId" name="labId" value="">
             <input type="hidden" id="date" name="date" value="">
             <input type="hidden" id="seatNumber" name="seatNumber" value="">
@@ -213,6 +212,7 @@
             <input type="hidden" id="endTime" name="endTime" value="">
             <input type="hidden" id="userId" name="userId" value="">
             <input type="hidden" id="isAnonymous" name="isAnonymous" value="">
+            <input type="hidden" id="studentName" name="studentName" value="">
         </form>
 
         <!-- View Button -->
@@ -536,7 +536,8 @@
                 const lab = document.getElementById('labs').value;
                 const date = document.getElementById('dates').value;
                 const endTime = document.getElementById('endtimes').value;
-                
+                const studentName = document.getElementById('student-name').value;
+
                 // Get the selected seat
                 const selectedSeat = document.querySelector('.selected-seat');
                 if (!selectedSeat) {
@@ -551,7 +552,7 @@
                 const isAnonymous = document.getElementById('anonymous') ? document.getElementById('anonymous').checked : false;
 
                 // Validate that all required fields are selected
-                if (!lab || !date || !endTime || !seatNumber || !startTime) {
+                if (!lab || !date || !endTime || !seatNumber || !startTime || !studentName) {
                     alert("Please select a laboratory, date, end time, and seat before reserving.");
                     hideConfirmPopup();
                     return;
@@ -570,6 +571,7 @@
                             document.getElementById("endTime").value = endTime;
                             document.getElementById("userId").value = localStorage.getItem('userId');
                             document.getElementById("isAnonymous").value = isAnonymous;
+                            document.getElementById("studentName").value = studentName;
                             
                             // Submit the form
                             document.getElementById("reservationForm").submit();
