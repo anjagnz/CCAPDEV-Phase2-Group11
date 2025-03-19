@@ -580,21 +580,13 @@ app.get("/labtech-profile-:section", (req, res) => {
     res.redirect(`/labtech-profile${hash}`);
 });
 
-// Labtech Pages - Consolidated routes
-app.get("/labtech-:page", (req, res) => {
-    const page = req.params.page;
-    
-    // Special case for laboratories which uses a template
-    if (page === 'laboratories') {
-        return res.render("labtech-laboratories");
-    }
-    
-    // For other pages, serve the HTML file
-    res.sendFile(path.join(__dirname, `labtech-${page}.html`));
-});
-
 // Reservations
+
 app.get("/see-reservations", (req, res) => res.sendFile(path.join(__dirname, "see-reservations.html")));
+
+app.get("/labtech-reservations", (req, res) => {
+    res.sendFile(path.join(__dirname, "labtech-reservations.html"));
+})
 
 // API endpoint to check seat availability
 app.get("/api/reservations/check-availability", async (req, res) => {
