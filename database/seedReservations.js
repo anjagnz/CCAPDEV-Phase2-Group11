@@ -23,23 +23,28 @@ const generateEndTime = (startTime) => {
     hour = parseInt(hour);
     minute = parseInt(minute);
     
-    // Add 30 minutes
-    if (minute === 30) {
-        hour += 1;
-        minute = 0;
-    } else {
-        minute = 30;
-    }
+    // Generate random duration in 30-minute blocks (1-4 blocks = 30min to 2 hours)
+    const blocks = Math.floor(Math.random() * 4) + 1;
     
-    // Handle period change
-    if (hour === 12 && minute === 0 && period === 'A.M.') {
-        period = 'P.M.';
-    } else if (hour === 12 && minute === 0 && period === 'P.M.') {
-        period = 'A.M.';
-        hour = 1;
-    } else if (hour > 12) {
-        hour -= 12;
-        if (period === 'A.M.') period = 'P.M.';
+    // Add the random duration
+    for (let i = 0; i < blocks; i++) {
+        if (minute === 30) {
+            hour += 1;
+            minute = 0;
+        } else {
+            minute = 30;
+        }
+        
+        // Handle period change
+        if (hour === 12 && minute === 0 && period === 'A.M.') {
+            period = 'P.M.';
+        } else if (hour === 12 && minute === 0 && period === 'P.M.') {
+            period = 'A.M.';
+            hour = 1;
+        } else if (hour > 12) {
+            hour -= 12;
+            if (period === 'A.M.') period = 'P.M.';
+        }
     }
     
     return `${hour}:${minute === 0 ? '00' : minute} ${period}`;
