@@ -18,12 +18,10 @@ app.set("views", path.join(__dirname, "views"));
 
 // Check if demo profiles exist, if not, seed the database
 const User = require('./database/models/User');
-const LabTech = require('./database/models/Labtech');
 
 const checkAndSeedDatabase = async () => {
     try {
       const userCount = await User.countDocuments();
-      const labTechCount = await LabTech.countDocuments();
 
         // We'll use require to run the seed script directly
         require('./database/seedDatabase');
@@ -112,18 +110,13 @@ app.get("/api/user/details/:id", async (req, res) => {
         
         // Try to find the user in the User first
         let user = await User.findById(req.params.id);
-        let isLabTech = false;
-        
-        // If not found in User, try LabTech
-        if (!user) {
-            user = await LabTech.findById(req.params.id);
-            isLabTech = true;
-        }
-        
+
         if (!user) {
             console.log(`User not found with ID: ${req.params.id}`);
             return res.status(404).json({ message: "User not found" });
         }
+
+        let isLabTech = user.type === "Faculty";
         
         // Return detailed user data
         const userDetails = {
@@ -153,11 +146,6 @@ app.get("/api/user/:id", async (req, res) => {
         // Try to find the user in the User first
         let user = await User.findById(req.params.id);
         
-        // If not found in User, try LabTech
-        if (!user) {
-            user = await LabTech.findById(req.params.id);
-        }
-        
         if (!user) {
             console.log(`User not found with ID: ${req.params.id}`);
             return res.status(404).json({ message: "User not found" });
@@ -169,7 +157,7 @@ app.get("/api/user/:id", async (req, res) => {
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
-            isLabTech: user.constructor.modelName === 'LabTech'
+            isLabTech: user.type === "Faculty"
         };
         
         console.log(`Found user: ${JSON.stringify(userData)}`);
@@ -196,19 +184,14 @@ app.put("/api/user/update/:id", async (req, res) => {
     try {
         console.log(`Updating user with ID: ${req.params.id}`, req.body);
         
-        // Check which model the user belongs to
         let user = await User.findById(req.params.id);
-        let isLabTech = false;
-        
-        if (!user) {
-            user = await LabTech.findById(req.params.id);
-            isLabTech = true;
-            
-            if (!user) {
-                return res.status(404).json({ message: "User not found" });
-            }
+
+        if(!user) {
+            return res.status(404).json({message: "User not found"});
         }
-        
+
+        let isLabTech = user.type === "Faculty";
+
         // Update user fields
         user.department = req.body.department || user.department;
         user.biography = req.body.biography || user.biography;
@@ -302,13 +285,13 @@ app.delete("/api/user/:id", async (req, res) => {
         let user = await User.findById(userId);
         let isLabTech = false;
         
+        if(user) {
+            if(user.type === "Faculty")
+                isLabTech = true;
+        }
+
         if (!user) {
-            user = await LabTech.findById(userId);
-            isLabTech = true;
-            
-            if (!user) {
-                return res.status(404).json({ message: "User not found" });
-            }
+            return res.status(404).json({ message: "User not found" });
         }
         
         // Verify password (using plain text comparison as per user preference)
@@ -317,16 +300,10 @@ app.delete("/api/user/:id", async (req, res) => {
         }
         
         // Delete all reservations associated with the user
-        if (!isLabTech) {
-            await Reservation.deleteMany({ userId: userId });
-        }
+        await Reservation.deleteMany({ userId: userId });
         
         // Delete the user account
-        if (isLabTech) {
-            await LabTech.findByIdAndDelete(userId);
-        } else {
-            await User.findByIdAndDelete(userId);
-        }
+        await User.findByIdAndDelete(userId);
         
         console.log(`Successfully deleted user account with ID: ${userId}`);
         res.json({ message: "Account deleted successfully" });
@@ -373,9 +350,8 @@ app.post("/signup", async (req, res) => {
         
         // Check if email is already in use
         const existingUser = await User.findOne({ email });
-        const existingLabTech = await LabTech.findOne({ email });
         
-        if (existingUser || existingLabTech) {
+        if (existingUser) {
             return res.status(400).json({ error: "Email is already in use" });
         }
         
@@ -412,22 +388,21 @@ app.post("/signup", async (req, res) => {
                 return res.status(400).json({ error: "Invalid faculty code" });
             }
 
-            const newLabTech = new LabTech({
+            const newUser = new User({
                 firstName,
                 lastName,
                 email,
                 password: newPass,
-                type: 'Faculty',
-                laboratories: [] // Adding the laboratories array field
+                type: 'Faculty'
             });
             
-            await newLabTech.save();
-            console.log("New lab tech user created:", newLabTech._id);
+            await newUser.save();
+            console.log("New lab tech user created:", newUser._id);
                
             // Send success response with user info
             res.json({
                 success: true,
-                userId: newLabTech._id,
+                userId: newUser._id,
                 isLabTech: true,
                 redirect: "/labtech-home" 
             });
@@ -467,14 +442,13 @@ app.post("/signin", async (req, res) => {
         let user = await User.findOne({ email });
         let isLabTech = false;
 
+        if(user) {
+            if(user.type === "Faculty")
+                isLabTech = true;
+        }
+        
         if (!user) {
-            // If not found in User, try LabTech
-            user = await LabTech.findOne({ email });
-            isLabTech = true;
-            
-            if (!user) {
-                return res.status(401).json({ error: "Invalid email or password" });
-            }
+            return res.status(401).json({ error: "Invalid email or password" });
         }
 
         // Verify password (using plain text comparison as per user preference)
@@ -483,13 +457,13 @@ app.post("/signin", async (req, res) => {
         }
 
         // Determine redirect URL based on user type
-        const redirectUrl = isLabTech ? "/labtech-home" : "/student-home";
+        const redirectUrl = user.type === "Faculty" ? "/labtech-home" : "/student-home";
         
         // Send success response with user info
         res.json({
             success: true,
             userId: user._id,
-            isLabTech,
+            isLabTech: user.type === "Faculty",
             redirect: redirectUrl
         });
         
@@ -535,10 +509,12 @@ app.get("/profile/:id", async (req, res) => {
         // Try to find the user in the User first
         let user = await User.findById(req.params.id);
         
-        // If not found in User, try LabTech
+        /* TRY no need anymore kasi same schema na sila
+        // If not found in User, try LabTech 
         if (!user) {
-            user = await LabTech.findById(req.params.id);
+            user = await User.findById(req.params.id);
         }
+        */
         
         if (!user) {
             console.log(`User not found with ID: ${req.params.id}`);

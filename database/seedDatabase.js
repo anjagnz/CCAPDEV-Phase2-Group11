@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const User = require('./models/User');
-const LabTech = require('./models/Labtech');
 const Laboratory = require('./models/Laboratory');
 const TimeSlot = require('./models/TimeSlot');
 const { seedReservations } = require('./seedReservations'); // js for reservations
@@ -137,7 +136,6 @@ const seedDatabase = async () => {
     try {
         // Clear existing data
         await User.deleteMany({});
-        await LabTech.deleteMany({});
         await Laboratory.deleteMany({});
         await TimeSlot.deleteMany({});
         
@@ -147,7 +145,7 @@ const seedDatabase = async () => {
         await User.insertMany(demoStudents);
         console.log('Demo students added');
 
-        await LabTech.insertMany(demoLabTechs);
+        await User.insertMany(demoLabTechs);
         console.log('Demo lab technicians added');
 
         const insertedLabs = await Laboratory.insertMany(demoLaboratories);

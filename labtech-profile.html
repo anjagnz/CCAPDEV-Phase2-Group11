@@ -297,7 +297,7 @@
                     // Populate profile overview
                     document.getElementById('profile-name').textContent = userData.lastName + ', ' + userData.firstName;
                     document.getElementById('profile-email').textContent = userData.email;
-                    document.getElementById('profile-type').textContent = '[' + (userData.isLabTech ? 'Lab Technician' : 'Student') + ']';
+                    document.getElementById('profile-type').textContent = '[' + (userData.isLabTech ? 'Lab Technician' : 'Student') + ']'; // TRY
                     
                     // Fetch additional user details
                     return fetch(`/api/user/details/${userId}`);
