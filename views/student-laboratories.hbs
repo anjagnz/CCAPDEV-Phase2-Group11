@@ -124,7 +124,7 @@
             <div class="dropdown">
                 <span class="dropdown-header">Laboratory</span>
                 <select name = "labs" id = "labs">
-                    <option value = "disabled selected">Select a Laboratory</option>
+                    <option value = "" disabled selected>Select a Laboratory</option>
                     {{#each labs}}
                         <option value="{{this._id}}" data-capacity = {{this.capacity}}>{{this.laboratoryName}}</option>
                     {{/each}}
@@ -134,7 +134,7 @@
             <div class="dropdown">
                 <span class="dropdown-header">Date</span>
                 <select name="dates" id="dates">
-                    <option value="disabled selected">Select a Date</option>
+                    <option value="" disabled selected>Select a Date</option>
                 </select>
             </div>
 
@@ -170,7 +170,7 @@
             <div class="dropdown">
                 <span class="dropdown-header">Reserve until...</span>
                 <select name="endtimes" id="endtimes">
-                    <option value="disabled selected">Select an End Time</option>
+                    <option value="" disabled selected>Select an End Time</option>
                 </select>
             </div>
 
@@ -244,6 +244,9 @@
                 const selectedDate = document.getElementById("dates").value;
                 const capacity = selectedLab.getAttribute("data-capacity");
                 const userId = localStorage.getItem('userId');
+
+                console.log("Selected Lab: ", selectedLab);
+                console.log("Selected Date: ", selectedDate);
 
                 const timeSlots = [
                     "07:30 A.M.", "08:00 A.M.", "08:30 A.M.", "09:00 A.M.",
@@ -366,7 +369,7 @@
                 }
 
                 const endTimesDropdown = document.getElementById("endtimes");
-                endTimesDropdown.innerHTML = `<option value="disabled selected">Select an End Time</option>`;
+                endTimesDropdown.innerHTML = `<option value="" disabled selected>Select an End Time</option>`;
 
                 // Fetch current reservations from the server
                 fetch(`/api/reservations/lab/${selectedLab}/date/${selectedDate}`)
@@ -611,176 +614,24 @@
                     dateSelect.appendChild(option);
                 }
             }
-            
-            // Function to reload the page with the selected lab and date
-            function updateLabView() {
-                const labSelect = document.getElementById('labs');
-                const dateSelect = document.getElementById('dates');
-                const userId = localStorage.getItem('userId');
-                
-                // Only update when both lab and date are properly selected
-                if (labSelect.value !== "" && labSelect.value !== "disabled selected" && 
-                    dateSelect.value !== "" && dateSelect.value !== "disabled selected") {
-                    
-                    // Store selections in localStorage to preserve them
-                    localStorage.setItem('selectedLab', labSelect.value);
-                    localStorage.setItem('selectedDate', dateSelect.value);
-                    
-                    // Instead of refreshing the page, just update the seat status
-                    updateSeatStatus();
-                }
-            }
-            
-            // Function to update seat status based on selected lab and date
-            function updateSeatStatus() {
-                const selectedLab = document.getElementById('labs').value;
-                const selectedDate = document.getElementById('dates').value;
-                const userId = localStorage.getItem('userId');
-                
-                // Only query when both lab and date are properly selected
-                if (!selectedLab || selectedLab === "" || selectedLab === "disabled selected" || 
-                    !selectedDate || selectedDate === "" || selectedDate === "disabled selected") {
+
+            // Set up the reserve button click handler
+            document.getElementById('reserve-button').onclick = function() {
+                const selectedSeat = document.querySelector('.selected-seat');
+                if (!selectedSeat) {
+                    alert('Please select a seat first!');
                     return;
                 }
                 
-                console.log(`Updating seat status for lab: ${selectedLab}, date: ${selectedDate}`);
-
-                // Reset all seats to available (clickable)
-                document.querySelectorAll('.clickable-seat, .taken-seat, .selected-seat, .my-booking-seat').forEach(seat => {
-                    seat.className = "clickable-seat";
-                    // Re-attach click handlers for all seats
-                    seat.onclick = function() {
-                        // Remove selected class from all seats
-                        document.querySelectorAll('.selected-seat').forEach(s => {
-                            if (s.classList.contains('my-booking-seat')) {
-                                s.className = "my-booking-seat";
-                            } else if (s.classList.contains('taken-seat')) {
-                                s.className = "taken-seat";
-                            } else {
-                                s.className = "clickable-seat";
-                            }
-                        });
-                        // Add selected class to this seat if it's clickable
-                        if (this.className === "clickable-seat") {
-                            this.className = "selected-seat";
-                        }
-                    };
-                });
-                
-                // Fetch current reservations from the server
-                fetch(`/api/reservations/lab/${selectedLab}/date/${selectedDate}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('Received reservation data:', data);
-                        
-                        if (data.reservations && data.reservations.length > 0) {
-                            // Mark booked seats
-                            data.reservations.forEach(reservation => {
-                                const seatNumber = reservation.seatNumber;
-                                const startTime = reservation.startTime;
-                                
-                                // Find the seat button with matching seat number and time slot
-                                const seatButton = document.querySelector(`.clickable-seat[seat-number="${seatNumber}"][seat-time="${startTime}"]`);
-                                if (seatButton) {
-                                    // If this is the current user's booking, mark it differently
-                                    if (reservation.userId === userId) {
-                                        seatButton.className = "my-booking-seat";
-                                        seatButton.title = "Your booking";
-                                    } else {
-                                        seatButton.className = "taken-seat";
-                                        seatButton.title = "Already booked";
-                                    }
-                                    // Remove click handler from booked seats
-                                    seatButton.onclick = null;
-                                }
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error fetching reservations:', error);
-                });
-
-                // Set up the reserve button click handler
-                document.getElementById('reserve-button').onclick = function() {
-                    const selectedSeat = document.querySelector('.selected-seat');
-                    if (!selectedSeat) {
-                        alert('Please select a seat first!');
-                        return;
-                    }
-                    
-                    const endTime = document.getElementById('endtimes').value;
-                    if (!endTime || endTime === "disabled selected") {
-                        alert('Please select an end time!');
-                        return;
-                    }
-                    
-                    // Show confirmation popup
-                    openPopup();
-                };
-            }
-            
-            // Add this function to restore selections on page load
-            function restoreSelections() {
-                const selectedLab = localStorage.getItem('selectedLab');
-                const selectedDate = localStorage.getItem('selectedDate');
-                
-                if (selectedLab) {
-                    document.getElementById('labs').value = selectedLab;
+                const endTime = document.getElementById('endtimes').value;
+                if (!endTime || endTime === "disabled selected") {
+                    alert('Please select an end time!');
+                    return;
                 }
                 
-                if (selectedDate) {
-                    // First populate the dates
-                    generateNext7Days();
-                    
-                    // Then set the selected date
-                    const dateSelect = document.getElementById('dates');
-                    for (let i = 0; i < dateSelect.options.length; i++) {
-                        if (dateSelect.options[i].value === selectedDate) {
-                            dateSelect.selectedIndex = i;
-                            break;
-                        }
-                    }
-                    
-                    // If both lab and date are selected, update seat status
-                    if (selectedLab) {
-                        updateSeatStatus();
-                    }
-                }
-            }
-            
-            // Function to periodically update seat status
-            function startAutoRefresh() {
-                // Update seat status immediately if lab and date are selected
-                const selectedLab = document.getElementById('labs').value;
-                const selectedDate = document.getElementById('dates').value;
-                
-                if (selectedLab !== "" && selectedLab !== "disabled selected" && 
-                    selectedDate !== "" && selectedDate !== "disabled selected") {
-                    updateSeatStatus();
-                }
-                
-                /*
-                // Then update every 10 seconds
-                setInterval(function() {
-                    const lab = document.getElementById('labs').value;
-                    const date = document.getElementById('dates').value;
-                    
-                    if (lab !== "" && lab !== "disabled selected" && 
-                        date !== "" && date !== "disabled selected") {
-                        updateSeatStatus();
-                    }
-                }, 10000); // 10 seconds*/
-            }
-            
-            // Call restoreSelections when the page loads
-            document.addEventListener('DOMContentLoaded', function() {
-                restoreSelections();
-                startAutoRefresh();
-            });
-            
-            // Add event listeners to the lab and date selects
-            document.getElementById('labs').addEventListener('change', updateLabView);
-            document.getElementById('dates').addEventListener('change', updateLabView);
+                // Show confirmation popup
+                openPopup();
+            };
 
             window.onload = function() {
                 generateNext7Days();

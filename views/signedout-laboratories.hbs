@@ -110,7 +110,7 @@
             <div class="dropdown">
                 <span class="dropdown-header">Laboratory</span>
                 <select name = "labs" id = "labs">
-                    <option value = "disabled selected">Select a Laboratory</option>
+                    <option value = "" disabled selected>Select a Laboratory</option>
                     {{#each labs}}
                         <option value="{{this._id}}" data-capacity = {{this.capacity}}>{{this.laboratoryName}}</option>
                     {{/each}}
@@ -120,7 +120,7 @@
             <div class="dropdown">
                 <span class="dropdown-header">Date</span>
                 <select name="dates" id="dates">
-                    <option value="disabled selected">Select a Date</option>
+                    <option value="" disabled selected>Select a Date</option>
                 </select>
             </div>
 
@@ -280,40 +280,6 @@
                     dateSelect.appendChild(option);
                 }
             }
-            
-            // Add this function to restore selections on page load
-            function restoreSelections() {
-                const selectedLab = localStorage.getItem('selectedLab');
-                const selectedDate = localStorage.getItem('selectedDate');
-                
-                if (selectedLab) {
-                    document.getElementById('labs').value = selectedLab;
-                }
-                
-                if (selectedDate) {
-                    // First populate the dates
-                    generateNext7Days();
-                    
-                    // Then set the selected date
-                    const dateSelect = document.getElementById('dates');
-                    for (let i = 0; i < dateSelect.options.length; i++) {
-                        if (dateSelect.options[i].value === selectedDate) {
-                            dateSelect.selectedIndex = i;
-                            break;
-                        }
-                    }
-                }
-            }
-            
-            
-            // Call restoreSelections when the page loads
-            document.addEventListener('DOMContentLoaded', function() {
-                restoreSelections();
-            });
-            
-            // Add event listeners to the lab and date selects
-            document.getElementById('labs').addEventListener('change', updateLabView);
-            document.getElementById('dates').addEventListener('change', updateLabView);
 
             window.onload = function() {
                 generateNext7Days();
