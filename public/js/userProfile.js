@@ -189,7 +189,7 @@ function openProfilePopup(userId) {
         type: 'Student',
         department: 'Computer Science',
         biography: 'i need sleep',
-        image: 'img/default-profile.png'
+        image: '/img/default-profile.png'
     };
     
     // Load the popup-profile.html content dynamically

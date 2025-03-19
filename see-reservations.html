@@ -160,7 +160,7 @@
                 tableBody.innerHTML = ""; // Clear existing content
 
                 reservations.forEach(reservation => {
-                    var reservationDate = reservation.reservationDate.split('T')[0].trim(); // Extract only the date part
+                    var reservationDate = formatToGMT8(reservation.reservationDate);
 
                     // Create radio button
                     const radio = document.createElement("input");
@@ -227,7 +227,7 @@
                 const reservation = await response.json();
 
                 // Extract necessary details
-                var reservationDate = reservation.reservationDate.split('T')[0].trim(); // Extract only the date part
+                var reservationDate = formatToGMT8(reservation.reservationDate);
                 var formattedDate = formatDate(new Date(reservation.bookingDate)).split("T");
                 var bookingDate = formattedDate[0];
                 var bookingTime = formattedDate[1];
@@ -351,7 +351,7 @@
                     reservationDate.setHours(hours, minutes, 0, 0);
                     
                     console.log(`Reservation date: ${reservationDate} and current date: ${currentDateTime}`);
-                    
+
                     if (reservationDate < currentDateTime) {
                         const deleteResponse = await fetch(`/api/reservation/${reservation._id}`, { method: 'DELETE' });
                         if (deleteResponse.ok) {
@@ -367,6 +367,20 @@
             } catch (error) {
                 console.error("Error checking past reservations:", error);
             }
+        }
+
+        // Format to GMT +8 from UTC
+
+        function formatToGMT8(dateString) {
+            const date = new Date(dateString);
+
+            const gmt8Date = new Date(date.getTime() + (8*60*60*1000));
+
+            const year = gmt8Date.getFullYear();
+            const month = String(gmt8Date.getMonth() + 1).padStart(2, '0');
+            const day = String(gmt8Date.getDate()).padStart(2, '0');
+
+            return `${year}-${month}-${day}`;
         }
 
         // Confirm deletion

@@ -97,7 +97,7 @@
             <div class="profile-card">
                 <div class="profile-header">
                     <div class="profile-picture-large">
-                        <img id="profile-image" src="img/default-profile.png" alt="Profile Picture">
+                        <img id="profile-image" src="/img/default-profile.png" alt="Profile Picture">
                     </div>
                     <h2 id="profile-name" style="color: var(--dark-blue)">User Name</h2>
                 </div>
@@ -131,7 +131,7 @@
                 <form id="profile-edit-form">
                     <div class="profile-header" style="padding-left: 10px;">
                         <div class="profile-picture-large">
-                            <img id="edit-profile-image" src="img/default-profile.png" alt="Profile Picture">
+                            <img id="edit-profile-image" src="/img/default-profile.png" alt="Profile Picture">
                         </div>
                         <div class="upload-overlay">
                             <div class="upload-wrapper">
@@ -319,7 +319,7 @@
                     if (userDetails.image) {
                         document.getElementById('profile-image').src = userDetails.image;
                     } else {
-                        document.getElementById('profile-image').src = 'img/default-profile.png';
+                        document.getElementById('profile-image').src = '/img/default-profile.png';
                     }
 
                     console.log(userDetails.image);
@@ -331,7 +331,7 @@
                     document.getElementById('email').value = userDetails.email || '';
                     document.getElementById('department').value = userDetails.department || '';
                     document.getElementById('biography').value = userDetails.biography || '';
-                    document.getElementById('edit-profile-image').src = userDetails.image || 'img/default-profile.png';
+                    document.getElementById('edit-profile-image').src = userDetails.image || '/img/default-profile.png';
                 })
                 .catch(error => {
                     console.error('Error loading profile data:', error);
@@ -356,7 +356,7 @@
                         // Sort reservations by date to get the upcoming one
                         reservations.sort((a, b) => new Date(a.reservationDate) - new Date(b.reservationDate));
                         const upcomingReservation = reservations[0];
-                        const reservationDate = new Date(upcomingReservation.reservationDate).toISOString().split('T')[0];
+                        const reservationDate = formatToGMT8(upcomingReservation.reservationDate);
                         document.getElementById('upcoming-lab-info').textContent = 
                             reservationDate + ', ' + upcomingReservation.laboratoryRoom;
                     } else {
@@ -378,7 +378,7 @@
                         tableBody.appendChild(emptyRow);
                     } else {
                         reservations.forEach(reservation => {
-                            const reservationDate = new Date(reservation.reservationDate).toISOString().split('T')[0];
+                            const reservationDate = formatToGMT8(reservation.reservationDate);
                             const row = document.createElement('tr');
                             const now = new Date();
                             const todayDate = now.toISOString().split('T')[0];
@@ -426,6 +426,20 @@
                     errorRow.innerHTML = '<td colspan="6" style="text-align: center; color: red;">Error loading reservations</td>';
                     tableBody.appendChild(errorRow);
                 });
+        }
+
+        // Format to GMT +8 from UTC
+
+        function formatToGMT8(dateString) {
+            const date = new Date(dateString);
+
+            const gmt8Date = new Date(date.getTime() + (8*60*60*1000));
+
+            const year = gmt8Date.getFullYear();
+            const month = String(gmt8Date.getMonth() + 1).padStart(2, '0');
+            const day = String(gmt8Date.getDate()).padStart(2, '0');
+
+            return `${year}-${month}-${day}`;
         }
 
         // Function to delete past reservations
