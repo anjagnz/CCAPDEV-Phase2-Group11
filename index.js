@@ -16,6 +16,7 @@ app.use(fileUpload());
 app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "views"));
 
+
 // Check if demo profiles exist, if not, seed the database
 const User = require('./database/models/User');
 
@@ -30,6 +31,18 @@ const checkAndSeedDatabase = async () => {
       console.error('Error checking database:', error);
     }
 }
+
+// Connect to MongoDB and check for demo profiles
+// if no environtment var, connect to local
+mongoose.connect(process.env.DATABASE_URL ||'mongodb://localhost/LabMateDB')
+.then(() => {
+    console.log('Connected to MongoDB successfully');
+    // After successful connection, check and seed the database if needed
+    checkAndSeedDatabase();
+})
+.catch(err => {
+    console.error('MongoDB connection error:', err);
+});
 
 const Reservation = require('./database/models/Reservation');
 const Laboratory = require("./database/models/Laboratory");
@@ -871,20 +884,6 @@ hbs.registerHelper('range', function(start, end) {
     }
     return result;
 });
-
-// // Connect to MongoDB and check for demo profiles
-
-// Connect to MongoDB (if no environtment var, connect to local)
-mongoose.connect(process.env.DATABASE_URL ||'mongodb://localhost/LabMateDB')
-.then(() => {
-    console.log('Connected to MongoDB successfully');
-    // After successful connection, check and seed the database if needed
-    checkAndSeedDatabase();
-})
-.catch(err => {
-    console.error('MongoDB connection error:', err);
-});
-
 
 // Start the server
 const PORT = process.env.PORT || 3000;
