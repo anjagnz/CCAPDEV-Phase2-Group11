@@ -54,21 +54,23 @@ async function run() {
   } finally {
     // Ensures that the client will close when you finish/error
     await client.close();
+    checkAndSeedDatabase();
+
   }
 }
-run().catch(console.dir);
+run().catch(console.dir).then(() => {
+    console.log('Connected to MongoDB successfully');
+    // After successful connection, check and seed the database if needed
+    checkAndSeedDatabase();
+})
+.catch(err => {
+    console.error('MongoDB connection error:', err);
+});
 
 
-// // Connect to MongoDB and check for demo profiles
-// mongoose.connect('mongodb://localhost/LabMateDB')
-// .then(() => {
-//     console.log('Connected to MongoDB successfully');
-//     // After successful connection, check and seed the database if needed
-//     checkAndSeedDatabase();
-// })
-// .catch(err => {
-//     console.error('MongoDB connection error:', err);
-// });
+// Connect to MongoDB and check for demo profiles
+mongoose.connect('mongodb://localhost/LabMateDB')
+
 
 const Reservation = require('./database/models/Reservation');
 const Laboratory = require("./database/models/Laboratory");
@@ -911,8 +913,8 @@ hbs.registerHelper('range', function(start, end) {
     return result;
 });
 
-// Start the server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+// // Start the server
+// const PORT = process.env.PORT || 3000;
+// app.listen(PORT, () => {
+//     console.log(`Server is running on port ${PORT}`);
+// });
