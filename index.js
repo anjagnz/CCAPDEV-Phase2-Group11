@@ -53,22 +53,15 @@ async function run() {
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
+    checkAndSeedDatabase();
     await client.close();
     
   }
 }
-run().catch(console.dir).then(() => {
-    console.log('Connected to MongoDB successfully');
-    // After successful connection, check and seed the database if needed
-    checkAndSeedDatabase();
-})
-.catch(err => {
-    console.error('MongoDB connection error:', err);
-});
-
+run().catch(console.dir);
 
 // Connect to MongoDB and check for demo profiles
-mongoose.connect('mongodb://localhost/LabMateDB')
+mongoose.connect('mongodb://localhost/LabMateDB');
 
 
 const Reservation = require('./database/models/Reservation');
