@@ -4,7 +4,7 @@ const Laboratory = require('./models/Laboratory');
 const TimeSlot = require('./models/TimeSlot');
 const { seedReservations } = require('./seedReservations'); // js for reservations
 
-mongoose.connect('mongodb://localhost/LabMateDB', {
+mongoose.connect(process.env.DATABASE_URL || 'mongodb://localhost/LabMateDB', {
     useNewUrlParser: true,
     useUnifiedTopology: true
 })
