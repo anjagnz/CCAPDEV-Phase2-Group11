@@ -425,7 +425,6 @@
 
             console.log(endTimeField.value);
 
-            
             // Create a select element to replace the input
             let select = document.createElement("select"); 
             select.className = endTimeField.className;
@@ -435,18 +434,16 @@
 
             const response = await fetch(`/api/reservation/${reservationId}`, { method: "GET" });
             const reservation = await response.json();
-
-            const date = reservation.reservationDate;
-            const lab = reservation.laboratoryRoom;
-            const seat = reservation.seatNumber;
-
-            console.log(date, lab, seat);
+            const response2 = await fetch(`/api/laboratories/${reservation.laboratoryRoom}`, {method: "GET"});
+            const laboratory = await response2.json();
 
             // generate valid end times
-            const seatNumber = reservation.seatNumber;
+            const seatNumber = reservation.seatNumber.toString();
             const seatTime = reservation.startTime;
-            const selectedLab = reservation.laboratoryRoom;
-            const selectedDate = reservation.reservationDate;
+            const selectedLab = laboratory._id;
+            const selectedDate = formatToGMT8(reservation.reservationDate);
+
+            console.log(seatNumber, seatTime, selectedLab, selectedDate);
 
             const timeSlots = [
                 "07:30 A.M.", "08:00 A.M.", "08:30 A.M.", "09:00 A.M.",

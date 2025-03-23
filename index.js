@@ -584,11 +584,28 @@ app.get("/api/reservations/check-availability", async (req, res) => {
     }
 });
 
+// API endpoint to get a specific lab by name
+app.get("/api/laboratories/:laboratoryName", async (req, res) => {
+    try {
+        const { laboratoryName } = req.params; 
+        const laboratory = await Laboratory.findOne({ laboratoryName });
+
+        if (!laboratory) {
+            return res.status(404).json({ message: "Laboratory not found" });
+        }
+
+        res.json(laboratory);
+    } catch (error) {
+        res.status(500).json({ message: "Server error", error });
+    }
+});
+;
+
+
 // API endpoint to get reservations for a lab and date
 app.get("/api/reservations/lab/:labId/date/:date", async (req, res) => {
     try {
         const { labId, date } = req.params;
-        
         // Validate inputs
         if (!labId || !date) {
             return res.status(400).json({ error: "Laboratory and date are required" });
@@ -629,7 +646,7 @@ app.get("/api/reservations/lab/:labId/date/:date", async (req, res) => {
             startTime: reservation.startTime,
             endTime: reservation.endTime,
             userId: reservation.userId,
-            studentName: reservation.studentName || (reservation.userId ? `${reservation.userId.firstName} ${reservation.userId.lastName}` : "Unknown"),
+            studentName: reservation.studentName,
             isAnonymous: reservation.isAnonymous,
         }));
         
@@ -673,11 +690,13 @@ app.post("/create-reservation", async (req, res) => {
         if (existingReservation) {
             return res.status(400).send("This seat is already reserved for the selected time");
         }
-        
+
+        const user = await User.findById(userId);
+
         // Create and save the new reservation
         const newReservation = new Reservation({
             userId,
-            studentName: `${userId.firstName} ${userId.lastName}`,
+            studentName: `${user.firstName} ${user.lastName}`,
             laboratoryRoom: lab.laboratoryName,
             seatNumber: parseInt(seatNumber),
             bookingDate: new Date(),
