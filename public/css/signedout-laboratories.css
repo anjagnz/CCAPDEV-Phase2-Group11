@@ -118,6 +118,13 @@ td{
     border-radius: 8px;
 }
 
+.freezecol {
+    position: sticky;
+    left: 0;
+    background-color: #FFFFFF;
+    border-radius: 0;
+}
+
 .view-seat{
     height: 50px;
     width: 50px;

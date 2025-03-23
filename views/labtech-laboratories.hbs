@@ -206,6 +206,19 @@
     <!-- View Button -->
 
     <script>
+        function toggleViewSlots() {
+                const chartBody = document.getElementById("chart-body");
+                const viewToggle = document.querySelector("a#view-toggle");
+                if (viewToggle.textContent === 'Expand view') {
+                    chartBody.style.height = "";
+                    chartBody.style.overflowY = "";
+                    viewToggle.textContent = 'Minimize view'
+                } else {
+                    chartBody.style.height = "500px";
+                    chartBody.style.overflowY = "scroll";
+                    viewToggle.textContent = 'Expand view'
+                }
+            }
 
         function isTimeInRange(time, startTime, endTime) {
             const toMinutes = (t) => {
@@ -311,7 +324,7 @@
                     });
 
                     for (let seat = 1; seat <= capacity; seat++) {
-                        timetableHTML += `<tr><td>Seat ${seat}</td>`;
+                        timetableHTML += `<tr><td class="freezecol">Seat ${seat}</td>`;
                         displayTimeSlots.forEach((time, index) => {
                             const matchingReservation = reservations.find(
                                 reservation => reservation.seatNumber === seat && isTimeInRange(time, reservation.startTime, reservation.endTime)
@@ -376,6 +389,11 @@
                 .catch(error => {
                     console.error("Error fetching reservations: ", error);
                 });
+            
+            // add slot view toggle after loading slots
+            if (!document.querySelector("a#view-toggle")) {
+                document.querySelector("#chart-header").innerHTML += " (<a id='view-toggle' onclick='toggleViewSlots()' style='text-decoration: underline; cursor: pointer;'>Minimize view</a>)"
+            }
         });
 
         function generateValidEndTimes(selectedSeat) {

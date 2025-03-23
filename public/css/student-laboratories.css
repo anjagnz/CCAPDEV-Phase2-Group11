@@ -95,6 +95,13 @@ th{
     font-size: 13px;
 }
 
+.freezecol {
+    position: sticky;
+    left: 0;
+    background-color: #FFFFFF;
+    border-radius: 0;
+}
+
 #seat-header{
     white-space: nowrap;
     padding: 20px;
