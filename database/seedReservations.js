@@ -76,24 +76,26 @@ const seedReservations = async () => {
         // current date based on when run
         const currentDate = new Date();
         
-        // create reservations from 2 days ago to 7 days ahead
-        for (let day = -2; day <= 7; day++) {
+        // create reservations from 2 days ago to 7 days 
+        for (let day = -2; day < 7; day++) {
             const reservationDate = new Date(currentDate);
             reservationDate.setDate(currentDate.getDate() + day);
-            reservationDate.setHours(0, 0, 0, 0);
+            reservationDate.setHours(12, 0, 0, 0);
             
             // Create 5 reservations per day
             for (let i = 0; i < 5; i++) {
                 // Randomly select a user, lab, seat, and time slot
                 const randomUserIndex = Math.floor(Math.random() * users.length);
                 const randomLabIndex = Math.floor(Math.random() * labs.length);
-                const randomSeatNumber = Math.floor(Math.random() * 30) + 1; // Seats 1-30
                 const randomTimeIndex = Math.floor(Math.random() * timeSlots.length);
                 
                 const user = users[randomUserIndex];
                 const lab = labs[randomLabIndex];
                 const startTime = timeSlots[randomTimeIndex];
                 const endTime = generateEndTime(startTime);
+                
+                // Randomly select a seat number based on lab's capacity (1 - capacity)
+                const randomSeatNumber = Math.floor(Math.random() * lab.capacity) + 1;
                 
                 // Create a new reservation
                 const reservation = {
