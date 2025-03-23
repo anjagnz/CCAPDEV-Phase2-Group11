@@ -780,7 +780,7 @@ app.get("/student-laboratories", async (req, res) => {
         const labs = await Laboratory.find({}).lean();
         const today = new Date();
         const next7Days = [];
-        for(let i = 0; i < 7; i++) {
+        for(let i = 0; i <= 7; i++) {
             const date = new Date();
             date.setDate(today.getDate() + i);
             next7Days.push({
@@ -809,7 +809,7 @@ app.get("/signedout-laboratories", async (req, res) => {
         const labs = await Laboratory.find({}).lean();
         const today = new Date();
         const next7Days = [];
-        for(let i = 0; i < 7; i++) {
+        for(let i = 0; i <= 7; i++) {
             const date = new Date();
             date.setDate(today.getDate() + i);
             next7Days.push({
@@ -838,7 +838,7 @@ app.get("/labtech-laboratories", async (req, res) => {
         const labs = await Laboratory.find({}).lean();
         const today = new Date();
         const next7Days = [];
-        for(let i = 0; i < 7; i++) {
+        for(let i = 0; i <= 7; i++) {
             const date = new Date();
             date.setDate(today.getDate() + i);
             next7Days.push({

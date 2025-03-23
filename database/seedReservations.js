@@ -76,11 +76,11 @@ const seedReservations = async () => {
         // current date based on when run
         const currentDate = new Date();
         
-        // create reservations from 2 days ago to 7 days 
-        for (let day = -2; day < 7; day++) {
+        // create reservations from 2 days ago to 7 days ahead
+        for (let day = -2; day <= 7; day++) {
             const reservationDate = new Date(currentDate);
             reservationDate.setDate(currentDate.getDate() + day);
-            reservationDate.setHours(12, 0, 0, 0);
+            reservationDate.setHours(0, 0, 0, 0);
             
             // Create 5 reservations per day
             for (let i = 0; i < 5; i++) {

@@ -32,7 +32,7 @@ function populateDates() {
     const today = new Date();
     
     // Add next 7 days
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i <= 7; i++) {
         const date = new Date(today);
         date.setDate(today.getDate() + i);
         const option = document.createElement('option');
