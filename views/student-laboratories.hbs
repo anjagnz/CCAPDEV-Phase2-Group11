@@ -506,6 +506,11 @@
                         nameSpan.className = "user-name";
                         nameSpan.textContent = "Anonymous Reservation";
                         popupBox.appendChild(nameSpan);
+                    } else if (reservation.studentName === "Walk-in Student") {
+                        const nameSpan = document.createElement("span");
+                        nameSpan.className = "user-name";
+                        nameSpan.textContent = reservation.studentName;
+                        popupBox.appendChild(nameSpan);
                     } else {
                         const userImg = document.createElement("img");
                         userImg.className = "user-img";

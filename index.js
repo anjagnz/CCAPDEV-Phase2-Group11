@@ -723,10 +723,10 @@ app.post("/create-reservation", async (req, res) => {
 // Create a new reservation as labtech
 app.post("/create-reservation-labtech", async (req, res) => {
     try {
-        const { labId, date, seatNumber, startTime, endTime, userId, isAnonymous , studentName} = req.body;
+        const { labId, date, seatNumber, startTime, endTime, userId} = req.body;
         
         // Validate inputs
-        if (!labId || !date || !seatNumber || !startTime || !endTime || !userId || !studentName) {
+        if (!labId || !date || !seatNumber || !startTime || !endTime || !userId) {
             return res.status(400).send("All fields are required");
         }
         
@@ -757,14 +757,14 @@ app.post("/create-reservation-labtech", async (req, res) => {
         // Create and save the new reservation
         const newReservation = new Reservation({
             userId,
-            studentName,
+            studentName: "Walk-in Student",
             laboratoryRoom: lab.laboratoryName,
             seatNumber: parseInt(seatNumber),
             bookingDate: new Date(),
             reservationDate: reservationDate,
             startTime,
             endTime,
-            isAnonymous
+            isAnonymous: false // handle labtech reservation (no anon boolean)
         });
         
         await newReservation.save();

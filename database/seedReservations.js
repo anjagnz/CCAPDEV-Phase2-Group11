@@ -98,14 +98,14 @@ const seedReservations = async () => {
                 // Create a new reservation
                 const reservation = {
                     userId: user._id,
-                    studentName: `${user.firstName} ${user.lastName}`,
+                    studentName: user.type === "Faculty" ? "Walk-in Student" : `${user.firstName} ${user.lastName}`,
                     laboratoryRoom: lab.laboratoryName,
                     seatNumber: randomSeatNumber,
                     bookingDate: new Date(), // Current date as booking date
                     reservationDate: new Date(reservationDate),
                     startTime: startTime,
                     endTime: endTime,
-                    isAnonymous: Math.random() > 0.8 // 20% chance of being anonymous
+                    isAnonymous: user.type === "Faculty" ? false : Math.random() > 0.8 // 20% chance of being anonymous
                 };
                 
                 reservations.push(reservation);
