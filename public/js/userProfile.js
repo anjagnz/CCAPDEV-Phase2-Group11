@@ -2,7 +2,7 @@
 
 document.addEventListener('DOMContentLoaded', function() {
     // Check if we're on a user profile page
-    const isUserProfilePage = window.location.pathname.includes('user-profile') || 
+    const isUserProfilePage = window.location.pathname.includes('student-profile') || 
                              window.location.pathname.includes('profile_');
     
     if (isUserProfilePage) {
@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Setup event listeners for reservations if on reservations page
-    const isReservationsPage = window.location.pathname.includes('see-reservations');
+    const isReservationsPage = window.location.pathname.includes('student-reservations');
     if (isReservationsPage) {
         setupReservationManagement();
     }

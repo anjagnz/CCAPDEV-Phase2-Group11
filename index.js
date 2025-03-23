@@ -468,7 +468,7 @@ app.get("/labtech-home", (req, res) => res.sendFile(path.join(__dirname, "labtec
 app.get("/popup-profile", (req, res) => {
     res.render("popup-profile", { userData: null });
 });
-app.get("/user-profile", (req, res) => res.sendFile(path.join(__dirname, "user-profile.html")));
+app.get("/student-profile", (req, res) => res.sendFile(path.join(__dirname, "student-profile.html")));
 app.get("/labtech-profile", (req, res) => res.sendFile(path.join(__dirname, "labtech-profile.html")));
 
 
@@ -483,7 +483,7 @@ app.get("/profile-:section", (req, res) => {
     };
     
     const hash = validSections[section] || '';
-    res.redirect(`/user-profile${hash}`);
+    res.redirect(`/student-profile${hash}`);
 });
 
 // User Profiles
@@ -537,7 +537,7 @@ app.get("/labtech-profile-:section", (req, res) => {
 
 // Reservations
 
-app.get("/see-reservations", (req, res) => res.sendFile(path.join(__dirname, "see-reservations.html")));
+app.get("/student-reservations", (req, res) => res.sendFile(path.join(__dirname, "student-reservations.html")));
 
 app.get("/labtech-reservations", (req, res) => {
     res.sendFile(path.join(__dirname, "labtech-reservations.html"));
@@ -704,8 +704,8 @@ app.post("/create-reservation", async (req, res) => {
         const timeslots = await TimeSlot.find();
         
         
-        // Redirect to see-reservations.html after successful booking
-        res.redirect('/see-reservations');
+        // Redirect to student-reservations.html after successful booking
+        res.redirect('/student-reservations');
     } catch (error) {
         console.error("Error creating reservation:", error);
         res.status(500).send("An error occurred while creating the reservation");

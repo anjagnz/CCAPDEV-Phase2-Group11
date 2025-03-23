@@ -45,7 +45,7 @@ $.each(includes, function() {
             case 'labtech-home':
                 document.getElementById("nav-home")?.classList.add("active");
                 break;
-            case 'see-reservations':
+            case 'student-reservations':
             case 'labtech-reservations':
                 document.getElementById("nav-reserve")?.classList.add("active");
                 break;

@@ -768,6 +768,20 @@
                     resPopup.classList.remove('show');
                 }
             };
+
+        window.onload = function () {
+            // Log the current time
+            const currentTime = new Date();
+            console.log("Current time:", currentTime);
+            console.log("UTC time:", currentTime.toUTCString());
+        };
+
+        document.getElementById("dates").addEventListener("change", async function () {
+            const selectedDate = this.value;
+            if (selectedDate) {
+            alert(`You have selected: ${selectedDate}`);
+            }
+        });
     </script>
 </body>
 
