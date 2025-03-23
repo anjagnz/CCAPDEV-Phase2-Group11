@@ -18,6 +18,9 @@ const demoStudents = [
         firstName: 'Student',
         lastName: 'Student',
         email: 'student@dlsu.edu.ph',
+        department: 'Computer Science',
+        biography: 'Student',
+        image: "/uploads/profile-1.jpg",
         password: 'student',
     },
     {
@@ -27,6 +30,7 @@ const demoStudents = [
         email: 'angelo_rocha@dlsu.edu.ph',
         password: '345',
         biography: 'idk what to put here',
+        image: "/uploads/profile-2.jpg",
         department: 'Computer Science'
     },
     {
@@ -36,6 +40,7 @@ const demoStudents = [
         email: 'mary_grace_capote@dlsu.edu.ph',
         password: '456',
         biography: 'send help',
+        image: "/uploads/profile-3.jpg",
         department: 'Computer Science'
     },
     {
@@ -45,6 +50,7 @@ const demoStudents = [
         email: 'anja_gonzales@dlsu.edu.ph',
         password: '234',
         biography: 'i need sleep',
+        image: "/uploads/profile-4.jpg",
         department: 'Computer Science'
     },
     {
@@ -54,6 +60,7 @@ const demoStudents = [
         email: 'denise_liana_ho@dlsu.edu.ph',
         password: '123',
         biography: 'idk stream tsunami sea yeah',
+        image: "/uploads/profile-5.jpg",
         department: 'Computer Science'
     }
 ];
@@ -62,11 +69,13 @@ const demoStudents = [
 const demoLabTechs = [
     {
         type: 'Faculty',
-        firstName: 'Faculty',
-        lastName: 'Faculty',
+        firstName: 'Charlie',
+        lastName: 'Caronongan',
         email: 'faculty@dlsu.edu.ph',
         password: 'faculty',
-        biography: 'Lab technician for DLSU.',
+        department: 'Computer Science',
+        biography: 'Lab technician for DLSU. No, I am not a dog...',
+        image: "/uploads/charlie.jpg",
         department: 'Computer Science',
     },
     {
@@ -74,6 +83,9 @@ const demoLabTechs = [
         firstName: 'Noah',
         lastName: 'Davis',
         email: 'noah_davis@dlsu.edu.ph',
+        department: 'Computer Science',
+        biography: "I am a professor.",
+        image: "/uploads/noah.jpg",
         password: 'password123',
     },
     {
@@ -81,6 +93,8 @@ const demoLabTechs = [
         firstName: 'Michael',
         lastName: 'Myers',
         email: 'michael_myers@dlsu.edu.ph',
+        biography: "*intense breathing in and out from mask sounds*",
+        image: "/uploads/michael.jpg",
         password: 'password123',
     },
     {
@@ -88,16 +102,9 @@ const demoLabTechs = [
         firstName: 'Admin',
         lastName: 'Admin',
         email: 'admin@dlsu.edu.ph',
+        biography: "Admin",
         password: 'admin',
     },
-    {
-        type: 'Faculty',
-        firstName: 'The',
-        lastName: 'Goat',
-        email: 'the_goat@dlsu.edu.ph',
-        password: 'admin',
-        department: 'Computer Science'
-    }
 ];
 
 // Demo laboratories

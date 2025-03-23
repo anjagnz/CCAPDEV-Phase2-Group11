@@ -100,7 +100,7 @@ const seedReservations = async () => {
                 // Create a new reservation
                 const reservation = {
                     userId: user._id,
-                    studentName: user.type === "Faculty" ? "Walk-in Student" : `${user.firstName} ${user.lastName}`,
+                    studentName: `${user.firstName} ${user.lastName}`,
                     laboratoryRoom: lab.laboratoryName,
                     seatNumber: randomSeatNumber,
                     bookingDate: new Date(), // Current date as booking date

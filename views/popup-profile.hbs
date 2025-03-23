@@ -125,12 +125,7 @@
 
     <script>
         function closePopup() {
-            // Check if we came from student-laboratories and redirect back
-            if (document.referrer.includes('student-laboratories')) {
-                window.location.href = '/student-laboratories';
-            } else {
-                window.history.back();
-            }
+            window.history.back();
         }
         
         // Add event listeners for closing the popup

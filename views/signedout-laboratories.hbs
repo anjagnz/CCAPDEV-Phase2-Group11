@@ -9,7 +9,6 @@
         <link rel="stylesheet" href="/css/signedout-laboratories.css">
         
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="/js/seat-manager.js"></script>
         
 
         <style>
@@ -24,7 +23,6 @@
                 display: inline-block;
                 font-size: 16px;
                 margin: 4px 2px;
-                cursor: pointer;
                 border-radius: 5px;
             }
             
@@ -41,35 +39,7 @@
                 cursor: pointer;
                 border-radius: 5px;
             }
-            
-            .selected-seat {
-                background-color: #FC9D45;
-                color: white;
-                border: none;
-                padding: 10px;
-                text-align: center;
-                text-decoration: none;
-                display: inline-block;
-                font-size: 16px;
-                margin: 4px 2px;
-                cursor: pointer;
-                border-radius: 5px;
-            }
-            
-            .my-booking-seat {
-                background-color: #23c686;
-                color: white;
-                border: none;
-                padding: 10px;
-                text-align: center;
-                text-decoration: none;
-                display: inline-block;
-                font-size: 16px;
-                margin: 4px 2px;
-                cursor: not-allowed;
-                border-radius: 5px;
-            }
-
+        
             #view-button{
                 width: 150px;
                 background-color: var(--secondary-color);
@@ -280,8 +250,10 @@
 
                         timetable.innerHTML = timetableHTML;
 
-                        document.querySelectorAll(".clickable-seat").forEach(seat => {
-                            seat.addEventListener("click", handleSeatClick)
+                        document.querySelectorAll(".taken-seat").forEach(seat => {
+                            seat.addEventListener("click", () => {
+                                alert('Please sign in to the view reservation details of this seat.');
+                            });
                         });
                     })
                     .catch(error => {

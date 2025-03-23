@@ -72,7 +72,7 @@
             
             .my-booking-seat {
                 height: 50px;
-    width: 50px;
+                width: 50px;
                 background-color: #23c686;
                 color: white;
                 border: none;
@@ -82,7 +82,7 @@
                 display: inline-block;
                 font-size: 16px;
                 margin: 4px 2px;
-                cursor: not-allowed;
+                cursor: pointer;
                 border-radius: 5px;
             }
 
@@ -212,7 +212,6 @@
         <!-- View Button -->
 
         <script>
-
             function isTimeInRange(time, startTime, endTime) {
                 const toMinutes = (t) => {
                     const match = t.match(/(\d+):(\d+)\s+(A\.M\.|P\.M\.)/);
@@ -239,10 +238,14 @@
             document.getElementById("view-button").addEventListener("click", function()
             {
                 const selectedLab = document.getElementById("labs").options[document.getElementById("labs").selectedIndex]
-
                 const selectedDate = document.getElementById("dates").value;
                 const capacity = selectedLab.getAttribute("data-capacity");
                 const userId = localStorage.getItem('userId');
+
+                // handle input field errors
+                if (!selectedLab || !selectedDate) {
+                    alert("Please select a laboratory and date to view available seats!")
+                }
                 
                 const timeSlots = [
                     "07:30 A.M.", "08:00 A.M.", "08:30 A.M.", "09:00 A.M.",
@@ -324,19 +327,19 @@
                                 let popupId = "";
 
                                 if(matchingReservation) {
+                                    const reservationIndex = reservations.findIndex(reservation => 
+                                        reservation._id === matchingReservation._id || 
+                                        (reservation.seatNumber === matchingReservation.seatNumber && 
+                                        reservation.startTime === matchingReservation.startTime && 
+                                        reservation.userId._id === matchingReservation.userId._id)
+                                    );
+
+                                    popupId = `popup-frame-${reservationIndex}`;
+
                                     if(matchingReservation.userId._id.toString() === userId) {
                                         seatClass = "my-booking-seat";
                                     } else {
                                         seatClass = "taken-seat";
-                                        
-                                        const reservationIndex = reservations.findIndex(reservation => 
-                                            reservation._id === matchingReservation._id || 
-                                            (reservation.seatNumber === matchingReservation.seatNumber && 
-                                            reservation.startTime === matchingReservation.startTime && 
-                                            reservation.userId._id === matchingReservation.userId._id)
-                                        );
-
-                                        popupId = `popup-frame-${reservationIndex}`;
                                     }
                                 }
 
@@ -359,6 +362,15 @@
                         });
 
                         document.querySelectorAll(".taken-seat").forEach(seat => {
+                            seat.addEventListener("click", function() {
+                                const popupId = seat.getAttribute("data-popup-id");
+                                if(popupId) {
+                                    togglePopup(popupId);
+                                }
+                            });
+                        });
+
+                        document.querySelectorAll(".my-booking-seat").forEach(seat => {
                             seat.addEventListener("click", function() {
                                 const popupId = seat.getAttribute("data-popup-id");
                                 if(popupId) {
@@ -489,6 +501,8 @@
 
                 const frameContainer = document.querySelector(".frame");
                 reservations.forEach((reservation, index) => {
+                    reservation.isCurrentUser = reservation.userId._id.toString() === localStorage.getItem('userId');
+                    
                     const popupDiv = document.createElement("div");
                     popupDiv.className = "popup2";
                     popupDiv.id = `popup-frame-${index}`;
@@ -500,16 +514,15 @@
                     timeSpan.className = "popup-header";
                     timeSpan.textContent = `${reservation.startTime} - ${reservation.endTime}`;
                     popupBox.appendChild(timeSpan);
-                    
-                    if (reservation.isAnonymous) {
+                    if (reservation.isAnonymous && !reservation.isCurrentUser) {
                         const nameSpan = document.createElement("span");
                         nameSpan.className = "user-name";
-                        nameSpan.textContent = "Anonymous Reservation";
+                        nameSpan.textContent = "Anonymous Student";
                         popupBox.appendChild(nameSpan);
-                    } else if (reservation.studentName === "Walk-in Student") {
+                    } else if (reservation.userId.type === "Faculty") { // hide labtech info
                         const nameSpan = document.createElement("span");
                         nameSpan.className = "user-name";
-                        nameSpan.textContent = reservation.studentName;
+                        nameSpan.textContent = "Walk-in Student";
                         popupBox.appendChild(nameSpan);
                     } else {
                         const userImg = document.createElement("img");
@@ -522,7 +535,7 @@
                         
                         const nameSpan = document.createElement("span");
                         nameSpan.className = "user-name";
-                        nameSpan.textContent = reservation.isCurrentUser ? "Your Reservation" : reservation.userId.firstName + " " + reservation.userId.lastName;
+                        nameSpan.textContent = reservation.isCurrentUser ? "Your Reservation" : reservation.studentName;
                         popupBox.appendChild(nameSpan);
                     }
                     
@@ -613,6 +626,7 @@
                     .catch(error => {
                         console.error('Error checking seat availability:', error);
                         alert('Failed to check seat availability. Please try again.');
+                        hideConfirmPopup();
                     });
             }
 
@@ -737,6 +751,19 @@
                 confirmPopup.classList.remove("open-popup");
                 overlay.style.display = "none";            
             }
+
+            // Closes reservation popups if existing on any click 
+            document.onclick= function(event) {
+                const resPopup = document.querySelector(".popup2.show");
+                const clickedViewUser = event.target.classList.contains('user-img');
+                const initialResClick = event.target.classList.contains("taken-seat") || event.target.classList.contains("my-booking-seat");
+                
+                // hide the reservation popup, if one is shown 
+                // dont count the click when user views profile or the initial view of reservation
+                if (resPopup && !clickedViewUser && !initialResClick) {
+                    resPopup.classList.remove('show');
+                }
+            };
 
         </script>
     </body>

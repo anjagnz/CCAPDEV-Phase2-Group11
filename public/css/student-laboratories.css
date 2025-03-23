@@ -254,7 +254,7 @@ td{
 
 #reserve-button:disabled {
     background-color: #ccc;
-    cursor: not-allowed;
+    cursor: pointer;
 }
 
 /* Popup styles */

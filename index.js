@@ -190,7 +190,6 @@ app.put("/api/user/update/:id", async (req, res) => {
             return res.status(404).json({message: "User not found"});
         }
 
-
         // Update user fields
         user.department = req.body.department || user.department;
         user.biography = req.body.biography || user.biography;
@@ -496,13 +495,6 @@ app.get("/profile/:id", async (req, res) => {
         // Try to find the user in the User first
         let user = await User.findById(req.params.id);
         
-        /* TRY no need anymore kasi same schema na sila
-        // If not found in User, try LabTech 
-        if (!user) {
-            user = await User.findById(req.params.id);
-        }
-        */
-        
         if (!user) {
             console.log(`User not found with ID: ${req.params.id}`);
             return res.status(404).json({ message: "User not found" });
@@ -635,7 +627,7 @@ app.get("/api/reservations/lab/:labId/date/:date", async (req, res) => {
                 $gte: startDate,
                 $lt: endDate
             }
-        }).populate('userId', 'firstName lastName image');
+        }).populate('userId', 'firstName lastName image type');
         
         console.log(`Found ${reservations.length} reservations`);
         
@@ -754,17 +746,18 @@ app.post("/create-reservation-labtech", async (req, res) => {
             return res.status(400).send("This seat is already reserved for the selected time");
         }
         
+        const user = await User.findById(userId);
+
         // Create and save the new reservation
         const newReservation = new Reservation({
             userId,
-            studentName: "Walk-in Student",
+            studentName: user.firstName + " " + user.lastName,
             laboratoryRoom: lab.laboratoryName,
             seatNumber: parseInt(seatNumber),
             bookingDate: new Date(),
             reservationDate: reservationDate,
             startTime,
             endTime,
-            isAnonymous: false // handle labtech reservation (no anon boolean)
         });
         
         await newReservation.save();
@@ -797,7 +790,7 @@ app.get("/student-laboratories", async (req, res) => {
         }
 
         // Get any existing reservations
-        const reservations = await Reservation.find().lean().populate('userId', 'firstName lastName');
+        const reservations = await Reservation.find().lean().populate('userId', 'firstName lastName type');
 
         res.render('student-laboratories', { 
             labs, 
@@ -826,7 +819,7 @@ app.get("/signedout-laboratories", async (req, res) => {
         }
 
         // Get any existing reservations
-        const reservations = await Reservation.find().lean().populate('userId', 'firstName lastName');
+        const reservations = await Reservation.find().lean().populate('userId', 'firstName lastName isAnonymous type');
 
         res.render('signedout-laboratories', { 
             labs, 
@@ -841,7 +834,6 @@ app.get("/signedout-laboratories", async (req, res) => {
 });
 
 app.get("/labtech-laboratories", async (req, res) => {
-
     try {
         const labs = await Laboratory.find({}).lean();
         const today = new Date();
@@ -856,7 +848,7 @@ app.get("/labtech-laboratories", async (req, res) => {
         }
 
         // Get any existing reservations
-        const reservations = await Reservation.find().lean().populate('userId', 'firstName lastName');
+        const reservations = await Reservation.find().lean().populate('userId', 'firstName lastName type');
 
         res.render('labtech-laboratories', { 
             labs, 
