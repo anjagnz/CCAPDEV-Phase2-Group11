@@ -435,7 +435,7 @@ app.post("/signin", async (req, res) => {
         let user = await User.findOne({ email });
 
         if (!user) {
-            return res.status(401).json({ error: "Invalid email or password" });
+            return res.status(401).json({ error: "Account does not exist. Try again with a different email" });
         }
 
         // Verify password (using plain text comparison as per user preference)
