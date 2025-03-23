@@ -769,6 +769,14 @@
                     resPopup.classList.remove('show');
                 }
             };
+        
+        window.onload = function () {
+            // Log the current time
+            const currentTime = new Date();
+            console.log("Current time:", currentTime.toISOString());
+            console.log("UTC time:", currentTime.toUTCString());
+        };
+
     </script>
 </body>
 
