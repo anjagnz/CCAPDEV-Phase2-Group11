@@ -169,6 +169,7 @@
                     const timeDiff = (currentDate - reservationDateTime) / (1000 * 60);
                     const currentDateGMT8 = formatToGMT8(currentDate.toISOString());
                     const isAfter10Minutes = timeDiff >= 10;
+                    const isWithin10Minutes = timeDiff <= 10 && timeDiff >= 0
 
                     console.log(`Time Diff: ${timeDiff} Reservation Date: ${reservationDateTime} Current Date: ${currentDate}Date (GMT+8): ${currentDateGMT8}`);
 
@@ -197,7 +198,7 @@
                     // Append the reservation detail icon
                     row.children[4].appendChild(icon);
 
-                    if(isAfter10Minutes) {
+                    if(isWithin10Minutes) {
                         canBeDeleted = true;
 
                         // Create radio button

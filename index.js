@@ -590,10 +590,9 @@ app.get("/api/reservations/lab/:labId/date/:date", async (req, res) => {
         // Create start and end date for the query (beginning and end of the day)
         const startDate = new Date(date);
         startDate.setHours(0, 0, 0, 0);
-        
+
         const endDate = new Date(date);
         endDate.setHours(23, 59, 59, 999);
-        
         console.log(`Date range: ${startDate.toISOString()} to ${endDate.toISOString()}`);
         
         // fetch lab data

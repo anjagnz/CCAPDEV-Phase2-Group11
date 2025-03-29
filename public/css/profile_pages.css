@@ -286,17 +286,33 @@ input {
 
 .reservations-table {
     width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
+    border-collapse: collapse;
+    height: 400px;
+    display: block;
+    overflow-y: scroll;
+}
+
+.reservations-table thead {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+}
+.reservations-table thead,
+.reservations-table tbody {
+    display: table;
+    width: 100%;
+    table-layout: fixed;
+    text-align: left;
+}
+
+.reservations-table th,
+.reservations-table td {
+    text-align: left;
+    padding: 15px 20px;
 }
 
 .reservations-table th {
-    text-align: left;
-    padding: 15px 20px;
     font-size: 20px;
     font-weight: 600;
-    color: var(--text-color);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .reservations-table td {
