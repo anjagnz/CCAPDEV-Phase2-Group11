@@ -108,23 +108,28 @@ const demoLabTechs = [
 // Demo laboratories
 const demoLaboratories = [
     {
-        laboratoryName: 'GK404B',
+        hall: 'Gokongwei Hall',
+        room: 'GK404B',
         capacity: 20
     },
     {
-        laboratoryName: 'AG1904',
+        hall: 'Br. Andrew Gonzales Hall',
+        room: 'AG1904',
         capacity: 40
     },
     {
-        laboratoryName: 'GK201A',
+        hall: 'Gokongwei Hall',
+        room: 'GK201A',
         capacity: 20
     },
     {
-        laboratoryName: 'AG1706',
+        hall: 'Br. Andrew Gonzales Hall',
+        room: 'AG1706',
         capacity: 40
     },
     {
-        laboratoryName: 'GK302A',
+        hall: 'Gokongwei Hall',
+        room: 'GK302A',
         capacity: 20
     }
 ];
@@ -189,7 +194,7 @@ const seedDatabase = async () => {
                     // Add time slots for the current lab and date
                     for (const slot of slots) {
                         timeSlots.push({
-                            laboratoryRoom: lab.laboratoryName,
+                            laboratoryRoom: lab.room,
                             seatNumber: slot.seatNumber,
                             date: new Date(currentDate),
                             time: slot.time,

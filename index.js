@@ -558,10 +558,10 @@ app.get("/api/reservations/check-availability", async (req, res) => {
 });
 
 // API endpoint to get a specific lab by name
-app.get("/api/laboratories/:laboratoryName", async (req, res) => {
+app.get("/api/laboratories/:room", async (req, res) => {
     try {
-        const { laboratoryName } = req.params; 
-        const laboratory = await Laboratory.findOne({ laboratoryName });
+        const { room } = req.params; 
+        const laboratory = await Laboratory.findOne({ room });
 
         if (!laboratory) {
             return res.status(404).json({ message: "Laboratory not found" });
@@ -603,7 +603,7 @@ app.get("/api/reservations/lab/:labId/date/:date", async (req, res) => {
 
         // Find all reservations for the given lab and date
         const reservations = await Reservation.find({
-            laboratoryRoom: lab.laboratoryName,
+            laboratoryRoom: lab.room,
             reservationDate: {
                 $gte: startDate,
                 $lt: endDate
@@ -655,7 +655,7 @@ app.post("/create-reservation", async (req, res) => {
 
         // Check if there's already a reservation for this seat, date, and time
         const existingReservation = await Reservation.findOne({
-            laboratoryRoom: lab.laboratoryName,
+            laboratoryRoom: lab.room,
             seatNumber: parseInt(seatNumber),
             reservationDate: reservationDate,
             startTime: startTime
@@ -671,7 +671,7 @@ app.post("/create-reservation", async (req, res) => {
         const newReservation = new Reservation({
             userId,
             studentName: `${user.firstName} ${user.lastName}`,
-            laboratoryRoom: lab.laboratoryName,
+            laboratoryRoom: lab.room,
             seatNumber: parseInt(seatNumber),
             bookingDate: new Date(),
             reservationDate: reservationDate,
@@ -719,7 +719,7 @@ app.post("/create-reservation-labtech", async (req, res) => {
 
         // Check if there's already a reservation for this seat, date, and time
         const existingReservation = await Reservation.findOne({
-            laboratoryRoom: lab.laboratoryName,
+            laboratoryRoom: lab.room,
             seatNumber: parseInt(seatNumber),
             reservationDate: reservationDate,
             startTime: startTime
@@ -735,7 +735,7 @@ app.post("/create-reservation-labtech", async (req, res) => {
         const newReservation = new Reservation({
             userId,
             studentName: user.firstName + " " + user.lastName,
-            laboratoryRoom: lab.laboratoryName,
+            laboratoryRoom: lab.room,
             seatNumber: parseInt(seatNumber),
             bookingDate: new Date(),
             reservationDate: reservationDate,

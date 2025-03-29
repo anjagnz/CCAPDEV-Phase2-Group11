@@ -101,7 +101,7 @@ const seedReservations = async () => {
                 const reservation = {
                     userId: user._id,
                     studentName: `${user.firstName} ${user.lastName}`,
-                    laboratoryRoom: lab.laboratoryName,
+                    laboratoryRoom: lab.room,
                     seatNumber: randomSeatNumber,
                     bookingDate: new Date(), // Current date as booking date
                     reservationDate: new Date(reservationDate),

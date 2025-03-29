@@ -6,7 +6,8 @@
     "dev": "nodemon server",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npm install && node index.js",
-    "seed": "node database/seedDatabase.js"
+    "seed": "node database/seedDatabase.js",
+    "demo": " npm install && node database/seedDatabase.js && node index.js"
   },
   "repository": {
     "type": "git",

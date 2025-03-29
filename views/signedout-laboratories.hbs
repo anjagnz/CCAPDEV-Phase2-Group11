@@ -81,7 +81,7 @@
                 <select name = "labs" id = "labs">
                     <option value = "" disabled selected>Select a Laboratory</option>
                     {{#each labs}}
-                        <option value="{{this._id}}" data-capacity = {{this.capacity}}>{{this.laboratoryName}}</option>
+                        <option value="{{this._id}}" data-capacity = {{this.capacity}}>{{this.room}} | {{this.hall}}</option>
                     {{/each}}
                 </select>
             </div>
