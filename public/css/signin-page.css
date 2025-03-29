@@ -1,20 +1,8 @@
-/* CSS for signin-page.html */
-
-:root {
-    --primary-color: #23c686;
-    --secondary-color: #1d3853;
-    --background-color: #fbfcf6;
-
-    --primary-font-fam: 'Roboto';
-    --secondary-font-fam: 'DM Sans';
-    color: #1b1b1b;
-}
-
 body{
-    background: var(--primary-color);
+    background: var(--green);
     margin: 0;
     padding: 0;
-    font-family: var(--primary-font-fam);
+    font-family: var(--primary-font-family);
     height: 100vh;
     overflow: hidden;
 }
@@ -33,9 +21,9 @@ body::before{
 }
 
 h1 {
-    color: var(--secondary-color);
+    color: var(--dark-blue);
     font-size: 35px;
-    font-family: var(--secondary-font-fam);
+    font-family: var(--secondary-font-family);
 }
 
 #container {
@@ -50,7 +38,7 @@ h1 {
     height: 400px;
     width: 650px;
     padding: 30px 40px;
-    background-color: var(--background-color);
+    background-color: var(--off-white);
     border: none;
     border-radius: 20px;
 }
@@ -60,12 +48,12 @@ h1 {
 }
 
 #signin a {
-    color: var(--secondary-color);
+    color: var(--dark-blue);
     font-weight: bold;
 }
 
 #signin a:hover {
-    color: var(--primary-color)
+    color: var(--green)
 }
 
 #signin .right-column {
@@ -98,8 +86,8 @@ h1 {
     font-size: 1rem;
     font-weight: bold;
     cursor: pointer;
-    background-color: var(--secondary-color);
-    color: var(--background-color)    
+    background-color: var(--dark-blue);
+    color: var(--off-white)    
 }
 
 @media (max-height: 600px) {

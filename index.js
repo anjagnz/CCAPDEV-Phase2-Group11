@@ -284,8 +284,9 @@ app.delete("/api/user/:id", async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
         
-        // Verify password (using plain text comparison as per user preference)
-        if (password !== user.password) {
+        // Verify password
+        const matchPass = await argon2.verify(user.password, password)
+        if (!matchPass) {
             return res.status(401).json({ message: "Incorrect password" });
         }
         

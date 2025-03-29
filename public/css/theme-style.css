@@ -12,6 +12,13 @@
     --primary-font-family: 'Roboto';
     --secondary-font-family: 'DM Sans';
     
+    --grey: #D9D9D9;
+    --orange: #FC9D45;
+    --red: #FF7878;
+    --header-height: 125px;
+    --sidebar-width: 258px;
+
+
     /* default theme */
     font-family: var(--primary-font-family);
     font-size: 16px;

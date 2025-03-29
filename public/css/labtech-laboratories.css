@@ -1,15 +1,5 @@
-:root {
-    --primary-color: #23c686;
-    --secondary-color: #1d3853;
-    --background-color: #fbfcf6;
-
-    --primary-font-fam: 'Roboto';
-    --secondary-font-fam: 'DM Sans';
-    --text-color: #1b1b1b;
-}
-
 body{
-    background-color: var(--background-color);
+    background-color: var(--off-white);
     margin: 0;
     padding: 0;
 }
@@ -24,10 +14,10 @@ body{
 .header{
     position: relative;
     text-align: center;
-    font-family: var(--secondary-font-fam);
+    font-family: var(--secondary-font-family);
     font-weight: 600;
     font-size: 35px;
-    color: var(--secondary-color);
+    color: var(--dark-blue);
     padding: 80px 100px 50px 100px;
 }
 
@@ -41,8 +31,8 @@ body{
 }
 
 .dropdown-header, #chart-header{
-    color: var(--secondary-color);
-    font-family: var(--secondary-font-fam);
+    color: var(--dark-blue);
+    font-family: var(--secondary-font-family);
     font-size: 15px;
     font-weight: 500;
     padding-bottom: 10px;
@@ -51,10 +41,10 @@ body{
 #student-name{
     width: 1000px;
     appearance: none;
-    border: 1px solid var(--secondary-color);
+    border: 1px solid var(--dark-blue);
     border-radius: 8px;
-    color: var(--secondary-color);
-    font-family: var(--primary-font-fam);
+    color: var(--dark-blue);
+    font-family: var(--primary-font-family);
     padding: 8px 500px 8px 15px;
     color: rgba(29, 56, 83, 0.8);
 }
@@ -66,10 +56,10 @@ body{
     -webkit-appearance: none;
     background: url(img/arrow-down.png) no-repeat 99% center, #FFFFFF;
     background-size: 20px;
-    border: 1px solid var(--secondary-color);
+    border: 1px solid var(--dark-blue);
     border-radius: 8px;
-    color: var(--secondary-color);
-    font-family: var(--primary-font-fam);
+    color: var(--dark-blue);
+    font-family: var(--primary-font-family);
     padding: 8px 500px 8px 15px;
     color: rgba(29, 56, 83, 0.8);
 }
@@ -83,10 +73,10 @@ body{
     width: 1000px;
     overflow-x: auto;
     background: #FFFFFF;
-    border: 1px solid var(--secondary-color);
+    border: 1px solid var(--dark-blue);
     border-radius: 8px;
-    color: var(--secondary-color);
-    font-family: var(--primary-font-fam);
+    color: var(--dark-blue);
+    font-family: var(--primary-font-family);
     margin-bottom: 10px;
 }
 
@@ -122,7 +112,7 @@ td{
 .clickable-seat{
     height: 50px;
     width: 50px;
-    background: #D9D9D9;
+    background: var(--grey);
     border: none;
     border-radius: 8px;
     cursor: pointer;
@@ -131,7 +121,7 @@ td{
 .taken-seat{
     height: 50px;
     width: 50px;
-    background: #FF7878;
+    background: var(--red);
     border: none;
     border-radius: 8px;
     cursor: pointer;
@@ -150,7 +140,7 @@ td{
 }
 
 .legend-text{
-    color: var(--secondary-color);
+    color: var(--dark-blue);
     font-size: 14px;
     padding-left: 8px;
     padding-right: 24px;
@@ -159,36 +149,36 @@ td{
 #legend-available{
     height: 25px;
     width: 25px;
-    background-color: #D9D9D9;
+    background-color: var(--grey);
     border-radius: 4px;
 }
 
 #legend-selected{
     height: 25px;
     width: 25px;
-    background-color: #FC9D45;
+    background-color: var(--orange);
     border-radius: 4px;
 }
 
 #legend-unavailable{
     height: 25px;
     width: 25px;
-    background-color: #FF7878;
+    background-color: var(--red);
     border-radius: 4px;
 }
 
 #legend-booking{
     height: 25px;
     width: 25px;
-    background-color: #23c686;
+    background-color: var(--green);
     border-radius: 4px;
 }
 
 #reserve-button{
     width: 250px;
-    background-color: var(--secondary-color);
-    color: var(--background-color);
-    font-family: var(--primary-font-fam);
+    background-color: var(--dark-blue);
+    color: var(--off-white);
+    font-family: var(--primary-font-family);
     font-size: 15px;
     font-weight: 500;
     border: none;
@@ -212,12 +202,12 @@ td{
 }
 
 .popup-box{
-    background-color: #fff;
+    background-color: white;
     width: 200px;
     height: 120px;
     display: flex;
     flex-direction: column;
-    border: 1px solid var(--secondary-color);
+    border: 1px solid var(--dark-blue);
     align-items: center;
     justify-content: center;
     border-radius: 8px;
@@ -225,8 +215,8 @@ td{
 
 .popup-header{
     font-size: 14px;
-    font-family: var(--primary-font-fam);
-    color: var(--secondary-color);
+    font-family: var(--primary-font-family);
+    color: var(--dark-blue);
     font-weight: 500;
     margin: 10px 0px 10px 0px;
 }
@@ -239,8 +229,8 @@ td{
 
 .user-name{
     font-size: 13px;
-    font-family: var(--primary-font-fam);
-    color: var(--secondary-color);
+    font-family: var(--primary-font-family);
+    color: var(--dark-blue);
     margin: 5px 0px 10px 0px;
 }
 

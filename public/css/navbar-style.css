@@ -1,6 +1,4 @@
-
 /* minor reference: https://www.youtube.com/watch?v=GdrbE-s5DgQ */
-
 
 * {
     margin: 0;
@@ -8,12 +6,12 @@
 }
 
 .navbar {
-    color: var(--off-white);
+    color: var(--green);
+    font-family: var(--secondary-font-family);
 }
 
 .navbar label.logo {
     color: var(--off-white);
-    font-family: var(--secondary-font-family);
     font-weight: 700;
     font-size: 32px;
 }
@@ -65,6 +63,13 @@
     color: var(--dark-blue)
 }
 
+
+.navbar #labmate-logo {
+    color: var(--off-white);
+    font-weight: 700;
+    font-size: 32px;
+}
+
 .navbar .nav-links {
     display: flex;
     gap: 2rem;
@@ -75,8 +80,8 @@
     border-bottom-color: var(--off-white);
     border-bottom-style: solid;
     padding-bottom: 5px;
-    pointer-events: none;
 }
+
 
 .navbar .nav-links a:hover {
     border-bottom-width: 3px;
@@ -86,12 +91,43 @@
     transition: border-bottom-width 0.1s ease;
 }
 
+.navbar .action-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    outline: none;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.navbar #signin-btn {
+    background-color: var(--green);
+    color: var(--off-white)
+}
+
+.navbar #signup-btn {
+    background-color: var(--off-white);
+    color: var(--green);
+}
+
+.navbar img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.navbar img:hover {
+    scale: 1.05;
+    box-shadow: 0 4px rgba(0, 0, 0, 0.2);
+}
+
 /* make navbar responsive */
 
-@media  (max-width: 900px) {
+@media (max-width: 900px) {
     .navbar a {
         margin-right: 0;
         margin-left: 0;
     }
 }
-

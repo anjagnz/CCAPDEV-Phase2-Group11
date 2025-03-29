@@ -67,7 +67,7 @@ body{
 }
 
 label{
-    color: var(--secondary-color);
+    color: var(--dark-blue);
 }
 .footer{
     padding-top: 8px;

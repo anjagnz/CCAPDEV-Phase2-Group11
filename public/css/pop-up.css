@@ -20,7 +20,7 @@ body{
     width: 600px;
     height: 400px;
     background: #fff;
-    outline: 1px solid var(--secondary-color);
+    outline: 1px solid var(--dark-blue);
     border-radius: 30px;
     position: fixed;
     top: 0;
