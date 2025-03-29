@@ -4,6 +4,7 @@ const fileUpload = require('express-fileupload')
 const path = require("path");
 const mongoose = require("mongoose");
 const hbs = require("hbs");
+const argon2 = require("argon2")
 
 // Configure middleware
 app.use(express.static(path.join(__dirname, 'public')));
@@ -16,34 +17,31 @@ app.use(fileUpload());
 app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "views"));
 
-
-// Check if demo profiles exist, if not, seed the database
-const User = require('./database/models/User');
-
 const checkAndSeedDatabase = async () => {
     try {
-      const userCount = await User.countDocuments();
-
+        const userCount = await User.countDocuments();
+        
         // We'll use require to run the seed script directly
         require('./database/seedDatabase');
-
+        
     } catch (error) {
-      console.error('Error checking database:', error);
+        console.error('Error checking database:', error);
     }
 }
 
-// Connect to MongoDB and check for demo profiles
+// Connect to MongoDB
 // if no environtment var, connect to local
 mongoose.connect(process.env.DATABASE_URL ||'mongodb://localhost/LabMateDB')
 .then(() => {
     console.log('Connected to MongoDB successfully');
     // After successful connection, check and seed the database if needed
-    checkAndSeedDatabase();
+    // checkAndSeedDatabase();  only seed when want to; npm run seed
 })
 .catch(err => {
     console.error('MongoDB connection error:', err);
 });
 
+const User = require('./database/models/User');
 const Reservation = require('./database/models/Reservation');
 const Laboratory = require("./database/models/Laboratory");
 const TimeSlot = require("./database/models/TimeSlot");
@@ -324,7 +322,7 @@ app.get("/signup-page", (req, res) => res.sendFile(path.join(__dirname, "signup-
 // Handle sign-up form submission
 app.post("/signup", async (req, res) => {
     try {
-        let { firstName, lastName, email, newPass, confirmPass, type } = req.body;
+        let { firstName, lastName, email, newPass, confirmPass, type, facultyCode} = req.body;
         
         email = email.toLowerCase();
 
@@ -346,62 +344,44 @@ app.post("/signup", async (req, res) => {
         if (existingUser) {
             return res.status(400).json({ error: "Email is already in use" });
         }
-        
-        // Create new user based on account type
-        if (type === "Student") {
-            const newUser = new User({
-                firstName,
-                lastName,
-                email,
-                password: newPass,
-                type: 'Student'
-            });
-            
-            await newUser.save();
-            console.log("New student user created:", newUser._id);
-                     
-            // Send success response with user info
-            res.json({
-                success: true,
-                userId: newUser._id,
-                isLabTech: false,
-                redirect: "/student-home" 
-            });
-        } else if (type === "Faculty") {
-            const facultyCode = req.body.facultyCode;
-            
-            // Faculty code is blank
-            if (!facultyCode) {
-                return res.status(400).json({ error: "Please enter a faculty code to proceed" });
-            }
-            
-            // Verify faculty code (for demo: i-am-faculty)
-            if (facultyCode !== "i-am-faculty") {
-                return res.status(400).json({ error: "Invalid faculty code" });
-            }
 
-            const newUser = new User({
-                firstName,
-                lastName,
-                email,
-                password: newPass,
-                type: 'Faculty'
-            });
-            
-            await newUser.save();
-            console.log("New lab tech user created:", newUser._id);
-               
-            // Send success response with user info
-            res.json({
-                success: true,
-                userId: newUser._id,
-                isLabTech: true,
-                redirect: "/labtech-home" 
-            });
-
-        } else {
-            return res.status(400).json({ error: "Invalid account type" });
+        // Faculty code is blank
+        if (type === "Faculty" && !facultyCode) {
+            return res.status(400).json({ error: "Please enter a faculty code to proceed" });
         }
+
+        // Verify faculty code (for demo: i-am-faculty)
+        if (type === "Faculty" && facultyCode !== "i-am-faculty") {
+            return res.status(400).json({ error: "Invalid faculty code" });
+        }
+
+
+        /* CREATE THE ACCOUNT */
+
+        // Hash password
+        const hashPass = await argon2.hash(newPass);
+
+        // Create new user
+        const newUser = new User({
+                firstName,
+                lastName,
+                email,
+                password: hashPass,
+                type: type
+        });
+
+        // Add to the database
+        await newUser.save();
+        console.log("New "+type+" user created:", newUser._id);
+        
+        // Send success response with user info
+        res.json({
+            success: true,
+            userId: newUser._id,
+            isLabTech: type === "Faculty",
+            redirect: type === "Faculty" ? "/labtech-home" : "/student-home"
+        });
+        
     } catch (error) {
         console.error("Error during sign-up:", error);
         res.status(500).json({ error: "An error occurred during sign-up" });
@@ -426,7 +406,7 @@ app.post("/signin", async (req, res) => {
         }
         
         // Try to find the user in the User first
-        if (mongoose.connection.readyState !== 1) {
+        if (!mongoose.connection.readyState) {
             console.error("❌ Database not connected. Cannot process sign-in request.");
             return res.status(500).json({ error: "Database connection lost. Please try again later." });
         }
@@ -434,12 +414,13 @@ app.post("/signin", async (req, res) => {
         let user = await User.findOne({ email });
 
         if (!user) {
-            return res.status(401).json({ error: "Account does not exist. Try again with a different email" });
+            return res.status(401).json({ error: "Account does not exist. Please try again with a different email" });
         }
 
-        // Verify password (using plain text comparison as per user preference)
-        if (password !== user.password) {
-            return res.status(401).json({ error: "Invalid email or password" });
+        // Verify passwords are the same
+        const passMatch = await argon2.verify(user.password, password);
+        if (!passMatch) {
+            return res.status(401).json({ error: "Password is incorrect. Please try again." });
         }
 
         // Determine redirect URL based on user type

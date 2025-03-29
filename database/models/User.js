@@ -5,7 +5,7 @@ const PostSchema = new mongoose.Schema({
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     image: { type: String, default: "/img/default-profile.png" },
-    email: { type: String, required: true },
+    email: { type: String, required: true, unique: true},
     password: { type: String, required: true },
     biography: { type: String, default: "No biography provided yet." },
     department: { type: String, default: "N/A" },

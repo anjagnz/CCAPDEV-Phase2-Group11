@@ -1,13 +1,11 @@
 const mongoose = require('mongoose');
+const argon2 = require('argon2');
 const User = require('./models/User');
 const Laboratory = require('./models/Laboratory');
 const TimeSlot = require('./models/TimeSlot');
 const { seedReservations } = require('./seedReservations'); // js for reservations
 
-mongoose.connect(process.env.DATABASE_URL || 'mongodb://localhost/LabMateDB', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-})
+mongoose.connect(process.env.DATABASE_URL || 'mongodb://localhost/LabMateDB')
 .then(() => console.log('Connected to MongoDB'))
 .catch(err => console.error('Could not connect to MongoDB', err));
 
@@ -148,6 +146,15 @@ const seedDatabase = async () => {
         
         console.log('Previous data cleared');
 
+        // Hash all passwords
+        for (const student of demoStudents) {
+            student.password = await argon2.hash(student.password);
+        }
+
+        for (const labtech of demoLabTechs) {
+            labtech.password = await argon2.hash(labtech.password);
+        }
+
         // Insert new demo data
         await User.insertMany(demoStudents);
         console.log('Demo students added');
@@ -201,6 +208,9 @@ const seedDatabase = async () => {
         console.log('Demo reservations added');
 
         console.log('Database seeded successfully');
+
+        mongoose.disconnect();
+        process.exit()
     } catch (error) {
         console.error('Error seeding database:', error);
     }
