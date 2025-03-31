@@ -287,9 +287,10 @@ textarea {
 .reservations-table {
     width: 100%;
     border-collapse: collapse;
-    height: 400px;
+    max-height: 400px;
     display: block;
-    overflow-y: scroll;
+    overflow-y: auto;
+    height: auto;
 }
 
 .reservations-table thead {

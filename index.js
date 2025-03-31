@@ -14,6 +14,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(fileUpload());
+
+// Configure sessions and cookies
 app.use(cookieParser());
 app.use(session({
     secret: "secret-key-shhhh",
@@ -21,14 +23,19 @@ app.use(session({
     saveUninitialized: false, 
     cookie: {
         httpOnly: true
+        // maxAge: 3 * 7 * 24 * 60 * 60 * 1000 
     }
 }));
-
-app.engine("hbs", exphbs.engine({extname: "hbs"}));
 
 // Configure handlebars
 app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "views"));
+app.engine("hbs", exphbs.engine({
+    extname: "hbs",
+    helpers: {
+        eq: (a, b) => a === b
+    }
+}));
 
 // Connect to MongoDB
 // if no environtment var, connect to local
@@ -57,23 +64,16 @@ const isAuth = (req, res, next) => {
     }
 };
 
-// Type verifier (for student-specific pages)
-const verifyStudent = (req,res,next) => {
-    if (req.session.user.type !== "Student") {
-        res.redirect("/labtech-home")
-    } else {
-        next();
-    }
-}
-
-// Type verifier (for faculty-specific pages)
-const verifyLabtech = (req,res,next) => {
-    if (req.session.user.type !== "Faculty") {
+// Type verifier (for type-specific pages) 
+const verifyType = (req, res, next) => {
+    if (req.session.user.type === "Faculty" && req.path.startsWith("/student")) {
+        res.redirect("/labtech-home");
+    } else if (req.session.user.type === "Student" && req.path.startsWith("/labtech")){
         res.redirect("/student-home")
     } else {
-        next();
+        next()
     }
-}
+};
 
 // session checker; prints session in console
 app.use(async (req, res, next) => {
@@ -146,7 +146,7 @@ app.post("/signin", async (req, res) => {
 
         // Store user data in session
         if (!req.session.user) {
-            req.session.user = user;
+            req.session.user = user.toObject();
         }
 
         // Remember me
@@ -272,30 +272,29 @@ app.get("/signedout-laboratories", async (req, res) => {
 
 // Homes
 
-app.get("/student-home", isAuth, verifyStudent, async (req, res) => {
+app.get("/student-home", isAuth, verifyType, async (req, res) => {
 
     // Refresh user data with database data
     const user = await User.findById(req.session.user._id);
-    req.session.user = user; 
+    req.session.user = user.toObject(); 
 
     // Check if user is authorized to access student home
-    res.render("student-home", req.session.user);
+    res.render("student-home", {user: req.session.user});
 });
 
-app.get("/labtech-home", isAuth, verifyLabtech, async (req, res) => {
+app.get("/labtech-home", isAuth, verifyType, async (req, res) => {
 
     // Refresh user data with database data
     const user = await User.findById(req.session.user._id);
-    req.session.user = user; 
-    console.log(req.session.user.image)
+    req.session.user = user.toObject();
 
     // Check if user is authorized to access faculty home
-    res.render("labtech-home", req.session.user);
+    res.render("labtech-home", {user: req.session.user});
 });
 
 // Laboratories
 
-app.get("/student-laboratories", isAuth, verifyStudent, async (req, res) => {
+app.get("/student-laboratories", isAuth, verifyType, async (req, res) => {
     try {
         const labs = await Laboratory.find({}).lean();
         const today = new Date();
@@ -316,7 +315,8 @@ app.get("/student-laboratories", isAuth, verifyStudent, async (req, res) => {
             labs, 
             next7Days, 
             timeSlots,
-            reservations 
+            reservations,
+            user: req.session.user
         });
     } catch (error) {
         console.error('Error fetching laboratories:', error);
@@ -324,7 +324,7 @@ app.get("/student-laboratories", isAuth, verifyStudent, async (req, res) => {
     }
 });
 
-app.get("/labtech-laboratories", isAuth, verifyLabtech, async (req, res) => {
+app.get("/labtech-laboratories", isAuth, verifyType, async (req, res) => {
     try {
         const labs = await Laboratory.find({}).lean();
         const today = new Date();
@@ -345,7 +345,8 @@ app.get("/labtech-laboratories", isAuth, verifyLabtech, async (req, res) => {
             labs, 
             next7Days, 
             timeSlots,
-            reservations 
+            reservations,
+            user: req.session.user
         });
     } catch (error) {
         console.error('Error fetching laboratories:', error);
@@ -355,11 +356,11 @@ app.get("/labtech-laboratories", isAuth, verifyLabtech, async (req, res) => {
 
 // Reservations
 
-app.get("/student-reservations", isAuth, verifyStudent, (req, res) => {
+app.get("/student-reservations", isAuth, verifyType, (req, res) => {
     res.sendFile(path.join(__dirname, "student-reservations.html"))
 });
 
-app.get("/labtech-reservations", isAuth, verifyLabtech, (req, res) => {
+app.get("/labtech-reservations", isAuth, verifyType, (req, res) => {
     res.sendFile(path.join(__dirname, "labtech-reservations.html"));
 })
 
@@ -517,8 +518,9 @@ app.put("/api/user/update", isAuth, async (req, res) => {
         // Save the updated user
         await user.save();
         
-        // Update session with new user data
-        req.session.user = user;
+        // Update session with new user data;
+        req.session.user = user.toObject();
+        
 
         res.json({
             success: true,
@@ -640,7 +642,7 @@ app.get("/labtech-profile", isAuth, async (req, res) => {
 
     const user = req.session.user;
     // TODO: handle upcoming lab string to get nearest lab
-    const upcomingLab = ""
+    const upcomingLab = "fix this in index.js idk how to do this tee hee"
 
     // format data passed for display
     const formattedReservations = reservations.map(reservation => {
