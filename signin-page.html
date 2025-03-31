@@ -72,6 +72,17 @@
                         })
                     });
 
+                    // temporarily store userid in localstorage so app doesnt break
+                    if (response.ok) {
+                        const sessionResponse = await fetch("/api/session");
+                        const sessionData = await sessionResponse.json();
+                        
+                        if (sessionData.user) {
+                            localStorage.setItem("userId", sessionData.user._id);
+                            localStorage.setItem("isLabtech", (sessionData.user.type === "Faculty").toString());
+                        }
+                    }
+
                     // follow redirect
                     if (response.redirected) {
                         window.location.href = response.url;

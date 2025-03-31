@@ -89,6 +89,15 @@ app.use(async (req, res, next) => {
     next();
 });
 
+// get session data (for temporary localstorage stuff)
+app.get("/api/session", (req, res) => {
+    if (req.session && req.session.user) {
+        res.json({ user: req.session.user });
+    } else {
+        res.status(401).json({ error: "No user session found" });
+    }
+});
+
 /* SIGNED-OUT ROUTES */
 
 app.get("/", (req, res) => {
@@ -415,7 +424,6 @@ app.get("/api/reservation/:id", async (req, res) => {
 });
 
 app.get("/logout", (req, res) => {
-    // destroy the session and redirect to signed out home page
     console.log("Destroying session and clearing remember me period...");
     req.session.destroy(() => {
         res.clearCookie("connect.sid");       
