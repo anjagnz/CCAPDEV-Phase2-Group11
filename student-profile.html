@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LabMate - User Profile</title> 
     <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
     <link rel="stylesheet" href="css/profile_pages.css">
@@ -14,8 +12,8 @@
     <script>
         /* adds outline design on active page in navigation bar */
         $(document).ready(function() {
-            $.getScript("public/js/navbar.js");
-            $.getScript("public/js/userProfile.js");
+            $.getScript("js/navbar.js");
+            $.getScript("js/userProfile.js");
         });
     </script>
 </head>
@@ -86,7 +84,7 @@
                     </table>
                 </div>
             </section>
-            <button class="logout-button" onclick="location.href='/'">Logout</button>
+            <button class="logout-button" onclick="location.href='/logout'">Logout</button>
         </main>
 
         <!-- Profile Overview Section -->

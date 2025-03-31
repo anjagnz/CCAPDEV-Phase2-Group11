@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LabMate - User Profile</title> 
     <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
     <link rel="stylesheet" href="css/profile_pages.css">
@@ -13,8 +11,8 @@
     <script>
         /* adds outline design on active page in navigation bar */
         $(document).ready(function() {
-            $.getScript("public/js/navbar.js");
-            $.getScript("public/js/userProfile.js");
+            $.getScript("js/navbar.js");
+            $.getScript("js/userProfile.js");
         });
     </script>
 </head>
@@ -28,7 +26,7 @@
             <a href="#dashboard">Dashboard</a>
         </div>
         <div class="nav-item" id="view-nav">
-            <img src="img/view.svg" alt="Settings" class="nav-icon">
+            <img src="img/view.svg" alt="View" class="nav-icon">
             <a href="#view">View Profile</a>
         </div>
         <div class="nav-item" id="edit-nav">
@@ -85,11 +83,11 @@
                     </table>
                 </div>
             </section>
-            <button class="logout-button" onclick="location.href='/'">Logout</button>
+            <button class="logout-button" onclick="location.href='/logout'">Logout</button>
         </main>
 
         <!-- Profile Overview Section -->
-        <main class="main-content" id="overview-section" style="display: none;">
+        <main class="main-content" id="view-section" style="display: none;">
             <div class="profile-card">
                 <div class="profile-header">
                     <div class="profile-picture-large">
@@ -218,11 +216,10 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Get all navigation items
             const navItems = document.querySelectorAll('.nav-item');
-            
             // Get all content sections
             const sections = {
                 'dashboard-nav': document.getElementById('dashboard-section'),
-                'view-nav': document.getElementById('overview-section'),
+                'view-nav': document.getElementById('view-section'),
                 'edit-nav': document.getElementById('edit-section'),
                 'delete-nav': document.getElementById('delete-section')
             };
@@ -243,6 +240,7 @@
                     
                     // Show the corresponding section
                     const sectionId = this.id;
+                    console.log(sectionId)
                     if (sections[sectionId]) {
                         sections[sectionId].style.display = 'block';
                     }

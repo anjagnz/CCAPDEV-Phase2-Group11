@@ -1,33 +1,34 @@
 const express = require("express");
-const app = new express();
 const fileUpload = require('express-fileupload')
 const path = require("path");
 const mongoose = require("mongoose");
-const hbs = require("hbs");
-const argon2 = require("argon2")
+const exphbs = require("express-handlebars");
+const argon2 = require("argon2") // password hashing
+const session = require("express-session");
+const cookieParser = require("cookie-parser");
 
 // Configure middleware
+const app = express();
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(express.static(__dirname)); // Serve files from root directory
+// app.use(express.static(__dirname)); // causes index.html to be served automatically w/o route
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(fileUpload());
+app.use(cookieParser());
+app.use(session({
+    secret: "secret-key-shhhh",
+    resave: false,
+    saveUninitialized: false, 
+    cookie: {
+        httpOnly: true
+    }
+}));
+
+app.engine("hbs", exphbs.engine({extname: "hbs"}));
 
 // Configure handlebars
 app.set("view engine", "hbs");
 app.set("views", path.join(__dirname, "views"));
-
-const checkAndSeedDatabase = async () => {
-    try {
-        const userCount = await User.countDocuments();
-        
-        // We'll use require to run the seed script directly
-        require('./database/seedDatabase');
-        
-    } catch (error) {
-        console.error('Error checking database:', error);
-    }
-}
 
 // Connect to MongoDB
 // if no environtment var, connect to local
@@ -47,10 +48,324 @@ const Laboratory = require("./database/models/Laboratory");
 const TimeSlot = require("./database/models/TimeSlot");
 const { timeSlots, endTimeOptions, morningTimeSlots } = require('./database/models/TimeSlotOptions');
 
-// Basic routes
-app.get("/", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
-app.get("/signup-page", (req, res) => res.sendFile(path.join(__dirname, "signup-page.html")));
-app.get("/popup-profile", (req, res) => res.sendFile(path.join(__dirname, "popup-profile.html")));
+// Authenticator (for signed-in pages)
+const isAuth = (req, res, next) => {
+    if (req.session.user) {
+        next();
+    } else {
+        res.redirect("/signin-page");
+    }
+};
+
+// Type verifier (for student-specific pages)
+const verifyStudent = (req,res,next) => {
+    if (req.session.user.type !== "Student") {
+        res.redirect("/labtech-home")
+    } else {
+        next();
+    }
+}
+
+// Type verifier (for faculty-specific pages)
+const verifyLabtech = (req,res,next) => {
+    if (req.session.user.type !== "Faculty") {
+        res.redirect("/student-home")
+    } else {
+        next();
+    }
+}
+
+// session checker; prints session in console
+app.use(async (req, res, next) => {
+    if (req.session && req.session.user) {
+        console.log("Current session user:", req.session.user.firstName + " " + req.session.user.lastName, new Date());
+    } else {
+        console.log("No user is currently logged in.");
+    }
+    next();
+});
+
+/* SIGNED-OUT ROUTES */
+
+app.get("/", (req, res) => {
+
+    // Redirect user to their homepage, if exist
+    if (req.session.user) {
+        res.redirect("/student-home")
+    } else {
+        res.sendFile(path.join(__dirname, "index.html"))
+    }
+});
+
+app.get("/signin-page", (req, res) => {
+    if (req.session.user) {
+        res.redirect("/student-home");
+    } else {
+        res.sendFile(path.join(__dirname, "signin-page.html"));
+    }
+});
+
+app.get("/signup-page", (req, res) => {
+    // Redirect user to homepage, if exist
+    if (req.session.user) {
+        res.redirect("/student-home")
+    } else {
+        res.sendFile(path.join(__dirname, "signup-page.html"))
+    }
+});
+
+app.post("/signin", async (req, res) => {
+    try {
+        let { email, password, rememberMe} = req.body;
+        email = email.toLowerCase();
+
+        console.log("Received sign-in request for email:", email);
+        
+        // Validate input
+        if (!email || !password) {
+            return res.status(400).json({ error: "Email and password are required" });
+        }
+        
+        // Try to find the user in the User first
+        if (!mongoose.connection.readyState) {
+            console.error("❌ Database not connected. Cannot process sign-in request.");
+            return res.status(500).json({ error: "Database connection lost. Please try again later." });
+        }
+
+        let user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(401).json({ error: "Account does not exist. Please try again with a different email" });
+        }
+
+        // Verify passwords are the same
+        const passMatch = await argon2.verify(user.password, password);
+        if (!passMatch) {
+            return res.status(401).json({ error: "Password is incorrect. Please try again." });
+        }
+
+        // Store user data in session
+        if (!req.session.user) {
+            req.session.user = user;
+        }
+
+        // Remember me
+        if (rememberMe) {
+            req.session.cookie.maxAge += 3 * 7 * 24 * 60 * 60 * 1000; // add 3 weeks
+        }
+
+
+        // Determine redirect URL based on user type
+        const redirectUrl = user.type === "Faculty" ? "/labtech-home" : "/student-home";
+        
+        // Send success response with user info
+        res.json({
+            success: true,
+            userId: user._id,
+            isLabTech: user.type === "Faculty",
+            redirect: redirectUrl
+        });
+        
+    } catch (error) {
+        console.error("Error during sign-in:", error.message, error.stack);
+        res.status(500).json({ error: "An error occurred during sign-in" });
+    }
+});
+
+app.post("/signup", async (req, res) => {
+    try {
+        let { firstName, lastName, email, newPass, confirmPass, type, facultyCode} = req.body;
+        email = email.toLowerCase();
+
+        console.log("Received sign-up request:", { firstName, lastName, email, type });
+        
+        // Validate input
+        if (!firstName || !lastName || !email || !newPass || !confirmPass) {
+            return res.status(400).json({ error: "All fields are required" });
+        }
+        
+        // Check if passwords match
+        if (newPass !== confirmPass) {
+            return res.status(400).json({ error: "Passwords do not match" });
+        }
+        
+        // Check if email is already in use
+        const existingUser = await User.findOne({ email });
+        
+        if (existingUser) {
+            return res.status(400).json({ error: "Email is already in use" });
+        }
+
+        // Faculty code is blank
+        if (type === "Faculty" && !facultyCode) {
+            return res.status(400).json({ error: "Please enter a faculty code to proceed" });
+        }
+
+        // Verify faculty code (for demo: i-am-faculty)
+        if (type === "Faculty" && facultyCode !== "i-am-faculty") {
+            return res.status(400).json({ error: "Invalid faculty code" });
+        }
+
+        // Hash password
+        const hashPass = await argon2.hash(newPass);
+
+        // Create new user
+        const newUser = new User({
+                firstName,
+                lastName,
+                email,
+                password: hashPass,
+                type: type
+        });
+
+        // Add to the database
+        await newUser.save();
+        console.log("New "+type+" user created:", newUser._id);
+        
+        // Store user data in session
+        req.session.user = newUser;
+
+        // Send success response with user info
+        res.json({
+            success: true,
+            userId: newUser._id,
+            isLabTech: type === "Faculty",
+            redirect: type === "Faculty" ? "/labtech-home" : "/student-home"
+        });
+        
+    } catch (error) {
+        console.error("Error during sign-up:", error);
+        res.status(500).json({ error: "An error occurred during sign-up" });
+    }
+});
+
+app.get("/signedout-laboratories", async (req, res) => {
+    try {
+        const labs = await Laboratory.find({}).lean();
+        const today = new Date();
+        const next7Days = [];
+        for(let i = 0; i <= 7; i++) {
+            const date = new Date();
+            date.setDate(today.getDate() + i);
+            next7Days.push({
+                formattedDate: date.toISOString().split('T')[0],
+                displayDate: date.toLocaleDateString('en-US', {weekday: 'long', month: 'long', day: 'numeric'})
+            });
+        }
+
+        // Get any existing reservations
+        const reservations = await Reservation.find().lean().populate('userId', 'firstName lastName isAnonymous type');
+
+        res.render('signedout-laboratories', { 
+            labs, 
+            next7Days, 
+            timeSlots,
+            reservations 
+        });
+    } catch (error) {
+        console.error('Error fetching laboratories:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+/* SIGNED-IN ROUTES */
+
+// Homes
+
+app.get("/student-home", isAuth, verifyStudent, async (req, res) => {
+
+    // Refresh user data with database data
+    const user = await User.findById(req.session.user._id);
+    req.session.user = user; 
+
+    // Check if user is authorized to access student home
+    res.render("student-home", req.session.user);
+});
+
+app.get("/labtech-home", isAuth, verifyLabtech, async (req, res) => {
+
+    // Refresh user data with database data
+    const user = await User.findById(req.session.user._id);
+    req.session.user = user; 
+    console.log(req.session.user.image)
+
+    // Check if user is authorized to access faculty home
+    res.render("labtech-home", req.session.user);
+});
+
+// Laboratories
+
+app.get("/student-laboratories", isAuth, verifyStudent, async (req, res) => {
+    try {
+        const labs = await Laboratory.find({}).lean();
+        const today = new Date();
+        const next7Days = [];
+        for(let i = 0; i <= 7; i++) {
+            const date = new Date();
+            date.setDate(today.getDate() + i);
+            next7Days.push({
+                formattedDate: date.toISOString().split('T')[0],
+                displayDate: date.toLocaleDateString('en-US', {weekday: 'long', month: 'long', day: 'numeric'})
+            });
+        }
+
+        // Get any existing reservations
+        const reservations = await Reservation.find().lean().populate('userId', 'firstName lastName type');
+
+        res.render('student-laboratories', { 
+            labs, 
+            next7Days, 
+            timeSlots,
+            reservations 
+        });
+    } catch (error) {
+        console.error('Error fetching laboratories:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+app.get("/labtech-laboratories", isAuth, verifyLabtech, async (req, res) => {
+    try {
+        const labs = await Laboratory.find({}).lean();
+        const today = new Date();
+        const next7Days = [];
+        for(let i = 0; i <= 7; i++) {
+            const date = new Date();
+            date.setDate(today.getDate() + i);
+            next7Days.push({
+                formattedDate: date.toISOString().split('T')[0],
+                displayDate: date.toLocaleDateString('en-US', {weekday: 'long', month: 'long', day: 'numeric'})
+            });
+        }
+
+        // Get any existing reservations
+        const reservations = await Reservation.find().lean().populate('userId', 'firstName lastName type');
+
+        res.render('labtech-laboratories', { 
+            labs, 
+            next7Days, 
+            timeSlots,
+            reservations 
+        });
+    } catch (error) {
+        console.error('Error fetching laboratories:', error);
+        res.status(500).send('Internal Server Error');
+    }
+});
+
+// Reservations
+
+app.get("/student-reservations", isAuth, verifyStudent, (req, res) => {
+    res.sendFile(path.join(__dirname, "student-reservations.html"))
+});
+
+app.get("/labtech-reservations", isAuth, verifyLabtech, (req, res) => {
+    res.sendFile(path.join(__dirname, "labtech-reservations.html"));
+})
+
+// Profiles
+
+app.get("/popup-profile", isAuth, (req, res) => res.sendFile(path.join(__dirname, "popup-profile.html")));
 
 // Get reservations across all users
 app.get("/api/reservations", async (req, res) => {
@@ -61,6 +376,7 @@ app.get("/api/reservations", async (req, res) => {
         res.status(500).json({ message: "Server error", error });
     }
 });
+
 
 // Get reservations for a specific user
 app.get("/api/reservations/user/:userId", async (req, res) => {
@@ -89,19 +405,14 @@ app.get("/api/reservation/:id", async (req, res) => {
     }
 });
 
-// Update availability of time slots based on reservations
-async function updateAvailability (){
-    try{
-        const reservation = Reservation.find();
-
-        if (!reservations || reservations.length === 0) {
-            console.log("No reservations found.");
-            return { success: false, message: "No reservations found" };
-        }
-    } catch (error){
-
-    }
-}
+app.get("/logout", (req, res) => {
+    // destroy the session and redirect to signed out home page
+    console.log("Destroying session...")
+    req.session.destroy(() => {
+        res.clearCookie("sessionId");
+        res.redirect("/");
+    });
+});
 
 // Get detailed user information by ID (must be defined BEFORE the more general route)
 app.get("/api/user/details/:id", async (req, res) => {
@@ -177,49 +488,44 @@ app.post("/api/reservation", async (req, res) => {
     }
 });
 
-// Update user profile
-app.put("/api/user/update/:id", async (req, res) => {
+app.put("/api/user/update", isAuth, async (req, res) => {
     try {
-        console.log(`Updating user with ID: ${req.params.id}`, req.body);
+        console.log(`Updating user with ID: ${req.session.user._id}`, req.body);
         
-        let user = await User.findById(req.params.id);
+        let user = await User.findById(req.session.user._id);
 
         if(!user) {
             return res.status(404).json({message: "User not found"});
         }
 
-        // Update user fields
+        // Update text fields
         user.department = req.body.department || user.department;
         user.biography = req.body.biography || user.biography;
         
         // Handle image upload if provided
-        if (req.files && req.files.profileImage) {
-            const profileImage = req.files.profileImage;
-            const uploadPath = path.join(__dirname, 'public/uploads', `${user._id}_${profileImage.name}`);
+        if (req.files && req.files.image) {
+            const image = req.files.image;
+            const uploadPath = path.join(__dirname, 'public/uploads', `${user._id}_${image.name}`);
             
             // Save the file
-            await profileImage.mv(uploadPath);
+            await image.mv(uploadPath);
             
-            // Update the user's image path
-            user.image = `/uploads/${user._id}_${profileImage.name}`;
+            // Update the user's image path in database
+            user.image = `/uploads/${user._id}_${image.name}`;
         }
-        
+
         // Save the updated user
         await user.save();
         
-        res.json({ 
+        // Update session with new user data
+        req.session.user = user;
+
+        res.json({
+            success: true,
             message: "Profile updated successfully",
-            user: {
-                _id: user._id,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                email: user.email,
-                department: user.department,
-                biography: user.biography,
-                image: user.image,
-                isLabTech: user.type === "Faculty"
-            }
+            user: user
         });
+
     } catch (error) {
         console.error(`Error updating user: ${error.message}`);
         res.status(500).json({ message: "Server error", error: error.message });
@@ -317,145 +623,65 @@ app.patch("/api/reservation/:id", async(req,res) => {
     }
 })
 
-// Serve the sign-up page
-app.get("/signup-page", (req, res) => res.sendFile(path.join(__dirname, "signup-page.html")));
-
-// Handle sign-up form submission
-app.post("/signup", async (req, res) => {
-    try {
-        let { firstName, lastName, email, newPass, confirmPass, type, facultyCode} = req.body;
-        
-        email = email.toLowerCase();
-
-        console.log("Received sign-up request:", { firstName, lastName, email, type });
-        
-        // Validate input
-        if (!firstName || !lastName || !email || !newPass || !confirmPass) {
-            return res.status(400).json({ error: "All fields are required" });
-        }
-        
-        // Check if passwords match
-        if (newPass !== confirmPass) {
-            return res.status(400).json({ error: "Passwords do not match" });
-        }
-        
-        // Check if email is already in use
-        const existingUser = await User.findOne({ email });
-        
-        if (existingUser) {
-            return res.status(400).json({ error: "Email is already in use" });
-        }
-
-        // Faculty code is blank
-        if (type === "Faculty" && !facultyCode) {
-            return res.status(400).json({ error: "Please enter a faculty code to proceed" });
-        }
-
-        // Verify faculty code (for demo: i-am-faculty)
-        if (type === "Faculty" && facultyCode !== "i-am-faculty") {
-            return res.status(400).json({ error: "Invalid faculty code" });
-        }
-
-
-        /* CREATE THE ACCOUNT */
-
-        // Hash password
-        const hashPass = await argon2.hash(newPass);
-
-        // Create new user
-        const newUser = new User({
-                firstName,
-                lastName,
-                email,
-                password: hashPass,
-                type: type
-        });
-
-        // Add to the database
-        await newUser.save();
-        console.log("New "+type+" user created:", newUser._id);
-        
-        // Send success response with user info
-        res.json({
-            success: true,
-            userId: newUser._id,
-            isLabTech: type === "Faculty",
-            redirect: type === "Faculty" ? "/labtech-home" : "/student-home"
-        });
-        
-    } catch (error) {
-        console.error("Error during sign-up:", error);
-        res.status(500).json({ error: "An error occurred during sign-up" });
-    }
-});
-
-// Serve the login page
-app.get("/signin-page", (req, res) => res.sendFile(path.join(__dirname, "signin-page.html")));
-
-
-// Handle sign-in form submission
-app.post("/signin", async (req, res) => {
-    try {
-        let { email, password } = req.body;
-        email = email.toLowerCase();
-
-        console.log("Received sign-in request for email:", email);
-        
-        // Validate input
-        if (!email || !password) {
-            return res.status(400).json({ error: "Email and password are required" });
-        }
-        
-        // Try to find the user in the User first
-        if (!mongoose.connection.readyState) {
-            console.error("❌ Database not connected. Cannot process sign-in request.");
-            return res.status(500).json({ error: "Database connection lost. Please try again later." });
-        }
-
-        let user = await User.findOne({ email });
-
-        if (!user) {
-            return res.status(401).json({ error: "Account does not exist. Please try again with a different email" });
-        }
-
-        // Verify passwords are the same
-        const passMatch = await argon2.verify(user.password, password);
-        if (!passMatch) {
-            return res.status(401).json({ error: "Password is incorrect. Please try again." });
-        }
-
-        // Determine redirect URL based on user type
-        const redirectUrl = user.type === "Faculty" ? "/labtech-home" : "/student-home";
-        
-        // Send success response with user info
-        res.json({
-            success: true,
-            userId: user._id,
-            isLabTech: user.type === "Faculty",
-            redirect: redirectUrl
-        });
-        
-    } catch (error) {
-        console.error("Error during sign-in:", error.message, error.stack);
-        res.status(500).json({ error: "An error occurred during sign-in" });
-    }
-});
-
-// Serve the student and labtech page
-app.get("/student-home", (req, res) => res.sendFile(path.join(__dirname, "student-home.html")));
-app.get("/labtech-home", (req, res) => res.sendFile(path.join(__dirname, "labtech-home.html")));
-
-
 // Profile Pages
 app.get("/popup-profile", (req, res) => {
     res.render("popup-profile", { userData: null });
 });
-app.get("/student-profile", (req, res) => res.sendFile(path.join(__dirname, "student-profile.html")));
-app.get("/labtech-profile", (req, res) => res.sendFile(path.join(__dirname, "labtech-profile.html")));
+app.get("/student-profile", isAuth, (req, res) => {
+    
+    res.sendFile(path.join(__dirname, "student-profile.html"))
+
+});
+
+app.get("/labtech-profile", isAuth, async (req, res) => {
+    const reservations = await Reservation.find()
+        .select('laboratoryRoom reservationDate startTime endTime seatNumber')
+        .lean();
+
+    const user = req.session.user;
+    // TODO: handle upcoming lab string to get nearest lab
+    const upcomingLab = ""
+
+    // format data passed for display
+    const formattedReservations = reservations.map(reservation => {
+        const reservationDate = new Date(reservation.reservationDate).toISOString().split('T')[0];
+        const now = new Date();
+        const todayDate = now.toISOString().split('T')[0];
+        var statusText = "";
+
+        // get reservation start and end times
+        const startTime = parseInt(reservation.startTime.replace(":", ""), 10);
+        const endTime = parseInt(reservation.endTime.replace(":", ""), 10);
+
+        // get current time
+        const nowHours = now.getHours().toString().padStart(2, '0');
+        const nowMinutes = now.getMinutes().toString().padStart(2, '0');
+        const nowTime = parseInt(`${nowHours}${nowMinutes}`, 10);
+
+        // TODO: HELP!!! theres problem w/ the date lmfao
+        console.log("DATE: ", todayDate, reservationDate)
+        if (todayDate === reservationDate && nowTime >= startTime && nowTime <= endTime) {
+            statusText = "Ongoing";
+        } else {
+            statusText = "Upcoming";
+        }
+
+        return {
+            lab: reservation.laboratoryRoom,
+            date: reservation.reservationDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }),
+            time: reservation.startTime + " - " + reservation.endTime,
+            seat: reservation.seatNumber,
+            status: statusText
+        };
+    });
+    
+    // Render profile with data
+    res.render("labtech-profile", { upcomingLab, reservations: formattedReservations, user });
+});
 
 
 // Profile Section Routes - Using route parameters for cleaner code
-app.get("/profile-:section", (req, res) => {
+app.get("/profile-:section", isAuth, (req, res) => {
     const section = req.params.section;
     const validSections = {
         'overview': '#overview',
@@ -504,7 +730,7 @@ app.get("/profile/:id", async (req, res) => {
 })
 
 // Labtech Profile Section Routes
-app.get("/labtech-profile-:section", (req, res) => {
+app.get("/labtech-profile-:section", isAuth, (req, res) => {
     const section = req.params.section;
     const validSections = {
         'overview': '#overview',
@@ -517,13 +743,6 @@ app.get("/labtech-profile-:section", (req, res) => {
     res.redirect(`/labtech-profile${hash}`);
 });
 
-// Reservations
-
-app.get("/student-reservations", (req, res) => res.sendFile(path.join(__dirname, "student-reservations.html")));
-
-app.get("/labtech-reservations", (req, res) => {
-    res.sendFile(path.join(__dirname, "labtech-reservations.html"));
-})
 
 // API endpoint to check seat availability
 app.get("/api/reservations/check-availability", async (req, res) => {
@@ -574,7 +793,6 @@ app.get("/api/laboratories/:room", async (req, res) => {
     }
 });
 ;
-
 
 // API endpoint to get reservations for a lab and date
 app.get("/api/reservations/lab/:labId/date/:date", async (req, res) => {
@@ -631,7 +849,7 @@ app.get("/api/reservations/lab/:labId/date/:date", async (req, res) => {
 });
 
 // Create a new reservation
-app.post("/create-reservation", async (req, res) => {
+app.post("/create-reservation", isAuth, async (req, res) => {
     try {
         const { labId, date, seatNumber, startTime, endTime, userId, isAnonymous } = req.body;
         
@@ -644,6 +862,7 @@ app.post("/create-reservation", async (req, res) => {
         
         // Format the reservation date
         const reservationDate = new Date(date);
+        reservationDate.setDate(reservationDate.getDate() - 1); // assuming PH date ang reservationDate
         reservationDate.setHours(24, 0, 0, 0); // from UTC to PH (T00:00 -> T16:00)
         
         // fetch lab data
@@ -695,7 +914,7 @@ app.post("/create-reservation", async (req, res) => {
 });
 
 // Create a new reservation as labtech
-app.post("/create-reservation-labtech", async (req, res) => {
+app.post("/create-reservation-labtech", isAuth, async (req, res) => {
     try {
         const { labId, date, seatNumber, startTime, endTime, userId} = req.body;
         
@@ -708,6 +927,7 @@ app.post("/create-reservation-labtech", async (req, res) => {
         
         // Format the reservation date
         const reservationDate = new Date(date);
+        reservationDate.setDate(reservationDate.getDate() - 1); // assuming PH date ang reservationDate
         reservationDate.setHours(24, 0, 0, 0); // from UTC to PH (T00:00 -> T16:00)
         
         // fetch lab data
@@ -757,127 +977,36 @@ app.post("/create-reservation-labtech", async (req, res) => {
 });
 
 
-// Routes for laboratory pages with database loading
-app.get("/student-laboratories", async (req, res) => {
-    try {
-        const labs = await Laboratory.find({}).lean();
-        const today = new Date();
-        const next7Days = [];
-        for(let i = 0; i <= 7; i++) {
-            const date = new Date();
-            date.setDate(today.getDate() + i);
-            next7Days.push({
-                formattedDate: date.toISOString().split('T')[0],
-                displayDate: date.toLocaleDateString('en-US', {weekday: 'long', month: 'long', day: 'numeric'})
-            });
-        }
+// // Register Handlebars helpers
+// const findReservation = function(seatNum, timeSlot, reservations) {
+//     return reservations.find(r => {
+//         const seatMatch = r.seatNumber === parseInt(seatNum);
+//         const timeMatch = r.startTime === timeSlot;
+//         return seatMatch && timeMatch;
+//     });
+// };
 
-        // Get any existing reservations
-        const reservations = await Reservation.find().lean().populate('userId', 'firstName lastName type');
+// const findReservationIndex = function(seatNum, timeSlot, reservations) {
+//     return reservations.findIndex(r => {
+//         const seatMatch = r.seatNumber === parseInt(seatNum);
+//         const timeMatch = r.startTime === timeSlot;
+//         return seatMatch && timeMatch;
+//     });
+// };
 
-        res.render('student-laboratories', { 
-            labs, 
-            next7Days, 
-            timeSlots,
-            reservations 
-        });
-    } catch (error) {
-        console.error('Error fetching laboratories:', error);
-        res.status(500).send('Internal Server Error');
-    }
-});
-
-app.get("/signedout-laboratories", async (req, res) => {
-    try {
-        const labs = await Laboratory.find({}).lean();
-        const today = new Date();
-        const next7Days = [];
-        for(let i = 0; i <= 7; i++) {
-            const date = new Date();
-            date.setDate(today.getDate() + i);
-            next7Days.push({
-                formattedDate: date.toISOString().split('T')[0],
-                displayDate: date.toLocaleDateString('en-US', {weekday: 'long', month: 'long', day: 'numeric'})
-            });
-        }
-
-        // Get any existing reservations
-        const reservations = await Reservation.find().lean().populate('userId', 'firstName lastName isAnonymous type');
-
-        res.render('signedout-laboratories', { 
-            labs, 
-            next7Days, 
-            timeSlots,
-            reservations 
-        });
-    } catch (error) {
-        console.error('Error fetching laboratories:', error);
-        res.status(500).send('Internal Server Error');
-    }
-});
-
-app.get("/labtech-laboratories", async (req, res) => {
-    try {
-        const labs = await Laboratory.find({}).lean();
-        const today = new Date();
-        const next7Days = [];
-        for(let i = 0; i <= 7; i++) {
-            const date = new Date();
-            date.setDate(today.getDate() + i);
-            next7Days.push({
-                formattedDate: date.toISOString().split('T')[0],
-                displayDate: date.toLocaleDateString('en-US', {weekday: 'long', month: 'long', day: 'numeric'})
-            });
-        }
-
-        // Get any existing reservations
-        const reservations = await Reservation.find().lean().populate('userId', 'firstName lastName type');
-
-        res.render('labtech-laboratories', { 
-            labs, 
-            next7Days, 
-            timeSlots,
-            reservations 
-        });
-    } catch (error) {
-        console.error('Error fetching laboratories:', error);
-        res.status(500).send('Internal Server Error');
-    }
-});
-
-//getting labs and days for labtech-labs
-// Removed duplicate route
-
-// Register Handlebars helpers
-const findReservation = function(seatNum, timeSlot, reservations) {
-    return reservations.find(r => {
-        const seatMatch = r.seatNumber === parseInt(seatNum);
-        const timeMatch = r.startTime === timeSlot;
-        return seatMatch && timeMatch;
-    });
-};
-
-const findReservationIndex = function(seatNum, timeSlot, reservations) {
-    return reservations.findIndex(r => {
-        const seatMatch = r.seatNumber === parseInt(seatNum);
-        const timeMatch = r.startTime === timeSlot;
-        return seatMatch && timeMatch;
-    });
-};
-
-// Register the helpers globally
-hbs.registerHelper('findReservation', findReservation);
-hbs.registerHelper('findReservationIndex', findReservationIndex);
-hbs.registerHelper('equal', function(a, b) {
-    return a === b;
-});
-hbs.registerHelper('range', function(start, end) {
-    const result = [];
-    for (let i = start; i <= end; i++) {
-        result.push(i);
-    }
-    return result;
-});
+// // Register the helpers globally
+// exphbs.registerHelper('findReservation', findReservation);
+// exphbs.registerHelper('findReservationIndex', findReservationIndex);
+// exphbs.registerHelper('equal', function(a, b) {
+//     return a === b;
+// });
+// exphbs.registerHelper('range', function(start, end) {
+//     const result = [];
+//     for (let i = start; i <= end; i++) {
+//         result.push(i);
+//     }
+//     return result;
+// });
 
 // Start the server
 const PORT = process.env.PORT || 3000;

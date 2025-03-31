@@ -118,7 +118,6 @@ const seedReservations = async () => {
         await Reservation.insertMany(reservations);
         console.log(`${reservations.length} demo reservations added`);
         
-        console.log('Reservations seeded successfully');
     } catch (error) {
         console.error('Error seeding reservations:', error);
         throw error;

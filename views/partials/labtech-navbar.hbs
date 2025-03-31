@@ -1,5 +1,3 @@
-<!DOCTYPE html>
-<!-- ADD HTML PAGES TO APPROPRIATE href="#" FIELDS -->
 <header class="nav-header">
     <div class="navbar">
         <div class="logo">
@@ -14,7 +12,7 @@
         </ul>
 
         <div class="nav-profile">
-            <a href="/labtech-profile"><img src="/img/default-profile.png" id="profile-img" title="View Profile" alt="Profile Image"></a>
+            <a href="/labtech-profile"><img src="{{#if user.img}}{{user.img}}{{else}}/img/default-profile.png{{/if}}" id="profile-img" title="View Profile" alt="Profile Image"></a>
         </div>
     </div>
 </header>

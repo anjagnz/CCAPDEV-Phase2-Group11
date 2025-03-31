@@ -5,7 +5,6 @@
 }
 
 body {
-    font-family: 'Roboto', sans-serif;
     background: var(--grey);
     min-height: 100vh;
     overflow-x: hidden;
@@ -28,7 +27,6 @@ upper-tab {
 label{
     font-size: 20px;
     padding: 10px;
-    font-family: 'Roboto';
 }
 
 li{
@@ -58,7 +56,6 @@ input {
     padding: 0 5px;
     font-size: 18px;
     text-align: center;
-    font-family: 'Roboto';
 }
 
 .profile-picture-header {
@@ -230,11 +227,14 @@ input {
     padding: 20px;
     border: none;
     border-radius: 10px;
-    font-family: 'Roboto', sans-serif;
     font-size: 20px;
     line-height: 1.5;
     resize: none;
     margin-bottom: 60px;
+}
+
+textarea {
+    font-family: 'Roboto', sans-serif;
 }
 
 /* Dashboard/Account Overview Specific */
