@@ -306,10 +306,10 @@
             
             const password = document.getElementById('delete-password').value;
 
-            // send POST request to delete user (if same passwords)
+            // send request to delete user (if same passwords)
             if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-                fetch('/api/profile/delete', {
-                    method: 'POST',
+                fetch('/api/user/delete', {
+                    method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json'
                     },
@@ -318,10 +318,10 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('Account deleted successfully.');
+                        alert(data.message);
                         window.location.href = '/logout';
                     } else {
-                        alert('Failed to delete account. Please check your password and try again.');
+                        alert(data.message);
                     }
                 })
                 .catch(error => {

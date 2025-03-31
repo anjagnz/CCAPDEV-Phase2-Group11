@@ -22,8 +22,8 @@ app.use(session({
     resave: false,
     saveUninitialized: false, 
     cookie: {
-        httpOnly: true
-        // maxAge: 3 * 7 * 24 * 60 * 60 * 1000 
+        httpOnly: true,
+        maxAge: null // to be set by remember me checkbox
     }
 }));
 
@@ -75,10 +75,14 @@ const verifyType = (req, res, next) => {
     }
 };
 
-// session checker; prints session in console
+// session checker; prints session details in console
 app.use(async (req, res, next) => {
     if (req.session && req.session.user) {
-        console.log("Current session user:", req.session.user.firstName + " " + req.session.user.lastName, new Date());
+        console.log("Current session user:", 
+            req.session.user.firstName + " " + req.session.user.lastName,
+            "/ Times visited:", req.session.visitCount,
+            "/ Remember period:", (req.session.cookie.maxAge / (24 * 60 * 60 * 1000)).toFixed(1) + " days"
+        );
     } else {
         console.log("No user is currently logged in.");
     }
@@ -91,6 +95,16 @@ app.get("/", (req, res) => {
 
     // Redirect user to their homepage, if exist
     if (req.session.user) {
+
+        // extend user remember period
+        if (req.session.cookie.maxAge) {
+            req.session.cookie.maxAge += 3 * 7 * 24 * 60 * 60 * 1000;
+        }
+
+        // count visit (to check if remember period works)
+        req.session.visitCount = (req.session.visitCount || 0) + 1;
+
+        // redirect to user homepage
         res.redirect("/student-home")
     } else {
         res.sendFile(path.join(__dirname, "index.html"))
@@ -98,6 +112,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/signin-page", (req, res) => {
+    // Redirect user to homepage, if exist
     if (req.session.user) {
         res.redirect("/student-home");
     } else {
@@ -145,26 +160,19 @@ app.post("/signin", async (req, res) => {
         }
 
         // Store user data in session
-        if (!req.session.user) {
-            req.session.user = user.toObject();
-        }
+        req.session.user = user.toObject();
 
-        // Remember me
+        // Set rememberMe period based on checkbox
         if (rememberMe) {
-            req.session.cookie.maxAge += 3 * 7 * 24 * 60 * 60 * 1000; // add 3 weeks
-        }
+            // set to 3 weeks
+            req.session.cookie.maxAge = 3 * 7 * 24 * 60 * 60 * 1000;
+        } 
 
+        // handle visit count
+        req.session.visitCount = 1;
 
-        // Determine redirect URL based on user type
-        const redirectUrl = user.type === "Faculty" ? "/labtech-home" : "/student-home";
-        
-        // Send success response with user info
-        res.json({
-            success: true,
-            userId: user._id,
-            isLabTech: user.type === "Faculty",
-            redirect: redirectUrl
-        });
+        // Redirect to home
+        res.redirect("/labtech-home");
         
     } catch (error) {
         console.error("Error during sign-in:", error.message, error.stack);
@@ -408,9 +416,9 @@ app.get("/api/reservation/:id", async (req, res) => {
 
 app.get("/logout", (req, res) => {
     // destroy the session and redirect to signed out home page
-    console.log("Destroying session...")
+    console.log("Destroying session and clearing remember me period...");
     req.session.destroy(() => {
-        res.clearCookie("sessionId");
+        res.clearCookie("connect.sid");       
         res.redirect("/");
     });
 });
@@ -577,10 +585,9 @@ app.delete("/api/reservation/:id", async (req, res) => {
     }
 });
 
-// Delete user account
-app.delete("/api/user/:id", async (req, res) => {
+app.delete("/api/user/delete", async (req, res) => {
     try {
-        const userId = req.params.id;
+        const userId = req.session.user._id;
         const { password } = req.body;
         
         console.log(`Attempting to delete user account with ID: ${userId}`);
@@ -605,7 +612,8 @@ app.delete("/api/user/:id", async (req, res) => {
         await User.findByIdAndDelete(userId);
         
         console.log(`Successfully deleted user account with ID: ${userId}`);
-        res.json({ message: "Account deleted successfully" });
+        res.json({ success: true, message: "Account deleted successfully" });
+        
     } catch (error) {
         console.error(`Error deleting user account: ${error.message}`);
         res.status(500).json({ message: "Server error", error: error.message });
@@ -756,14 +764,11 @@ app.get("/api/reservations/check-availability", async (req, res) => {
             return res.status(400).json({ available: false, message: "All parameters are required" });
         }
         
-        // Format the reservation date
-        const reservationDate = new Date(date);
-        
         // Check if there's already a reservation for this seat, date, and time
         const existingReservation = await Reservation.findOne({
             laboratoryRoom: lab,
             seatNumber: parseInt(seatNumber),
-            reservationDate: reservationDate,
+            reservationDate: date,
             startTime: startTime
         });
         
