@@ -373,12 +373,56 @@ app.get("/labtech-laboratories", isAuth, verifyType, async (req, res) => {
 
 // Reservations
 
-app.get("/student-reservations", isAuth, verifyType, (req, res) => {
-    res.sendFile(path.join(__dirname, "student-reservations.html"))
+app.get("/student-reservations", isAuth, verifyType, async (req, res) => {
+    try{
+        const reservations = await Reservation.find({userId : req.session.user._id}).sort({reservationDate: 1}).lean();
+
+        // format reservation date
+        reservations.forEach(reservation=>{
+            const date = new Date(reservation.reservationDate);
+            const gmt8Date = new Date(date.getTime() + (8*60*60*1000));
+
+            const year = gmt8Date.getFullYear();
+            const month = String(gmt8Date.getMonth() + 1).padStart(2, '0');
+            const day = String(gmt8Date.getDate()).padStart(2, '0');
+
+            reservation.reservationDate = `${year}-${month}-${day}`        
+        })
+
+        res.render('student-reservations', {
+            reservations,
+            user: req.session.user
+        });
+    } catch (error){
+        console.error('Error fetching reservations:', error);
+        res.status(500).send('Internal Server Error');
+    }
 });
 
-app.get("/labtech-reservations", isAuth, verifyType, (req, res) => {
-    res.sendFile(path.join(__dirname, "labtech-reservations.html"));
+app.get("/labtech-reservations", isAuth, verifyType, async(req, res) => {
+    try{
+        const reservations = await Reservation.find().sort({reservationDate: 1}).lean();
+
+        // format reservation date
+        reservations.forEach(reservation=>{
+            const date = new Date(reservation.reservationDate);
+            const gmt8Date = new Date(date.getTime() + (8*60*60*1000));
+
+            const year = gmt8Date.getFullYear();
+            const month = String(gmt8Date.getMonth() + 1).padStart(2, '0');
+            const day = String(gmt8Date.getDate()).padStart(2, '0');
+
+            reservation.reservationDate = `${year}-${month}-${day}`        
+        })    
+
+        res.render('labtech-reservations', {
+            reservations,
+            user: req.session.user,
+        });
+    } catch(error){
+        console.error('Error fetching reservations:', error);
+        res.status(500).send('Internal Server Error');
+    }
 })
 
 // Profiles
@@ -990,6 +1034,7 @@ app.post("/create-reservation-labtech", isAuth, async (req, res) => {
         res.status(500).send("An error occurred while creating the reservation");
     }
 });
+
 
 
 // // Register Handlebars helpers
