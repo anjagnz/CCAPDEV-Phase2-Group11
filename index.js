@@ -637,6 +637,52 @@ app.delete("/api/reservation/:id", async (req, res) => {
     }
 });
 
+// Delete past reservations
+
+async function deletePastReservations() {
+    try {
+        const currentDateTime = new Date();
+        
+        const reservations = await Reservation.find({});
+        
+        let deletionsOccurred = false;
+
+        const pastReservations = reservations.filter(reservation => {
+            const reservationDate = new Date(reservation.reservationDate);
+            
+            const endTimeStr = reservation.endTime;
+            const [time, period] = endTimeStr.split(' ');
+            let [hours, minutes] = time.split(':').map(Number);
+            
+            if (period === 'P.M.' && hours < 12) {
+                hours += 12;
+            } else if (period === 'A.M.' && hours === 12) {
+                hours = 0;
+            }
+
+            reservationDate.setHours(hours, minutes, 0, 0);
+
+            return reservationDate <= currentDateTime;
+        })
+
+        if (pastReservations.length > 0) {
+            await Promise.all(pastReservations.map(async (reservation) => {
+                await Reservation.findByIdAndDelete(reservation._id);
+                console.log(`Deleted past reservation: ${reservation.laboratoryRoom} on ${reservation.reservationDate}`);
+            }))
+            deletionsOccurred = true;
+        }
+
+        if (deletionsOccurred) {
+            console.log('Reservation Deletion Check: Past reservations deleted.');
+        } else {
+            console.log('Reservation Deletion Check: All reservations are ongoing/upcoming.');
+        }
+    } catch (error) {
+        console.error("Error deleting past reservations:", error);
+    }
+}
+
 app.delete("/api/user/delete", async (req, res) => {
     try {
         const userId = req.session.user._id;
@@ -701,8 +747,37 @@ app.get("/labtech-profile", isAuth, async (req, res) => {
         .lean();
 
     const user = req.session.user;
-    // TODO: handle upcoming lab string to get nearest lab
-    const upcomingLab = "fix this in index.js idk how to do this tee hee"
+
+    const upcomingReservations = reservations
+        .filter(reservation => {
+            const now = new Date();
+            const reservationDateTime = new Date(reservation.reservationDate);
+
+            const reservationTime = convertTo24Hour(reservation.startTime);
+            if(!reservationTime) return false;
+            
+            reservationDateTime.setHours(reservationTime.hours, reservationTime.minutes, 0, 0);
+
+            return reservationDateTime > now;
+        })
+        .sort((one, two) => {
+            const dateOne = new Date(one.reservationDate);
+            const dateTwo = new Date(two.reservationDate);
+
+            const timeOne = convertTo24Hour(one.startTime);
+            const timeTwo = convertTo24Hour(two.startTime);
+
+            dateOne.setHours(timeOne.hours, timeOne.minutes, 0, 0);
+            dateTwo.setHours(timeTwo.hours, timeTwo.minutes, 0, 0);
+
+            return dateOne - dateTwo;
+        })
+
+    let upcomingLab = "No upcoming reservations.";
+
+    if(upcomingReservations.length > 0){
+        upcomingLab = `${upcomingReservations[0].laboratoryRoom} on ${new Date(upcomingReservations[0].reservationDate).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })} at ${upcomingReservations[0].startTime}`;
+    }
 
     // format data passed for display
     const formattedReservations = reservations.map(reservation => {
@@ -722,7 +797,7 @@ app.get("/labtech-profile", isAuth, async (req, res) => {
 
         // TODO: HELP!!! theres problem w/ the date lmfao
         console.log("DATE: ", todayDate, reservationDate)
-        if (todayDate === reservationDate && nowTime >= startTime && nowTime <= endTime) {
+        if (todayDate === reservationDate && nowTime >= startTime && nowTime < endTime) {
             statusText = "Ongoing";
         } else {
             statusText = "Upcoming";
@@ -1035,6 +1110,43 @@ app.post("/create-reservation-labtech", isAuth, async (req, res) => {
     }
 });
 
+// Helper Functions
+
+function convertTo24Hour(timeStr){
+    const match = timeStr.match(/(\d+):(\d+) (\w+\.?\w*)/);
+
+    if(!match)
+        return null;
+
+    let [_, hours, minutes, period] = match;
+    hours = Number(hours);
+    minutes = Number(minutes);
+
+    if(period.toUpperCase().includes("P") && hours !== 12){
+        hours += 12;
+    } else if (period.toUpperCase().includes("A") && hours === 12) {
+        hours = 0;
+    }
+
+    return {hours, minutes};
+}
+
+// checks for past reservations and delete if there is any every half hour (30 minutes)
+function runAtNextHalfHour() {
+    const now = new Date();
+    const minutes = now.getMinutes();
+    const seconds = now.getSeconds();
+    const millisToNextHalfHour= (30 - minutes % 30) * 60 * 1000 - seconds * 1000;
+
+    deletePastReservations(); // at start of program, delete past reservations if any
+
+    setTimeout(() => {
+        deletePastReservations();
+        setInterval(deletePastReservations, 30*60*1000);
+    }, millisToNextHalfHour);
+}
+
+runAtNextHalfHour();
 
 
 // // Register Handlebars helpers
