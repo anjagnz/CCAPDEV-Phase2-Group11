@@ -12,7 +12,7 @@
         </ul>
 
         <div class="nav-profile">
-            <a href="/labtech-profile"><img src="{{#if user.image}}{{user.image}}{{else}}/img/default-profile.png{{/if}}" id="profile-img" title="View Profile" alt="Profile Image"></a>
+            <a href="{{#if (eq user.type 'Faculty')}}/labtech-profile{{else}}/student-profile{{/if}}"><img src="{{#if user.image}}{{user.image}}{{else}}/img/default-profile.png{{/if}}" id="profile-img" title="View Profile" alt="Profile Image"></a>
         </div>
     </div>
 </header>

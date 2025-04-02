@@ -271,6 +271,9 @@ app.post("/signup", async (req, res) => {
         // Store user data in session
         req.session.user = newUser;
 
+        // handle visit count
+        req.session.visitCount = 1;
+
         // Send success response with user info
         res.json({
             success: true,
