@@ -466,9 +466,6 @@ app.get("/labtech-reservations", isAuth, verifyType, async (req, res) => {
     }
 });
 
-// Profiles
-
-app.get("/popup-profile", isAuth, (req, res) => res.sendFile(path.join(__dirname, "popup-profile.html")));
 
 // Get reservations across all users
 app.get("/api/reservations", async (req, res) => {
@@ -773,7 +770,7 @@ app.patch("/api/reservation/:id", async(req,res) => {
 })
 
 // Profile Pages
-app.get("/popup-profile", (req, res) => {
+app.get("/popup-profile", isAuth, (req, res) => {
     res.render("popup-profile", { userData: null });
 });
 
@@ -942,6 +939,7 @@ app.get("/profile-:section", isAuth, (req, res) => {
 
 // User Profiles
 
+// Generate popup profile with related user data
 app.get("/profile/:id", async (req, res) => {
     try {
         console.log(`Fetching user with ID: ${req.params.id}`);
@@ -968,7 +966,6 @@ app.get("/profile/:id", async (req, res) => {
         
         res.render("popup-profile", {userData});
 
-        console.log(`Found user: ${JSON.stringify(userData)}`);
     } catch (error) {
         console.error(`Error finding user: ${error.message}`);
         res.status(500).json({ message: "Server error", error: error.message });
