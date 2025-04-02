@@ -732,7 +732,7 @@ app.get("/labtech-profile", isAuth, async (req, res) => {
     let upcomingLab = "No upcoming reservations.";
 
     if(upcomingReservations.length > 0){
-        upcomingLab = `${upcomingReservations[0].laboratoryRoom} on ${new Date(upcomingReservations[0].reservationDate).toLocaleDateString('en-US')} at ${upcomingReservations[0].startTime}`;
+        upcomingLab = `${upcomingReservations[0].laboratoryRoom} on ${new Date(upcomingReservations[0].reservationDate).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })} at ${upcomingReservations[0].startTime}`;
     }
 
     // format data passed for display
@@ -753,7 +753,7 @@ app.get("/labtech-profile", isAuth, async (req, res) => {
 
         // TODO: HELP!!! theres problem w/ the date lmfao
         console.log("DATE: ", todayDate, reservationDate)
-        if (todayDate === reservationDate && nowTime >= startTime && nowTime <= endTime) {
+        if (todayDate === reservationDate && nowTime >= startTime && nowTime < endTime) {
             statusText = "Ongoing";
         } else {
             statusText = "Upcoming";
