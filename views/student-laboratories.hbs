@@ -14,17 +14,7 @@
         <script src="/js/seat-manager.js"></script>
 
         <script>
-            let isLoggedIn = false;
-            $(document).ready(function() {
-                const userId = localStorage.getItem('userId');
-                if (userId) {
-                    isLoggedIn = true;
-                    document.getElementById('anonymous-option').style.display = 'flex';
-                } else {
-                    console.error('No user ID found in localStorage');
-                }
-                $.getScript("/js/navbar.js");
-            });
+            $(document).ready(function() {$.getScript("js/navbar.js");});
         </script>
         
         <style>
@@ -111,7 +101,7 @@
     </head>
 
     <body>
-        <div data-include="navbar-signedin"></div>
+        {{>navbar}}
 
         <div class="frame">
             <span class="header">Reserve a Slot</span>
@@ -206,7 +196,7 @@
             <input type="hidden" id="seatNumber" name="seatNumber" value="">
             <input type="hidden" id="startTime" name="startTime" value="">
             <input type="hidden" id="endTime" name="endTime" value="">
-            <input type="hidden" id="userId" name="userId" value="">
+            <input type="hidden" id="userId" name="userId" value="{{user._id}}">
             <input type="hidden" id="isAnonymous" name="isAnonymous" value="">
         </form>
 
@@ -255,7 +245,7 @@
                 const selectedLab = document.getElementById("labs").options[document.getElementById("labs").selectedIndex]
                 const selectedDate = document.getElementById("dates").value;
                 const capacity = selectedLab.getAttribute("data-capacity");
-                const userId = localStorage.getItem('userId');
+                const userId = "{{user._id}}";
 
                 // handle input field errors
                 if (!selectedLab || !selectedDate) {
@@ -521,7 +511,7 @@
 
                 const frameContainer = document.querySelector(".frame");
                 reservations.forEach((reservation, index) => {
-                    reservation.isCurrentUser = reservation.userId._id.toString() === localStorage.getItem('userId');
+                    reservation.isCurrentUser = reservation.userId._id.toString() === "{{user._id}}";
                     
                     const popupDiv = document.createElement("div");
                     popupDiv.className = "popup2";
@@ -631,7 +621,6 @@
                             document.getElementById("seatNumber").value = seatNumber;
                             document.getElementById("startTime").value = startTime;
                             document.getElementById("endTime").value = endTime;
-                            document.getElementById("userId").value = localStorage.getItem('userId');
                             document.getElementById("isAnonymous").value = isAnonymous;
                             
                             // Submit the form
@@ -714,12 +703,6 @@
             function handleSeatClick(event) {
 
                 console.log("Seat clicked!");
-                
-                const userId = localStorage.getItem('userId');
-                if (!userId) {
-                    alert('Please sign in to select a seat');
-                    return;
-                }
 
                 // Remove any previously selected seats
                 document.querySelectorAll('.selected-seat').forEach(seat => {
@@ -731,10 +714,6 @@
                 const seat = event.target;
                 seat.classList.remove('clickable-seat');
                 seat.classList.add('selected-seat');
-                
-                // Store the selected seat info
-                localStorage.setItem('selectedSeatNumber', seat.getAttribute('seat-number'));
-                localStorage.setItem('selectedTimeSlot', seat.getAttribute('seat-time'));
 
                 // Update end time options based on selected time slot
                 
