@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>LabMate - Sign In</title> 
+        <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+        
+        <meta charset = "UTF-8">
+        <meta name = "viewport" content = "width=device-width, initial-scale=1.0">
+
+        <link rel="stylesheet" href="/css/theme-style.css">
+        <link rel="stylesheet" href="/css/navbar-style.css">
+        <link rel="stylesheet" href="/css/signin-page.css">
+        
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <!-- add navigation bar and interactivity  -->
+        <script>
+            /* adds outline design on active page in navigation bar */
+            $(document).ready(function() {$.getScript("/js/navbar.js");});
+        </script>
+    </head>
+    <body>
+        
+        {{> navbar-signedout}}
+
+        <form action ="/signin" method="post" id="container">
+            <div id="signin"> 
+                <div class="left-column">
+                    <h1>Account Sign-in</h1>
+                    <p id="error">{{#if error}}{{error}}{{/if}}</p>
+                    <div class="inputWrapper">
+                        <label for="email">DLSU Email Address</label>
+                        <input type="email" name="email" required>
+                    </div>
+                    <div class="inputWrapper">
+                        <label for="password">Password</label>
+                        <input type="password" name="password" required>
+                    </div>
+                    <div class="inputWrapper">
+                        <label>
+                            <input type="checkbox" name="rememberMe" value="true" title="Checking this box will let this website to remember your account for 3 weeks.">
+                            Remember me
+                        </label>
+                    </div>
+                    
+                    <input id="signin-btn" type="submit" value="Sign In">
+                </div>
+
+                <div class="right-column">
+                    <img src="/img/sign-in-graphic.png">
+                    <div style="margin-top: 10px">Don't have an account?  <a href="/signup-page">Create an account. </a></div>
+                </div>
+            </div>
+        </form>
+
+        <script>
+            document.getElementById("container").addEventListener("submit", async function(e) {
+                e.preventDefault();
+
+                const formData = new FormData(this);
+                const errorDiv = document.getElementById("error");
+                
+                try {
+                    const response = await fetch("/signin", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            email: formData.get("email"),
+                            password: formData.get("password"),
+                            rememberMe: formData.get("rememberMe") === "true"
+                        })
+                    });
+
+                    // temporarily store userid in localstorage so app doesnt break
+                    if (response.ok) {
+                        const sessionResponse = await fetch("/api/session");
+                        const sessionData = await sessionResponse.json();
+                        
+                        if (sessionData.user) {
+                            localStorage.setItem("userId", sessionData.user._id);
+                            localStorage.setItem("isLabtech", (sessionData.user.type === "Faculty").toString());
+                        }
+                    }
+
+                    // follow redirect
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                        return;
+                    }
+
+                    const data = await response.json();
+                    
+                    // display error from server if meron
+                    if (!response.ok) {
+                        errorDiv.textContent = data.error;
+                        errorDiv.style.display = "block";
+                    }
+                } catch (error) {
+                    console.error("Error during sign-in:", error);
+                    errorDiv.textContent = "An error occurred during sign-in. Please try again.";
+                    errorDiv.style.display = "block";
+                }
+            });
+        </script>
+        
+    </body>
+    
+</html> 

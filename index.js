@@ -33,7 +33,17 @@ app.set("views", path.join(__dirname, "views"));
 app.engine("hbs", exphbs.engine({
     extname: "hbs",
     helpers: {
-        eq: (a, b) => a === b
+        eq: (a, b) => a === b,
+        formatDate: function(date) {
+            if (!date) return '';
+            const dateObj = new Date(date);
+            return dateObj.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
     }
 }));
 
@@ -116,7 +126,7 @@ app.get("/", (req, res) => {
         // redirect to user homepage
         res.redirect("/student-home")
     } else {
-        res.sendFile(path.join(__dirname, "index.html"))
+        res.render("index");
     }
 });
 
@@ -125,7 +135,7 @@ app.get("/signin-page", (req, res) => {
     if (req.session.user) {
         res.redirect("/student-home");
     } else {
-        res.sendFile(path.join(__dirname, "signin-page.html"));
+        res.render("signin-page");
     }
 });
 
@@ -134,7 +144,7 @@ app.get("/signup-page", (req, res) => {
     if (req.session.user) {
         res.redirect("/student-home")
     } else {
-        res.sendFile(path.join(__dirname, "signup-page.html"))
+        res.render("signup-page");
     }
 });
 
@@ -162,10 +172,25 @@ app.post("/signin", async (req, res) => {
             return res.status(401).json({ error: "Account does not exist. Please try again with a different email" });
         }
 
-        // Verify passwords are the same
-        const passMatch = await argon2.verify(user.password, password);
-        if (!passMatch) {
-            return res.status(401).json({ error: "Password is incorrect. Please try again." });
+        try {
+            // Verify passwords are the same
+            const passMatch = await argon2.verify(user.password, password);
+            if (!passMatch) {
+                return res.status(401).json({ error: "Password is incorrect. Please try again." });
+            }
+        } catch (verifyError) {
+            console.error("Password verification error:", verifyError.message);
+            
+            // Check if the error is related to the hash format
+            if (verifyError.message.includes("must contain a $ as first char")) {
+                // This indicates the password hash in the database is incorrectly formatted
+                return res.status(401).json({ 
+                    error: "There was an issue with your password. Please try again later or contact support."
+                });
+            }
+            
+            // For any other password verification errors
+            return res.status(401).json({ error: "Authentication failed. Please try again." });
         }
 
         // Store user data in session
@@ -180,8 +205,12 @@ app.post("/signin", async (req, res) => {
         // handle visit count
         req.session.visitCount = 1;
 
-        // Redirect to home
-        res.redirect("/labtech-home");
+        // Redirect user based on their type
+        if (user.type === "Faculty") {
+            res.redirect("/labtech-home");
+        } else {
+            res.redirect("/student-home");
+        }
         
     } catch (error) {
         console.error("Error during sign-in:", error.message, error.stack);
@@ -373,13 +402,66 @@ app.get("/labtech-laboratories", isAuth, verifyType, async (req, res) => {
 
 // Reservations
 
-app.get("/student-reservations", isAuth, verifyType, (req, res) => {
-    res.sendFile(path.join(__dirname, "student-reservations.html"))
+app.get("/student-reservations", isAuth, verifyType, async (req, res) => {
+    try {
+        // Get reservations for the current user
+        const reservations = await Reservation.find({ userId: req.session.user._id });
+        
+        // Render the page with user and reservations data
+        res.render("student-reservations", {
+            user: req.session.user,
+            reservations: reservations
+        });
+    } catch (error) {
+        console.error("Error fetching reservations:", error);
+        res.status(500).send("Internal Server Error");
+    }
 });
 
-app.get("/labtech-reservations", isAuth, verifyType, (req, res) => {
-    res.sendFile(path.join(__dirname, "labtech-reservations.html"));
-})
+app.get("/labtech-reservations", isAuth, verifyType, async (req, res) => {
+    try {
+        // Get all reservations
+        const allReservations = await Reservation.find().lean();
+        
+        // Process reservations to determine which can be deleted (within 10 min of time slot)
+        const currentDate = new Date();
+        
+        const reservations = allReservations.map(reservation => {
+            const reservationDate = new Date(reservation.reservationDate);
+            
+            // Parse start time
+            const startTimeStr = reservation.startTime;
+            const [time, period] = startTimeStr.split(' ');
+            let [hours, minutes] = time.split(':').map(Number);
+            
+            if (period === 'P.M.' && hours < 12) {
+                hours += 12;
+            } else if (period === 'A.M.' && hours === 12) {
+                hours = 0;
+            }
+            
+            reservationDate.setHours(hours, minutes, 0, 0);
+            
+            // Calculate time difference in minutes
+            const timeDiff = (currentDate - reservationDate) / (1000 * 60);
+            
+            // Flag if reservation can be deleted (within 10 minutes of time slot)
+            return {
+                ...reservation,
+                canBeDeleted: timeDiff <= 10 && timeDiff >= 0
+            };
+        });
+        
+        // Render the page with user and reservations data
+        res.render("labtech-reservations", {
+            user: req.session.user,
+            reservations: reservations
+        });
+    } catch (error) {
+        console.error("Error fetching reservations:", error);
+        res.status(500).send("Internal Server Error");
+    }
+});
 
 // Profiles
 

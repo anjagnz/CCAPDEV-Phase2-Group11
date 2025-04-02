@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LabMate - Reservations</title> 
+    <link rel="icon" type="image/x-icon" href="/img/favicon.ico">
+    <link rel="stylesheet" href="/css/theme-style.css">
+    <link rel="stylesheet" href="/css/navbar-style.css">
+    <link rel="stylesheet" href="/css/reservations.css">
+    <link rel="stylesheet" href="/css/pop-up.css">
+    <link rel="stylesheet" href="/css/reservation-details.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- add navigation bar and interactivity  -->
+    <script>
+        /* adds outline design on active page in navigation bar */
+        $(document).ready(function() {$.getScript("/js/navbar.js");});
+    </script>
+</head>
+<body>
+    
+    <!-- insert navigation bar for signed in view -->
+    {{> navbar-signedin}}
+    
+    <h1>Your Reservations</h1>
+
+    <!-- Reservations  -->
+    <div class="reservations">
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Laboratory Room</th>
+                    <th>Reservation Date</th>
+                    <th>Time Slot</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#if reservations}}
+                    {{#each reservations}}
+                    <tr>
+                        <td style="text-align: right;">
+                            <input type="radio" name="select-option" class="select-btn" value="{{this._id}}">
+                        </td>
+                        <td>{{this.laboratoryRoom}}</td>
+                        <td>{{formatDate this.reservationDate}}</td>
+                        <td><span id="start">{{this.startTime}}</span> - <span id="end">{{this.endTime}}</span></td>
+                        <td style="text-align: left;">
+                            <img src="/img/reservation-details.jpeg" data-reservation-id="{{this._id}}" class="details">
+                        </td>
+                    </tr>
+                    {{/each}}
+                {{/if}}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="remove-btn-wrapper">
+        <button type="button" class="remove-btn" onclick="openPopup1()">Remove Reservation</button>
+    </div>
+        
+    <div id="overlay" class="overlay"></div>
+
+    <!-- Reservation Details -->
+    <div class="popup" id="reservation-details">
+        <h1 class="reservation-details-title">Reservation Details</h1>
+        <div class="details-container">
+            <div class="input-wrapper field-group">
+                <div class="label-wrapper field-label">            
+                    Student Name:
+                </div>
+                <input type="text" id="student-name" class="text-field" data-label="studentName" disabled> 
+            </div>
+
+            <div class="input-wrapper field-group">
+                <div class="label-wrapper field-label">            
+                    Laboratory Room:
+                </div>
+                <input type="text" id="lab-room" class="text-field" data-label="laboratoryRoom" disabled> 
+            </div>
+
+            <div class="input-wrapper field-group">
+                <div class="label-wrapper field-label">            
+                    Seat Number:
+                </div>
+                <input type="text" id="seat-num" class="text-field" data-label="seatNumber" disabled>
+            </div>
+
+            <div class="input-wrapper field-group">
+                <div class="label-wrapper field-label">            
+                    Date of Booking:
+                </div>
+                <input type="text" id="booking-date" class="text-field" data-label="bookingDate" disabled>
+            </div>
+
+            <div class="input-wrapper field-group">
+                <div class="label-wrapper field-label">            
+                    Time of Booking:
+                </div>
+                <input type="text" id="booking-time" class="text-field" disabled>
+            </div>
+
+            <div class="input-wrapper field-group">
+                <div class="label-wrapper field-label">            
+                    Reservation Date:
+                </div>
+                <input type="text" id="reserve-date" class="text-field" data-label="reservationDate" disabled>
+            </div>
+
+            <div class="input-wrapper field-group">
+                <div class="label-wrapper field-label">            
+                    Start Time:
+                </div>
+                <input type="text" id="start-time" class="text-field" data-label="startTime" disabled>
+            </div>
+
+            <div class="input-wrapper field-group">
+                <div class="label-wrapper field-label">            
+                    End Time:
+                </div>
+                <input type="text" id="end-time" class="text-field" name="editable" data-label="endTime" disabled>
+            </div>
+
+            <div class="footer">
+                <div class="button-wrapper1">
+                    <button type="button" class="btn-1" id="edit-btn">Edit Reservation</button>
+                </div>
+
+                <div class="button-wrapper2">
+                    <button type="done" class="btn-2" id="done-btn" onclick="done()">Done</button>
+                </div>
+            </div>
+        </div>
+    </div> 
+
+    <!-- Remove Reservation -->
+    <div class="popup" id="remove-reservation">
+        <img src="/img/message_icon.png" class="icon"/>
+        <p class="message">Are you sure you want to remove this reservation? <br>
+            This action cannot be undone.
+        </p>
+        
+        <div class="btn-wrapper">
+            <button type="button" class="btn1" onclick="cancel()">Cancel</button>
+        </div>
+            
+        <div class="btn-wrapper">
+            <button type="button" class="btn2" onclick="confirm()">Confirm</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // Add click event listeners to the details icons
+            document.querySelectorAll('.details').forEach(icon => {
+                icon.addEventListener('click', function() {
+                    openPopup2(this.dataset.reservationId);
+                });
+            });
+        });
+
+        async function loadReservationDetails(reservationId) {
+            try {
+                const response = await fetch(`/api/reservation/${reservationId}`, { method: "GET" });
+                const reservation = await response.json();
+
+                // Extract necessary details
+                var reservationDate = formatToGMT8(reservation.reservationDate);
+                var formattedDate = formatDate(new Date(reservation.bookingDate)).split("T");
+                var bookingDate = formattedDate[0];
+                var bookingTime = formattedDate[1];
+                
+                const userId = localStorage.getItem('userId');
+                const response2 = await fetch(`/api/user/${userId}`);
+                const user = await response2.json();
+                const studentName = user.firstName + " " + user.lastName;
+
+                // Update form field values
+                if (reservation.studentName){
+                    document.getElementById("student-name").value = reservation.studentName;
+                } else{
+                    document.getElementById("student-name").value = studentName;
+                }
+                document.getElementById("lab-room").value = reservation.laboratoryRoom;
+                document.getElementById("seat-num").value = reservation.seatNumber;
+                document.getElementById("booking-date").value = bookingDate;
+                document.getElementById("booking-time").value = bookingTime;
+                document.getElementById("reserve-date").value = reservationDate;
+                document.getElementById("start-time").value = reservation.startTime;
+                document.getElementById("end-time").value = reservation.endTime;
+
+                // Set up the edit button's onclick event with the reservation ID
+                const editButton = document.getElementById("edit-btn");
+                editButton.onclick = function() {
+                    edit(reservationId);
+                };
+                
+            } catch (error) {
+                console.error("Error fetching reservations:", error);
+            }
+        }
+
+        let remove= document.getElementById("remove-reservation");
+        let details = document.querySelector("#reservation-details");
+
+        // The rest of your JavaScript functions will be imported from external files or kept here
+    </script>
+</body>
+</html> 

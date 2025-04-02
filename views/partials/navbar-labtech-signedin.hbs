@@ -1,0 +1,40 @@
+<header class="nav-header">
+    <div class="navbar">
+        <div class="logo">
+            <label id="labmate-logo">Lab<span style="color:#1d3853;">Mate</span></label>
+        </div>
+
+        <ul class="nav-links">
+            <li><a href="/labtech-home" id="nav-home" title="Home Page">Home</a></li>
+            <li><a href="/labtech-laboratories" id="nav-lab" title="View Laboratories">Laboratories</a></li>
+            <li><a href="/labtech-reservations" id="nav-reserve" title="Check Reservations">Reservations</a></li>
+        </ul>
+
+        <div class="nav-profile">
+            <a href="/labtech-profile"><img src="{{#if user.image}}{{user.image}}{{else}}/img/default-profile.png{{/if}}" id="profile-img" title="View Profile" alt="Profile Image"></a>
+        </div>
+    </div>
+</header>
+
+<script>
+    // Add underline on current page
+    document.addEventListener("DOMContentLoaded", function() {
+        const page = window.location.pathname.split("/").pop() || "index.html";
+        const pageWithoutExt = page.replace(".html", "");
+
+        // Add active class to the current page in the navigation bar
+        switch (pageWithoutExt) {
+            case 'labtech-home':
+                document.getElementById("nav-home")?.classList.add("active");
+                break;
+            case 'labtech-reservations':
+                document.getElementById("nav-reserve")?.classList.add("active");
+                break;
+            case 'labtech-laboratories':
+                document.getElementById("nav-lab")?.classList.add("active");
+                break;
+            default:
+                break;
+        }
+    });
+</script> 
