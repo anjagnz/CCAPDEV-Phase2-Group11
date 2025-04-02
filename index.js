@@ -593,6 +593,52 @@ app.delete("/api/reservation/:id", async (req, res) => {
     }
 });
 
+// Delete past reservations
+
+async function deletePastReservations() {
+    try {
+        const currentDateTime = new Date();
+        
+        const reservations = await Reservation.find({});
+        
+        let deletionsOccurred = false;
+
+        const pastReservations = reservations.filter(reservation => {
+            const reservationDate = new Date(reservation.reservationDate);
+            
+            const endTimeStr = reservation.endTime;
+            const [time, period] = endTimeStr.split(' ');
+            let [hours, minutes] = time.split(':').map(Number);
+            
+            if (period === 'P.M.' && hours < 12) {
+                hours += 12;
+            } else if (period === 'A.M.' && hours === 12) {
+                hours = 0;
+            }
+
+            reservationDate.setHours(hours, minutes, 0, 0);
+
+            return reservationDate <= currentDateTime;
+        })
+
+        if (pastReservations.length > 0) {
+            await Promise.all(pastReservations.map(async (reservation) => {
+                await Reservation.findByIdAndDelete(reservation._id);
+                console.log(`Deleted past reservation: ${reservation.laboratoryRoom} on ${reservation.reservationDate}`);
+            }))
+            deletionsOccurred = true;
+        }
+
+        if (deletionsOccurred) {
+            console.log('Reservation Deletion Check: Past reservations deleted.');
+        } else {
+            console.log('Reservation Deletion Check: All reservations are ongoing/upcoming.');
+        }
+    } catch (error) {
+        console.error("Error deleting past reservations:", error);
+    }
+}
+
 app.delete("/api/user/delete", async (req, res) => {
     try {
         const userId = req.session.user._id;
@@ -1040,6 +1086,23 @@ function convertTo24Hour(timeStr){
 
     return {hours, minutes};
 }
+
+// checks for past reservations and delete if there is any every half hour (30 minutes)
+function runAtNextHalfHour() {
+    const now = new Date();
+    const minutes = now.getMinutes();
+    const seconds = now.getSeconds();
+    const millisToNextHalfHour= (30 - minutes % 30) * 60 * 1000 - seconds * 1000;
+
+    deletePastReservations(); // at start of program, delete past reservations if any
+
+    setTimeout(() => {
+        deletePastReservations();
+        setInterval(deletePastReservations, 30*60*1000);
+    }, millisToNextHalfHour);
+}
+
+runAtNextHalfHour();
 
 // // Register Handlebars helpers
 // const findReservation = function(seatNum, timeSlot, reservations) {
