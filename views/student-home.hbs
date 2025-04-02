@@ -13,14 +13,10 @@
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://kit.fontawesome.com/f8fd180dda.js" crossorigin="anonymous"></script>
         <!-- add navigation bar and interactivity  -->
-        <script>
-            /* adds outline design on active page in navigation bar */
-            $(document).ready(function() {$.getScript("js/navbar.js");});
-        </script>
     </head>
     <body>
         <!-- insert navigation bar for signed in view -->
-        <div data-include="navbar-signedin"></div>
+        {{>navbar}}
 
         <div class = "frame">
             <span class = "header">What would you like to do next, <span id="user-name">{{user.firstName}} {{user.lastName}}</span>?</span>

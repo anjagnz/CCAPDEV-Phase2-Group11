@@ -1,0 +1,43 @@
+<header class="nav-header" id="index-header">
+    <div class="navbar">
+
+        <label class="logo">Lab<span id="mate">Mate</span></label>
+
+        <ul class="nav-links">
+            <li><a href="/" id="nav-home" title="Home Page">Home</a></li>
+            <li><a href="/signedout-laboratories" id="nav-lab" title="View Laboratories">Laboratories</a></li>
+        </ul>
+
+        <div class="nav-btns">
+            <button onclick="window.location.href='/signup-page'" class="round secondary action-btn">Sign Up</button>
+            <button onclick="window.location.href='/signin-page'" class="round primary action-btn">Sign In</button>
+        </div>
+    </div>
+</header>
+
+<style>
+    .navbar .nav-btns button {
+        margin-left: 20px;
+    }
+</style>
+
+<script>
+    // Add underline on current page
+    document.addEventListener("DOMContentLoaded", function() {
+        const page = window.location.pathname.split("/").pop() || "index.html";
+        const pageWithoutExt = page.replace(".html", "");
+
+        // Add active class to the current page in the navigation bar
+        switch (pageWithoutExt) {
+            case '':
+            case 'index':
+                document.getElementById("nav-home")?.classList.add("active");
+                break;
+            case 'signedout-laboratories':
+                document.getElementById("nav-lab")?.classList.add("active");
+                break;
+            default:
+                break;
+        }
+    });
+</script> 

@@ -63,15 +63,10 @@
 
         </style>
 
-        <script>
-            $(document).ready(function() {
-                $.getScript("/js/navbar.js");
-            });
-        </script>
     </head>
 
     <body>
-        <div data-include="navbar-signedout"></div>
+        {{>navbar-signedout}}
 
         <div class="frame">
             <span class="header">View Slot Availability</span>
@@ -168,7 +163,6 @@
 
                 const selectedDate = document.getElementById("dates").value;
                 const capacity = selectedLab.getAttribute("data-capacity");
-                const userId = localStorage.getItem('userId');
 
                 const timeSlots = [
                     "07:30 A.M.", "08:00 A.M.", "08:30 A.M.", "09:00 A.M.",

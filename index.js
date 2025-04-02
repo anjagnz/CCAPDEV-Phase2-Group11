@@ -122,7 +122,7 @@ app.get("/", (req, res) => {
         // redirect to user homepage
         res.redirect("/student-home")
     } else {
-        res.sendFile(path.join(__dirname, "index.html"))
+        res.render("index");
     }
 });
 
@@ -131,7 +131,7 @@ app.get("/signin-page", (req, res) => {
     if (req.session.user) {
         res.redirect("/student-home");
     } else {
-        res.sendFile(path.join(__dirname, "signin-page.html"));
+        res.render("signin-page");
     }
 });
 
@@ -140,7 +140,7 @@ app.get("/signup-page", (req, res) => {
     if (req.session.user) {
         res.redirect("/student-home")
     } else {
-        res.sendFile(path.join(__dirname, "signup-page.html"))
+        res.render("signup-page");
     }
 });
 
@@ -168,10 +168,25 @@ app.post("/signin", async (req, res) => {
             return res.status(401).json({ error: "Account does not exist. Please try again with a different email" });
         }
 
-        // Verify passwords are the same
-        const passMatch = await argon2.verify(user.password, password);
-        if (!passMatch) {
-            return res.status(401).json({ error: "Password is incorrect. Please try again." });
+        try {
+            // Verify passwords are the same
+            const passMatch = await argon2.verify(user.password, password);
+            if (!passMatch) {
+                return res.status(401).json({ error: "Password is incorrect. Please try again." });
+            }
+        } catch (verifyError) {
+            console.error("Password verification error:", verifyError.message);
+            
+            // Check if the error is related to the hash format
+            if (verifyError.message.includes("must contain a $ as first char")) {
+                // This indicates the password hash in the database is incorrectly formatted
+                return res.status(401).json({ 
+                    error: "There was an issue with your password. Please try again later or contact support."
+                });
+            }
+            
+            // For any other password verification errors
+            return res.status(401).json({ error: "Authentication failed. Please try again." });
         }
 
         // Store user data in session
@@ -186,8 +201,12 @@ app.post("/signin", async (req, res) => {
         // handle visit count
         req.session.visitCount = 1;
 
-        // Redirect to home
-        res.redirect("/labtech-home");
+        // Redirect user based on their type
+        if (user.type === "Faculty") {
+            res.redirect("/labtech-home");
+        } else {
+            res.redirect("/student-home");
+        }
         
     } catch (error) {
         console.error("Error during sign-in:", error.message, error.stack);
@@ -247,6 +266,9 @@ app.post("/signup", async (req, res) => {
         
         // Store user data in session
         req.session.user = newUser;
+
+        // handle visit count
+        req.session.visitCount = 1;
 
         // Send success response with user info
         res.json({
@@ -471,9 +493,6 @@ app.get("/labtech-reservations", isAuth, verifyType, async(req, res) => {
     }
 })
 
-// Profiles
-
-app.get("/popup-profile", isAuth, (req, res) => res.sendFile(path.join(__dirname, "popup-profile.html")));
 
 // Get reservations across all users
 app.get("/api/reservations", async (req, res) => {
@@ -778,13 +797,82 @@ app.patch("/api/reservation/:id", async(req,res) => {
 })
 
 // Profile Pages
-app.get("/popup-profile", (req, res) => {
+app.get("/popup-profile", isAuth, (req, res) => {
     res.render("popup-profile", { userData: null });
 });
-app.get("/student-profile", isAuth, (req, res) => {
-    
-    res.sendFile(path.join(__dirname, "student-profile.html"))
 
+app.get("/student-profile", isAuth, async (req, res) => {
+
+    const user = req.session.user;
+    const reservations = await Reservation.find({userId: user._id})
+        .select('laboratoryRoom reservationDate startTime endTime seatNumber')
+        .lean();
+
+    const upcomingReservations = reservations
+        .filter(reservation => {
+            const now = new Date();
+            const reservationDateTime = new Date(reservation.reservationDate);
+
+            const reservationTime = convertTo24Hour(reservation.startTime);
+            if (!reservationTime) return false;
+
+            reservationDateTime.setHours(reservationTime.hours, reservationTime.minutes, 0, 0);
+
+            return reservationDateTime > now;
+        })
+        .sort((one, two) => {
+            const dateOne = new Date(one.reservationDate);
+            const dateTwo = new Date(two.reservationDate);
+
+            const timeOne = convertTo24Hour(one.startTime);
+            const timeTwo = convertTo24Hour(two.startTime);
+
+            dateOne.setHours(timeOne.hours, timeOne.minutes, 0, 0);
+            dateTwo.setHours(timeTwo.hours, timeTwo.minutes, 0, 0);
+
+            return dateOne - dateTwo;
+        })
+
+    let upcomingLab = "No upcoming reservations.";
+
+    if (upcomingReservations.length > 0) {
+        upcomingLab = `${upcomingReservations[0].laboratoryRoom} on ${new Date(upcomingReservations[0].reservationDate).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })} at ${upcomingReservations[0].startTime}`;
+    }
+
+    // format data passed for display
+    const formattedReservations = reservations.map(reservation => {
+        const reservationDate = new Date(reservation.reservationDate).toISOString().split('T')[0];
+        const now = new Date();
+        const todayDate = now.toISOString().split('T')[0];
+        var statusText = "";
+
+        // get reservation start and end times
+        const startTime = parseInt(reservation.startTime.replace(":", ""), 10);
+        const endTime = parseInt(reservation.endTime.replace(":", ""), 10);
+
+        // get current time
+        const nowHours = now.getHours().toString().padStart(2, '0');
+        const nowMinutes = now.getMinutes().toString().padStart(2, '0');
+        const nowTime = parseInt(`${nowHours}${nowMinutes}`, 10);
+
+        // TODO: HELP!!! theres problem w/ the date lmfao
+        if (todayDate === reservationDate && nowTime >= startTime && nowTime < endTime) {
+            statusText = "Ongoing";
+        } else {
+            statusText = "Upcoming";
+        }
+
+        return {
+            lab: reservation.laboratoryRoom,
+            date: reservation.reservationDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }),
+            time: reservation.startTime + " - " + reservation.endTime,
+            seat: reservation.seatNumber,
+            status: statusText
+        };
+    });
+
+    // Render profile with data
+    res.render("student-profile", { upcomingLab, reservations: formattedReservations, user });
 });
 
 app.get("/labtech-profile", isAuth, async (req, res) => {
@@ -842,7 +930,6 @@ app.get("/labtech-profile", isAuth, async (req, res) => {
         const nowTime = parseInt(`${nowHours}${nowMinutes}`, 10);
 
         // TODO: HELP!!! theres problem w/ the date lmfao
-        console.log("DATE: ", todayDate, reservationDate)
         if (todayDate === reservationDate && nowTime >= startTime && nowTime < endTime) {
             statusText = "Ongoing";
         } else {
@@ -879,6 +966,7 @@ app.get("/profile-:section", isAuth, (req, res) => {
 
 // User Profiles
 
+// Generate popup profile with related user data
 app.get("/profile/:id", async (req, res) => {
     try {
         console.log(`Fetching user with ID: ${req.params.id}`);
@@ -905,7 +993,6 @@ app.get("/profile/:id", async (req, res) => {
         
         res.render("popup-profile", {userData});
 
-        console.log(`Found user: ${JSON.stringify(userData)}`);
     } catch (error) {
         console.error(`Error finding user: ${error.message}`);
         res.status(500).json({ message: "Server error", error: error.message });

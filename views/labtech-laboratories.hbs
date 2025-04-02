@@ -14,19 +14,6 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="/js/seat-manager.js"></script>
 
-    <script>
-        let isLoggedIn = false;
-        $(document).ready(function () {
-            const userId = localStorage.getItem('userId');
-            if (userId) {
-                isLoggedIn = true;
-            } else {
-                console.error('No user ID found in localStorage');
-            }
-            $.getScript("/js/navbar.js");
-        });
-    </script>
-
     <style>
         /* Seat styles */
         .clickable-seat {
@@ -201,7 +188,7 @@
         <input type="hidden" id="seatNumber" name="seatNumber" value="">
         <input type="hidden" id="startTime" name="startTime" value="">
         <input type="hidden" id="endTime" name="endTime" value="">
-        <input type="hidden" id="userId" name="userId" value="">
+        <input type="hidden" id="userId" name="userId" value="{{user._id}}">
     </form>
 
     <!-- View Button -->
@@ -248,7 +235,7 @@
             const selectedLab = document.getElementById("labs").options[document.getElementById("labs").selectedIndex]
             const selectedDate = document.getElementById("dates").value;
             const capacity = selectedLab.getAttribute("data-capacity");
-            const userId = localStorage.getItem('userId');
+            const userId = "{{user._id}}";
 
             // handle input field errors
             if (!selectedLab || !selectedDate) {
@@ -513,7 +500,7 @@
 
             const frameContainer = document.querySelector(".frame");
             reservations.forEach((reservation, index) => {
-                reservation.isCurrentUser = reservation.userId._id.toString() === localStorage.getItem('userId');
+                reservation.isCurrentUser = reservation.userId._id.toString() === "{{user._id}}";
 
                 const popupDiv = document.createElement("div");
                 popupDiv.className = "popup2";
@@ -616,7 +603,6 @@
                         document.getElementById("seatNumber").value = seatNumber;
                         document.getElementById("startTime").value = startTime;
                         document.getElementById("endTime").value = endTime;
-                        document.getElementById("userId").value = localStorage.getItem('userId');
 
                         // Submit the form
                         document.getElementById("reservationForm").submit();
@@ -700,12 +686,6 @@
 
             console.log("Seat clicked!");
 
-            const userId = localStorage.getItem('userId');
-            if (!userId) {
-                alert('Please sign in to select a seat');
-                return;
-            }
-
             // Remove any previously selected seats
             document.querySelectorAll('.selected-seat').forEach(seat => {
                 seat.classList.remove('selected-seat');
@@ -717,38 +697,9 @@
             seat.classList.remove('clickable-seat');
             seat.classList.add('selected-seat');
 
-            // Store the selected seat info
-            localStorage.setItem('selectedSeatNumber', seat.getAttribute('seat-number'));
-            localStorage.setItem('selectedTimeSlot', seat.getAttribute('seat-time'));
-
             // Update end time options based on selected time slot
 
             generateValidEndTimes(seat);
-        }
-
-        // Function to update end time options based on selected start time
-        function updateEndTimeOptions(startTime) {
-            const endTimeSelect = document.getElementById('endtimes');
-            const morningTimeSlots = [
-                '7:30 AM', '8:00 AM', '8:30 AM', '9:00 AM', '9:30 AM',
-                '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM'
-            ];
-
-            // Clear existing options except the first one
-            while (endTimeSelect.options.length > 1) {
-                endTimeSelect.remove(1);
-            }
-
-            // Find start index and add subsequent time slots
-            const startIndex = morningTimeSlots.indexOf(startTime);
-            if (startIndex !== -1) {
-                for (let i = startIndex + 1; i < morningTimeSlots.length; i++) {
-                    const option = document.createElement('option');
-                    option.value = morningTimeSlots[i];
-                    option.text = morningTimeSlots[i];
-                    endTimeSelect.appendChild(option);
-                }
-            }
         }
 
         // Function to hide the overlay and confirm popup
