@@ -776,10 +776,79 @@ app.patch("/api/reservation/:id", async(req,res) => {
 app.get("/popup-profile", (req, res) => {
     res.render("popup-profile", { userData: null });
 });
-app.get("/student-profile", isAuth, (req, res) => {
-    
-    res.sendFile(path.join(__dirname, "student-profile.html"))
 
+app.get("/student-profile", isAuth, async (req, res) => {
+
+    const user = req.session.user;
+    const reservations = await Reservation.find({userId: user._id})
+        .select('laboratoryRoom reservationDate startTime endTime seatNumber')
+        .lean();
+
+    const upcomingReservations = reservations
+        .filter(reservation => {
+            const now = new Date();
+            const reservationDateTime = new Date(reservation.reservationDate);
+
+            const reservationTime = convertTo24Hour(reservation.startTime);
+            if (!reservationTime) return false;
+
+            reservationDateTime.setHours(reservationTime.hours, reservationTime.minutes, 0, 0);
+
+            return reservationDateTime > now;
+        })
+        .sort((one, two) => {
+            const dateOne = new Date(one.reservationDate);
+            const dateTwo = new Date(two.reservationDate);
+
+            const timeOne = convertTo24Hour(one.startTime);
+            const timeTwo = convertTo24Hour(two.startTime);
+
+            dateOne.setHours(timeOne.hours, timeOne.minutes, 0, 0);
+            dateTwo.setHours(timeTwo.hours, timeTwo.minutes, 0, 0);
+
+            return dateOne - dateTwo;
+        })
+
+    let upcomingLab = "No upcoming reservations.";
+
+    if (upcomingReservations.length > 0) {
+        upcomingLab = `${upcomingReservations[0].laboratoryRoom} on ${new Date(upcomingReservations[0].reservationDate).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })} at ${upcomingReservations[0].startTime}`;
+    }
+
+    // format data passed for display
+    const formattedReservations = reservations.map(reservation => {
+        const reservationDate = new Date(reservation.reservationDate).toISOString().split('T')[0];
+        const now = new Date();
+        const todayDate = now.toISOString().split('T')[0];
+        var statusText = "";
+
+        // get reservation start and end times
+        const startTime = parseInt(reservation.startTime.replace(":", ""), 10);
+        const endTime = parseInt(reservation.endTime.replace(":", ""), 10);
+
+        // get current time
+        const nowHours = now.getHours().toString().padStart(2, '0');
+        const nowMinutes = now.getMinutes().toString().padStart(2, '0');
+        const nowTime = parseInt(`${nowHours}${nowMinutes}`, 10);
+
+        // TODO: HELP!!! theres problem w/ the date lmfao
+        if (todayDate === reservationDate && nowTime >= startTime && nowTime < endTime) {
+            statusText = "Ongoing";
+        } else {
+            statusText = "Upcoming";
+        }
+
+        return {
+            lab: reservation.laboratoryRoom,
+            date: reservation.reservationDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }),
+            time: reservation.startTime + " - " + reservation.endTime,
+            seat: reservation.seatNumber,
+            status: statusText
+        };
+    });
+
+    // Render profile with data
+    res.render("student-profile", { upcomingLab, reservations: formattedReservations, user });
 });
 
 app.get("/labtech-profile", isAuth, async (req, res) => {
