@@ -1,18 +1,19 @@
 <header class="nav-header" id="index-header">
     <div class="navbar">
 
-        <a href="/"><div class="logo">
-            <label id="labmate-logo">Lab<span style="color:#1d3853;">Mate</span></label>
-        </div></a>
+            <a href="/"><div class="logo">
+                <label id="labmate-logo">Lab<span style="color:#1d3853;">Mate</span></label>
+            </div></a>
 
         <ul class="nav-links">
-            <li><a href="/" id="nav-home" title="Home Page">Home</a></li>
-            <li><a href="/signedout-laboratories" id="nav-lab" title="View Laboratories">Laboratories</a></li>
-        </ul>
+                    <li><a href="/" id="nav-home" title="Home Page">Home</a></li>
+                    <li><a href="/signedout-laboratories" id="nav-lab" title="View Laboratories">Laboratories</a></li>
+                    <li><a href="/about" id="nav-about" title="About">About</a></li>
+                </ul>
 
-        <div class="nav-btns">
-            <button onclick="window.location.href='/signup-page'" class="round secondary action-btn">Sign Up</button>
-            <button onclick="window.location.href='/signin-page'" class="round primary action-btn">Sign In</button>
+            <div class="nav-btns">
+                <button onclick="window.location.href='/signup-page'" class="round secondary action-btn">Sign Up</button>
+                <button onclick="window.location.href='/signin-page'" class="round primary action-btn">Sign In</button>
         </div>
     </div>
 </header>
@@ -37,6 +38,9 @@
                 break;
             case 'signedout-laboratories':
                 document.getElementById("nav-lab")?.classList.add("active");
+                break;
+            case 'about':
+                document.getElementById("nav-about")?.classList.add("active");
                 break;
             default:
                 break;

@@ -162,6 +162,10 @@ app.get("/", async (req, res) => {
     }
 });
 
+app.get("/about", (req, res) => {
+    res.render("about");
+});
+
 app.get("/signin-page", (req, res) => {
     // Redirect user to homepage, if exist
     if (req.session.user) {
