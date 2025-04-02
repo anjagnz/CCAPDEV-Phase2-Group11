@@ -1,8 +1,8 @@
 <header class="nav-header">
     <div class="navbar">
-        <div class="logo">
+        <a href="{{#if (eq user.type 'Faculty')}}/labtech-home{{else}}/student-home{{/if}}"><div class="logo">
             <label id="labmate-logo">Lab<span style="color:#1d3853;">Mate</span></label>
-        </div>
+        </div></a>
 
         {{!-- Links based on user type  --}}
         <ul class="nav-links">
