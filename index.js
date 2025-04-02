@@ -6,26 +6,22 @@ const exphbs = require("express-handlebars");
 const argon2 = require("argon2") // password hashing
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
+const mongodbsesh = require("connect-mongodb-session")(session)
+
+// Database
+const dbUri = 'mongodb://localhost/LabMateDB';
+const User = require('./database/models/User');
+const Reservation = require('./database/models/Reservation');
+const Laboratory = require("./database/models/Laboratory");
+const TimeSlot = require("./database/models/TimeSlot");
+const { timeSlots, endTimeOptions, morningTimeSlots } = require('./database/models/TimeSlotOptions');
 
 // Configure middleware
 const app = express();
 app.use(express.static(path.join(__dirname, 'public')));
-// app.use(express.static(__dirname)); // causes index.html to be served automatically w/o route
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(fileUpload());
-
-// Configure sessions and cookies
-app.use(cookieParser());
-app.use(session({
-    secret: "secret-key-shhhh",
-    resave: false,
-    saveUninitialized: false, 
-    cookie: {
-        httpOnly: true,
-        maxAge: null // to be set by remember me checkbox
-    }
-}));
 
 // Configure handlebars
 app.set("view engine", "hbs");
@@ -42,10 +38,9 @@ app.engine("hbs", exphbs.engine({
     }
 }));
 
-
 // Connect to MongoDB
 // if no environtment var, connect to local
-mongoose.connect(process.env.DATABASE_URL ||'mongodb://localhost/LabMateDB')
+mongoose.connect(process.env.DATABASE_URL || dbUri)
 .then(() => {
     console.log('Connected to MongoDB successfully');
     // After successful connection, check and seed the database if needed
@@ -55,11 +50,30 @@ mongoose.connect(process.env.DATABASE_URL ||'mongodb://localhost/LabMateDB')
     console.error('MongoDB connection error:', err);
 });
 
-const User = require('./database/models/User');
-const Reservation = require('./database/models/Reservation');
-const Laboratory = require("./database/models/Laboratory");
-const TimeSlot = require("./database/models/TimeSlot");
-const { timeSlots, endTimeOptions, morningTimeSlots } = require('./database/models/TimeSlotOptions');
+// Store sessions in MongoDB
+const store = new mongodbsesh({
+    uri: process.env.DATABASE_URL || dbUri, 
+    collection: "sessions"
+});
+
+// catch any errors
+store.on('error', function(error) {
+    console.error('Session store error:', error);
+});
+
+// Configure sessions and cookies
+app.use(cookieParser());
+app.use(session({
+    secret: "secret-key-shhhh",
+    resave: false,
+    saveUninitialized: false, 
+    cookie: {
+        httpOnly: true,
+        maxAge: null // to be set by remember me checkbox
+    },
+    store: store,
+}));
+
 
 // Authenticator (for signed-in pages)
 const isAuth = (req, res, next) => {
