@@ -447,7 +447,7 @@ app.get("/labtech-reservations", isAuth, verifyType, async(req, res) => {
         const removableReservations = [];
         reservations.forEach(reservation => {
             var reservationDate = reservation.reservationDate;
-            const currentDate = new Date('2025-04-03T010:35:00+08:00'); 
+            const currentDate = new Date('2025-04-03T09:35:00+08:00'); 
             const reservationDateTime = new Date(reservationDate);
 
             const startTimeStr = reservation.startTime;
@@ -475,7 +475,7 @@ app.get("/labtech-reservations", isAuth, verifyType, async(req, res) => {
             console.log(`Time Diff: ${timeDiff} Reservation Date: ${reservationDateTime} Current Date: ${currentDate}Date (GMT+8): ${currentDateGMT8}`);
 
             if(isWithin10Minutes) {
-                removableReservations.push(reservation);
+                removableReservations.push(reservation._id);
             }
 
         });

@@ -165,12 +165,8 @@
                 console.log(userId);
                 const response2 = await fetch(`/api/user/${userId}`);
                 const user = await response2.json();
-                const studentName = reservation.studentName;
-
-                if (!studentName){
-                    studentName = user.firstName + " " + user.lastName;
-                } 
-
+                const studentName = user.firstName + " " + user.lastName;
+                
                 // Update form field values
                 document.getElementById("reservee-name").value = studentName;
                 document.getElementById("lab-room").value = reservation.laboratoryRoom;

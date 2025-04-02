@@ -162,12 +162,7 @@
                 const user = await response2.json();
                 const studentName = user.firstName + " " + user.lastName;
 
-                // Update form field values
-                if (reservation.studentName){
-                    document.getElementById("reservee-name").value = reservation.studentName;
-                } else{
-                    document.getElementById("reservee-name").value = studentName;
-                }
+                document.getElementById("reservee-name").value = studentName;
                 document.getElementById("lab-room").value = reservation.laboratoryRoom;
                 document.getElementById("seat-num").value = reservation.seatNumber;
                 document.getElementById("booking-date").value = bookingDate;
@@ -243,7 +238,6 @@
             const date = new Date(dateString);
 
             return date.toLocaleDateString("en-US", {
-                timeZone: "Asia/Singapore",
                 year: "numeric",
                 month: "2-digit",
                 day: "2-digit"
