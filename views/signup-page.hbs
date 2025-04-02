@@ -136,28 +136,19 @@
                 const error = document.querySelector("#error");
 
                 // check if inputs are valid
-                if (response.ok) {
-                    const data = await response.json();
-                    
-                    if (data.success) {
-                        // Store user info in localStorage if needed
-                        localStorage.setItem('userId', data.userId);
-                        localStorage.setItem('isLabTech', data.isLabTech);
-                        
-                        // Redirect to the appropriate page
-                        window.location.href = data.redirect;
-                    } else {
-                        error.textContent = data.error || "An unexpected error occurred.";
-                    }
-                } else {
+                if (!response.ok) {
                     // Show error from server
                     const data = await response.json();
                     error.textContent = data.error || "An unexpected error occurred.";
+                } else {
+                    // On success, follow the redirect from the server
+                    window.location.href = response.url;
                 }
             } catch (err) {
                 console.error(err);
                 error.textContent = "Failed to connect to the server.";
-            }});
+            }
+        });
         </script>
 
         <script>
