@@ -6,26 +6,22 @@ const exphbs = require("express-handlebars");
 const argon2 = require("argon2") // password hashing
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
+const mongodbsesh = require("connect-mongodb-session")(session)
+
+// Database
+const dbUri = 'mongodb://localhost/LabMateDB';
+const User = require('./database/models/User');
+const Reservation = require('./database/models/Reservation');
+const Laboratory = require("./database/models/Laboratory");
+const TimeSlot = require("./database/models/TimeSlot");
+const { timeSlots, endTimeOptions, morningTimeSlots } = require('./database/models/TimeSlotOptions');
 
 // Configure middleware
 const app = express();
 app.use(express.static(path.join(__dirname, 'public')));
-// app.use(express.static(__dirname)); // causes index.html to be served automatically w/o route
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(fileUpload());
-
-// Configure sessions and cookies
-app.use(cookieParser());
-app.use(session({
-    secret: "secret-key-shhhh",
-    resave: false,
-    saveUninitialized: false, 
-    cookie: {
-        httpOnly: true,
-        maxAge: null // to be set by remember me checkbox
-    }
-}));
 
 // Configure handlebars
 app.set("view engine", "hbs");
@@ -42,24 +38,50 @@ app.engine("hbs", exphbs.engine({
     }
 }));
 
-
-// Connect to MongoDB
-// if no environtment var, connect to local
-mongoose.connect(process.env.DATABASE_URL ||'mongodb://localhost/LabMateDB')
-.then(() => {
+// Connect to MongoDB based on provided db uri (deployed or local)
+mongoose.connect(process.env.DATABASE_URL || dbUri)
+.then(async () => {
     console.log('Connected to MongoDB successfully');
-    // After successful connection, check and seed the database if needed
-    // checkAndSeedDatabase();  only seed when want to; npm run seed
+    
+    // Check if database is empty, seed if yez
+    const userCount = await User.countDocuments();
+    const labCount = await Laboratory.countDocuments();
+    
+    if (userCount === 0 && labCount === 0) {
+        // Seed database with script
+        console.log('Database is empty. Seeding database...');
+        await require('./database/seedDatabase');
+    } else {
+        console.log('Database currently has '+userCount+' users & '+labCount+' laboratories.');
+    }
 })
 .catch(err => {
     console.error('MongoDB connection error:', err);
 });
 
-const User = require('./database/models/User');
-const Reservation = require('./database/models/Reservation');
-const Laboratory = require("./database/models/Laboratory");
-const TimeSlot = require("./database/models/TimeSlot");
-const { timeSlots, endTimeOptions, morningTimeSlots } = require('./database/models/TimeSlotOptions');
+// Store sessions in MongoDB
+const store = new mongodbsesh({
+    uri: process.env.DATABASE_URL || dbUri, 
+    collection: "sessions"
+});
+
+// catch any errors
+store.on('error', function(error) {
+    console.error('Session store error:', error);
+});
+
+// Configure sessions and cookies
+app.use(cookieParser());
+app.use(session({
+    secret: "secret-key-shhhh",
+    resave: false,
+    saveUninitialized: false, 
+    cookie: {
+        httpOnly: true,
+        maxAge: null // to be set by remember me checkbox
+    },
+    store: store,
+}));
 
 // Authenticator (for signed-in pages)
 const isAuth = (req, res, next) => {
@@ -106,10 +128,20 @@ app.get("/api/session", (req, res) => {
 
 /* SIGNED-OUT ROUTES */
 
-app.get("/", (req, res) => {
-
+app.get("/", async (req, res) => {
     // Redirect user to their homepage, if exist
     if (req.session.user) {
+        
+        // Check if user still exists in database before redirecting
+        const user = await User.findById(req.session.user._id);
+        if (!user) {
+            console.log("User no longer exists in database. Destroying session...");
+            req.session.destroy(() => {
+                res.clearCookie("connect.sid");
+                res.render("index");
+            });
+            return;
+        }
 
         // extend user remember period
         if (req.session.cookie.maxAge) {
@@ -119,17 +151,29 @@ app.get("/", (req, res) => {
         // count visit (to check if remember period works)
         req.session.visitCount = (req.session.visitCount || 0) + 1;
 
-        // redirect to user homepage
-        res.redirect("/student-home")
+        // redirect to user homepage based on type
+        if (user.type === 'Faculty') {
+            res.redirect("/labtech-home");
+        } else {
+            res.redirect("/student-home");
+        }
     } else {
         res.render("index");
     }
 });
 
+app.get("/about", (req, res) => {
+    res.render("about");
+});
+
 app.get("/signin-page", (req, res) => {
     // Redirect user to homepage, if exist
     if (req.session.user) {
-        res.redirect("/student-home");
+        if (req.session.user.type === 'Faculty') {
+            res.redirect("/labtech-home");
+        } else { 
+            res.redirect("/student-home");
+        }
     } else {
         res.render("signin-page");
     }
@@ -138,7 +182,11 @@ app.get("/signin-page", (req, res) => {
 app.get("/signup-page", (req, res) => {
     // Redirect user to homepage, if exist
     if (req.session.user) {
-        res.redirect("/student-home")
+        if (req.session.user.type === 'Faculty') {
+            res.redirect("/labtech-home");
+        } else { 
+            res.redirect("/student-home");
+        }
     } else {
         res.render("signup-page");
     }
@@ -270,13 +318,12 @@ app.post("/signup", async (req, res) => {
         // handle visit count
         req.session.visitCount = 1;
 
-        // Send success response with user info
-        res.json({
-            success: true,
-            userId: newUser._id,
-            isLabTech: type === "Faculty",
-            redirect: type === "Faculty" ? "/labtech-home" : "/student-home"
-        });
+        // Redirect user based on their type
+        if (newUser.type === "Faculty") {
+            res.redirect("/labtech-home");
+        } else {
+            res.redirect("/student-home");
+        }
         
     } catch (error) {
         console.error("Error during sign-up:", error);
@@ -491,7 +538,7 @@ app.get("/labtech-reservations", isAuth, verifyType, async(req, res) => {
         console.error('Error fetching reservations:', error);
         res.status(500).send('Internal Server Error');
     }
-})
+});
 
 
 // Get reservations across all users
