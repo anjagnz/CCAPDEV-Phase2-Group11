@@ -6,22 +6,26 @@ const exphbs = require("express-handlebars");
 const argon2 = require("argon2") // password hashing
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
-const mongodbsesh = require("connect-mongodb-session")(session)
-
-// Database
-const dbUri = 'mongodb://localhost/LabMateDB';
-const User = require('./database/models/User');
-const Reservation = require('./database/models/Reservation');
-const Laboratory = require("./database/models/Laboratory");
-const TimeSlot = require("./database/models/TimeSlot");
-const { timeSlots, endTimeOptions, morningTimeSlots } = require('./database/models/TimeSlotOptions');
 
 // Configure middleware
 const app = express();
 app.use(express.static(path.join(__dirname, 'public')));
+// app.use(express.static(__dirname)); // causes index.html to be served automatically w/o route
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(fileUpload());
+
+// Configure sessions and cookies
+app.use(cookieParser());
+app.use(session({
+    secret: "secret-key-shhhh",
+    resave: false,
+    saveUninitialized: false, 
+    cookie: {
+        httpOnly: true,
+        maxAge: null // to be set by remember me checkbox
+    }
+}));
 
 // Configure handlebars
 app.set("view engine", "hbs");
@@ -38,50 +42,24 @@ app.engine("hbs", exphbs.engine({
     }
 }));
 
-// Connect to MongoDB based on provided db uri (deployed or local)
-mongoose.connect(process.env.DATABASE_URL || dbUri)
-.then(async () => {
+
+// Connect to MongoDB
+// if no environtment var, connect to local
+mongoose.connect(process.env.DATABASE_URL ||'mongodb://localhost/LabMateDB')
+.then(() => {
     console.log('Connected to MongoDB successfully');
-    
-    // Check if database is empty, seed if yez
-    const userCount = await User.countDocuments();
-    const labCount = await Laboratory.countDocuments();
-    
-    if (userCount === 0 && labCount === 0) {
-        // Seed database with script
-        console.log('Database is empty. Seeding database...');
-        await require('./database/seedDatabase');
-    } else {
-        console.log('Database currently has '+userCount+' users & '+labCount+' laboratories.');
-    }
+    // After successful connection, check and seed the database if needed
+    // checkAndSeedDatabase();  only seed when want to; npm run seed
 })
 .catch(err => {
     console.error('MongoDB connection error:', err);
 });
 
-// Store sessions in MongoDB
-const store = new mongodbsesh({
-    uri: process.env.DATABASE_URL || dbUri, 
-    collection: "sessions"
-});
-
-// catch any errors
-store.on('error', function(error) {
-    console.error('Session store error:', error);
-});
-
-// Configure sessions and cookies
-app.use(cookieParser());
-app.use(session({
-    secret: "secret-key-shhhh",
-    resave: false,
-    saveUninitialized: false, 
-    cookie: {
-        httpOnly: true,
-        maxAge: null // to be set by remember me checkbox
-    },
-    store: store,
-}));
+const User = require('./database/models/User');
+const Reservation = require('./database/models/Reservation');
+const Laboratory = require("./database/models/Laboratory");
+const TimeSlot = require("./database/models/TimeSlot");
+const { timeSlots, endTimeOptions, morningTimeSlots } = require('./database/models/TimeSlotOptions');
 
 // Authenticator (for signed-in pages)
 const isAuth = (req, res, next) => {
@@ -128,20 +106,10 @@ app.get("/api/session", (req, res) => {
 
 /* SIGNED-OUT ROUTES */
 
-app.get("/", async (req, res) => {
+app.get("/", (req, res) => {
+
     // Redirect user to their homepage, if exist
     if (req.session.user) {
-        
-        // Check if user still exists in database before redirecting
-        const user = await User.findById(req.session.user._id);
-        if (!user) {
-            console.log("User no longer exists in database. Destroying session...");
-            req.session.destroy(() => {
-                res.clearCookie("connect.sid");
-                res.render("index");
-            });
-            return;
-        }
 
         // extend user remember period
         if (req.session.cookie.maxAge) {
@@ -151,29 +119,17 @@ app.get("/", async (req, res) => {
         // count visit (to check if remember period works)
         req.session.visitCount = (req.session.visitCount || 0) + 1;
 
-        // redirect to user homepage based on type
-        if (user.type === 'Faculty') {
-            res.redirect("/labtech-home");
-        } else {
-            res.redirect("/student-home");
-        }
+        // redirect to user homepage
+        res.redirect("/student-home")
     } else {
         res.render("index");
     }
 });
 
-app.get("/about", (req, res) => {
-    res.render("about");
-});
-
 app.get("/signin-page", (req, res) => {
     // Redirect user to homepage, if exist
     if (req.session.user) {
-        if (req.session.user.type === 'Faculty') {
-            res.redirect("/labtech-home");
-        } else { 
-            res.redirect("/student-home");
-        }
+        res.redirect("/student-home");
     } else {
         res.render("signin-page");
     }
@@ -182,11 +138,7 @@ app.get("/signin-page", (req, res) => {
 app.get("/signup-page", (req, res) => {
     // Redirect user to homepage, if exist
     if (req.session.user) {
-        if (req.session.user.type === 'Faculty') {
-            res.redirect("/labtech-home");
-        } else { 
-            res.redirect("/student-home");
-        }
+        res.redirect("/student-home")
     } else {
         res.render("signup-page");
     }
@@ -318,12 +270,13 @@ app.post("/signup", async (req, res) => {
         // handle visit count
         req.session.visitCount = 1;
 
-        // Redirect user based on their type
-        if (newUser.type === "Faculty") {
-            res.redirect("/labtech-home");
-        } else {
-            res.redirect("/student-home");
-        }
+        // Send success response with user info
+        res.json({
+            success: true,
+            userId: newUser._id,
+            isLabTech: type === "Faculty",
+            redirect: type === "Faculty" ? "/labtech-home" : "/student-home"
+        });
         
     } catch (error) {
         console.error("Error during sign-up:", error);
@@ -450,7 +403,20 @@ app.get("/labtech-laboratories", isAuth, verifyType, async (req, res) => {
 
 app.get("/student-reservations", isAuth, verifyType, async (req, res) => {
     try{
-        const reservations = await Reservation.find({userId : req.session.user._id}).sort({reservationDate: 1}).lean();
+        const reservations = await Reservation.find({userId : req.session.user._id}).lean();
+
+        reservations.sort((a, b) => {
+            // sort by reservation date
+            const dateComparison = new Date(a.reservationDate) - new Date(b.reservationDate);
+            if (dateComparison !== 0) return dateComparison;
+        
+            // then sort by start time
+            const startTimeComparison = convertTimeToMinutes(a.startTime) - convertTimeToMinutes(b.startTime);
+            if (startTimeComparison !== 0) return startTimeComparison;
+        
+            // then sort by end time
+            return convertTimeToMinutes(a.endTime) - convertTimeToMinutes(b.endTime);
+        });
 
         // format reservation date
         reservations.forEach(reservation=>{            
@@ -476,7 +442,20 @@ app.get("/student-reservations", isAuth, verifyType, async (req, res) => {
 
 app.get("/labtech-reservations", isAuth, verifyType, async(req, res) => {
     try{
-        const reservations = await Reservation.find().sort({reservationDate: 1}).lean();
+        const reservations = await Reservation.find().lean();
+
+        reservations.sort((a, b) => {
+            // sort by reservation date
+            const dateComparison = new Date(a.reservationDate) - new Date(b.reservationDate);
+            if (dateComparison !== 0) return dateComparison;
+        
+            // then sort by start time
+            const startTimeComparison = convertTimeToMinutes(a.startTime) - convertTimeToMinutes(b.startTime);
+            if (startTimeComparison !== 0) return startTimeComparison;
+        
+            // then sort by end time
+            return convertTimeToMinutes(a.endTime) - convertTimeToMinutes(b.endTime);
+        });
 
         // format reservation date
         reservations.forEach(reservation=>{            
@@ -494,7 +473,7 @@ app.get("/labtech-reservations", isAuth, verifyType, async(req, res) => {
         const removableReservations = [];
         reservations.forEach(reservation => {
             var reservationDate = reservation.reservationDate;
-            const currentDate = new Date('2025-04-03T09:35:00+08:00'); 
+            const currentDate = new Date('2025-04-03T08:01:00+08:00'); 
             const reservationDateTime = new Date(reservationDate);
 
             const startTimeStr = reservation.startTime;
@@ -538,7 +517,7 @@ app.get("/labtech-reservations", isAuth, verifyType, async(req, res) => {
         console.error('Error fetching reservations:', error);
         res.status(500).send('Internal Server Error');
     }
-});
+})
 
 
 // Get reservations across all users
@@ -852,8 +831,20 @@ app.get("/student-profile", isAuth, async (req, res) => {
 
     const user = req.session.user;
     const reservations = await Reservation.find({userId: user._id})
-        .select('laboratoryRoom reservationDate startTime endTime seatNumber')
-        .lean();
+        .select('laboratoryRoom reservationDate startTime endTime seatNumber').lean();
+
+    reservations.sort((a, b) => {
+        // sort by reservation date
+        const dateComparison = new Date(a.reservationDate) - new Date(b.reservationDate);
+        if (dateComparison !== 0) return dateComparison;
+        
+        // then sort by start time
+        const startTimeComparison = convertTimeToMinutes(a.startTime) - convertTimeToMinutes(b.startTime);
+        if (startTimeComparison !== 0) return startTimeComparison;
+        
+        // then sort by end time
+        return convertTimeToMinutes(a.endTime) - convertTimeToMinutes(b.endTime);
+    });
 
     const upcomingReservations = reservations
         .filter(reservation => {
@@ -926,6 +917,19 @@ app.get("/labtech-profile", isAuth, async (req, res) => {
     const reservations = await Reservation.find()
         .select('laboratoryRoom reservationDate startTime endTime seatNumber')
         .lean();
+
+    reservations.sort((a, b) => {
+        // sort by reservation date
+        const dateComparison = new Date(a.reservationDate) - new Date(b.reservationDate);
+        if (dateComparison !== 0) return dateComparison;
+        
+        // then sort by start time
+        const startTimeComparison = convertTimeToMinutes(a.startTime) - convertTimeToMinutes(b.startTime);
+        if (startTimeComparison !== 0) return startTimeComparison;
+        
+        // then sort by end time
+        return convertTimeToMinutes(a.endTime) - convertTimeToMinutes(b.endTime);
+    });
 
     const user = req.session.user;
 
@@ -1291,6 +1295,15 @@ app.post("/create-reservation-labtech", isAuth, async (req, res) => {
 });
 
 // Helper Functions
+function convertTimeToMinutes(timeString) {
+    const [time, modifier] = timeString.split(" ");
+    let [hours, minutes] = time.split(":").map(Number);
+
+    if (modifier === "P.M." && hours !== 12) hours += 12;
+    if (modifier === "A.M." && hours === 12) hours = 0;
+
+    return hours * 60 + minutes; 
+}
 
 function convertTo24Hour(timeStr){
     const match = timeStr.match(/(\d+):(\d+) (\w+\.?\w*)/);
