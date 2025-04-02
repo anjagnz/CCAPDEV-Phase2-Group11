@@ -265,7 +265,7 @@ app.post("/signup", async (req, res) => {
         console.log("New "+type+" user created:", newUser._id);
         
         // Store user data in session
-        req.session.user = newUser;
+        req.session.user = newUser.toObject();
 
         // handle visit count
         req.session.visitCount = 1;
