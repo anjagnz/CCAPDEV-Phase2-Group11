@@ -834,7 +834,6 @@ app.get("/labtech-profile", isAuth, async (req, res) => {
         const nowTime = parseInt(`${nowHours}${nowMinutes}`, 10);
 
         // TODO: HELP!!! theres problem w/ the date lmfao
-        console.log("DATE: ", todayDate, reservationDate)
         if (todayDate === reservationDate && nowTime >= startTime && nowTime < endTime) {
             statusText = "Ongoing";
         } else {

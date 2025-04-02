@@ -63,15 +63,10 @@
 
         </style>
 
-        <script>
-            $(document).ready(function() {
-                $.getScript("/js/navbar.js");
-            });
-        </script>
     </head>
 
     <body>
-        <div data-include="navbar-signedout"></div>
+        {{>navbar-signedout}}
 
         <div class="frame">
             <span class="header">View Slot Availability</span>
