@@ -657,8 +657,37 @@ app.get("/labtech-profile", isAuth, async (req, res) => {
         .lean();
 
     const user = req.session.user;
-    // TODO: handle upcoming lab string to get nearest lab
-    const upcomingLab = "fix this in index.js idk how to do this tee hee"
+
+    const upcomingReservations = reservations
+        .filter(reservation => {
+            const now = new Date();
+            const reservationDateTime = new Date(reservation.reservationDate);
+
+            const reservationTime = convertTo24Hour(reservation.startTime);
+            if(!reservationTime) return false;
+            
+            reservationDateTime.setHours(reservationTime.hours, reservationTime.minutes, 0, 0);
+
+            return reservationDateTime > now;
+        })
+        .sort((one, two) => {
+            const dateOne = new Date(one.reservationDate);
+            const dateTwo = new Date(two.reservationDate);
+
+            const timeOne = convertTo24Hour(one.startTime);
+            const timeTwo = convertTo24Hour(two.startTime);
+
+            dateOne.setHours(timeOne.hours, timeOne.minutes, 0, 0);
+            dateTwo.setHours(timeTwo.hours, timeTwo.minutes, 0, 0);
+
+            return dateOne - dateTwo;
+        })
+
+    let upcomingLab = "No upcoming reservations.";
+
+    if(upcomingReservations.length > 0){
+        upcomingLab = `${upcomingReservations[0].laboratoryRoom} on ${new Date(upcomingReservations[0].reservationDate).toLocaleDateString('en-US')} at ${upcomingReservations[0].startTime}`;
+    }
 
     // format data passed for display
     const formattedReservations = reservations.map(reservation => {
@@ -991,6 +1020,26 @@ app.post("/create-reservation-labtech", isAuth, async (req, res) => {
     }
 });
 
+// Helper Functions
+
+function convertTo24Hour(timeStr){
+    const match = timeStr.match(/(\d+):(\d+) (\w+\.?\w*)/);
+
+    if(!match)
+        return null;
+
+    let [_, hours, minutes, period] = match;
+    hours = Number(hours);
+    minutes = Number(minutes);
+
+    if(period.toUpperCase().includes("P") && hours !== 12){
+        hours += 12;
+    } else if (period.toUpperCase().includes("A") && hours === 12) {
+        hours = 0;
+    }
+
+    return {hours, minutes};
+}
 
 // // Register Handlebars helpers
 // const findReservation = function(seatNum, timeSlot, reservations) {
