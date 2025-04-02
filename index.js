@@ -33,9 +33,15 @@ app.set("views", path.join(__dirname, "views"));
 app.engine("hbs", exphbs.engine({
     extname: "hbs",
     helpers: {
-        eq: (a, b) => a === b
+        eq: (a, b) => a === b,
+        isRemovable: (reservationId, removableReservations, options) => {
+            return removableReservations.some(r => r._id.toString() === reservationId.toString()) 
+                ? options.fn(this) 
+                : options.inverse(this);
+        }
     }
 }));
+
 
 // Connect to MongoDB
 // if no environtment var, connect to local
@@ -378,15 +384,15 @@ app.get("/student-reservations", isAuth, verifyType, async (req, res) => {
         const reservations = await Reservation.find({userId : req.session.user._id}).sort({reservationDate: 1}).lean();
 
         // format reservation date
-        reservations.forEach(reservation=>{
-            const date = new Date(reservation.reservationDate);
-            const gmt8Date = new Date(date.getTime() + (8*60*60*1000));
+        reservations.forEach(reservation=>{            
+            const formattedDate = new Date(reservation.reservationDate).toLocaleDateString("en-US", {
+                timeZone: "Asia/Singapore",
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit"
+            });
 
-            const year = gmt8Date.getFullYear();
-            const month = String(gmt8Date.getMonth() + 1).padStart(2, '0');
-            const day = String(gmt8Date.getDate()).padStart(2, '0');
-
-            reservation.reservationDate = `${year}-${month}-${day}`        
+            reservation.reservationDate = formattedDate;
         })
 
         res.render('student-reservations', {
@@ -404,20 +410,60 @@ app.get("/labtech-reservations", isAuth, verifyType, async(req, res) => {
         const reservations = await Reservation.find().sort({reservationDate: 1}).lean();
 
         // format reservation date
-        reservations.forEach(reservation=>{
-            const date = new Date(reservation.reservationDate);
-            const gmt8Date = new Date(date.getTime() + (8*60*60*1000));
+        reservations.forEach(reservation=>{            
+            const formattedDate = new Date(reservation.reservationDate).toLocaleDateString("en-US", {
+                timeZone: "Asia/Singapore",
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit"
+            });
 
-            const year = gmt8Date.getFullYear();
-            const month = String(gmt8Date.getMonth() + 1).padStart(2, '0');
-            const day = String(gmt8Date.getDate()).padStart(2, '0');
-
-            reservation.reservationDate = `${year}-${month}-${day}`        
+            reservation.reservationDate = formattedDate;
         })    
+
+        // get removable reservations
+        const removableReservations = [];
+        reservations.forEach(reservation => {
+            var reservationDate = reservation.reservationDate;
+            const currentDate = new Date('2025-04-03T15:35:00+08:00'); 
+            const reservationDateTime = new Date(reservationDate);
+
+            const startTimeStr = reservation.startTime;
+            const [time, period] = startTimeStr.split(' ');
+            let [hours, minutes] = time.split(':').map(Number);
+
+            if (period === 'P.M.' && hours < 12) {
+                hours += 12;
+            } else if (period === 'A.M.' && hours === 12) {
+                hours = 0;
+            }
+
+            reservationDateTime.setHours(hours, minutes, 0, 0);
+
+            const timeDiff = (currentDate - reservationDateTime) / (1000 * 60);
+            const currentDateGMT8 = currentDate.toLocaleDateString("en-US", {
+                timeZone: "Asia/Singapore",
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit"
+            });;
+
+            const isWithin10Minutes = timeDiff <= 10 && timeDiff >= 0
+
+            console.log(`Time Diff: ${timeDiff} Reservation Date: ${reservationDateTime} Current Date: ${currentDate}Date (GMT+8): ${currentDateGMT8}`);
+
+            if(isWithin10Minutes) {
+                removableReservations.push(reservation);
+            }
+
+        });
+
+        console.log(removableReservations);
 
         res.render('labtech-reservations', {
             reservations,
             user: req.session.user,
+            removableReservations
         });
     } catch(error){
         console.error('Error fetching reservations:', error);
