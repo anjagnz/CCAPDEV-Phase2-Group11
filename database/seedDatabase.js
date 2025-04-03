@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const argon2 = require('argon2');
 const User = require('./models/User');
 const Laboratory = require('./models/Laboratory');
-const TimeSlot = require('./models/TimeSlot');
 const { seedReservations } = require('./seedReservations'); // js for reservations
 
 mongoose.connect(process.env.DATABASE_URL || 'mongodb://localhost/LabMateDB')
@@ -147,7 +146,6 @@ const seedDatabase = async () => {
         // Clear existing data
         await User.deleteMany({});
         await Laboratory.deleteMany({});
-        await TimeSlot.deleteMany({});
         
         console.log('Previous data cleared');
 
@@ -167,48 +165,10 @@ const seedDatabase = async () => {
         await User.insertMany(demoLabTechs);
         console.log('Demo lab technicians added');
 
-        const insertedLabs = await Laboratory.insertMany(demoLaboratories);
+        await Laboratory.insertMany(demoLaboratories);
         console.log('Demo laboratories added');
 
-        const timeSlots = [];
-        const today = new Date(); // Get today's date
-
-        // Create the time slots for the next 7 days
-        insertedLabs.forEach(lab => {
-            for (let i = 0; i <= 7; i++) {  
-                const currentDate = new Date(today);
-                currentDate.setDate(today.getDate() + i); // Increment by i days
-                
-                // Loop for seat numbers 1-5
-                for (let j = 1; j <= 5; j++) {
-                    const slots = [
-                        { seatNumber: j, time: '07:30 AM - 08:00 AM' },
-                        { seatNumber: j, time: '08:00 AM - 8:30 AM' },
-                        { seatNumber: j, time: '08:30 AM - 09:00 AM' },
-                        { seatNumber: j, time: '09:30 AM - 10:00 AM' },
-                        { seatNumber: j, time: '010:00 AM - 11:00 AM' },
-                        { seatNumber: j, time: '11:00 AM - 11:30 AM' },
-                        { seatNumber: j, time: '11:30 AM - 12:00 PM' }
-                    ];
-
-                    // Add time slots for the current lab and date
-                    for (const slot of slots) {
-                        timeSlots.push({
-                            laboratoryRoom: lab.room,
-                            seatNumber: slot.seatNumber,
-                            date: new Date(currentDate),
-                            time: slot.time,
-                            isAvailable: true,
-                        });
-                    }
-                }
-            }
-        })
-
-        await TimeSlot.insertMany(timeSlots);
-        console.log('Demo time slots added');
-
-        // seed reservations once users, labs, timeslots are added
+        // seed reservations once users and labs are added
         await seedReservations();
         console.log('Demo reservations added');
 

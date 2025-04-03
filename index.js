@@ -13,7 +13,6 @@ const dbUri = 'mongodb://localhost/LabMateDB';
 const User = require('./database/models/User');
 const Reservation = require('./database/models/Reservation');
 const Laboratory = require("./database/models/Laboratory");
-const TimeSlot = require("./database/models/TimeSlot");
 const { timeSlots, endTimeOptions, morningTimeSlots } = require('./database/models/TimeSlotOptions');
 
 // Configure middleware
@@ -725,27 +724,6 @@ app.put("/api/user/update", isAuth, async (req, res) => {
     }
 });
 
-// Get time slots for a specific date, lab, and seat
-app.get("/api/timeslots/:date/:lab/:seat", async (req, res) => {
-    try {
-        const { date, lab, seat } = req.params;
-        const seatNumber = Number(seat);
-        const queryDate = new Date(date);
-
-        const timeslots = await TimeSlot.find({ queryDate, lab, seatNumber });
-
-        if (!timeslots.length) {
-            return res.status(404).json({ message: "No timeslots found for the given criteria." });
-        }
-
-        res.json(timeslots);
-    } catch (error) {
-        console.error(`Error fetching timeslots: ${error.message}`);
-        res.status(500).json({ message: "Server error", error: error.message });
-    }
-});
-
-
 // Delete a specific reservation
 app.delete("/api/reservation/:id", async (req, res) => {
     try {
@@ -1215,10 +1193,6 @@ app.post("/create-reservation", isAuth, async (req, res) => {
         });
         
         await newReservation.save();
-
-        // Update the availability of the timeslots selected
-        const timeslots = await TimeSlot.find();
-        
         
         // Redirect to student-reservations.html after successful booking
         res.redirect('/student-reservations');
@@ -1277,9 +1251,6 @@ app.post("/create-reservation-labtech", isAuth, async (req, res) => {
         });
         
         await newReservation.save();
-
-        // Update the availability of the timeslots selected
-        const timeslots = await TimeSlot.find();
     
         // Redirect to labtech-reservations.html after successful booking
         res.redirect('/labtech-reservations');
