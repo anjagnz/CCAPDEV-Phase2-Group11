@@ -162,7 +162,7 @@
                 var formattedDate = formatDate(new Date(reservation.bookingDate)).split("T");
                 var bookingDate = formatToGMT8(new Date());
                 var bookingTime = formattedDate[1];
-                const userId = localStorage.getItem('userId');
+                const userId = reservation.userId;
                 console.log(userId);
                 const response2 = await fetch(`/api/user/${userId}`);
                 const user = await response2.json();
