@@ -541,7 +541,7 @@
                         
                         const nameSpan = document.createElement("span");
                         nameSpan.className = "user-name";
-                        nameSpan.textContent = reservation.isCurrentUser ? "Your Reservation" : reservation.studentName;
+                        nameSpan.textContent = reservation.isCurrentUser ? "Your Reservation" + (reservation.isAnonymous ? " (Anonymous)" : ""): reservation.studentName;
                         popupBox.appendChild(nameSpan);
                     }
                     

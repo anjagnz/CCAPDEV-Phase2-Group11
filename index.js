@@ -1386,38 +1386,6 @@ function getStatus(reservation){
     
 }
 
-
-// // Register Handlebars helpers
-// const findReservation = function(seatNum, timeSlot, reservations) {
-//     return reservations.find(r => {
-//         const seatMatch = r.seatNumber === parseInt(seatNum);
-//         const timeMatch = r.startTime === timeSlot;
-//         return seatMatch && timeMatch;
-//     });
-// };
-
-// const findReservationIndex = function(seatNum, timeSlot, reservations) {
-//     return reservations.findIndex(r => {
-//         const seatMatch = r.seatNumber === parseInt(seatNum);
-//         const timeMatch = r.startTime === timeSlot;
-//         return seatMatch && timeMatch;
-//     });
-// };
-
-// // Register the helpers globally
-// exphbs.registerHelper('findReservation', findReservation);
-// exphbs.registerHelper('findReservationIndex', findReservationIndex);
-// exphbs.registerHelper('equal', function(a, b) {
-//     return a === b;
-// });
-// exphbs.registerHelper('range', function(start, end) {
-//     const result = [];
-//     for (let i = start; i <= end; i++) {
-//         result.push(i);
-//     }
-//     return result;
-// });
-
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
