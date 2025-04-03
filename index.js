@@ -916,36 +916,16 @@ app.get("/student-profile", isAuth, async (req, res) => {
     if (upcomingReservations.length > 0) {
         upcomingLab = `${upcomingReservations[0].laboratoryRoom} on ${new Date(upcomingReservations[0].reservationDate).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })} at ${upcomingReservations[0].startTime}`;
     }
+    
 
     // format data passed for display
     const formattedReservations = reservations.map(reservation => {
-        const reservationDate = new Date(reservation.reservationDate).toISOString().split('T')[0];
-        const now = new Date();
-        const todayDate = now.toISOString().split('T')[0];
-        var statusText = "";
-
-        // get reservation start and end times
-        const startTime = parseInt(reservation.startTime.replace(":", ""), 10);
-        const endTime = parseInt(reservation.endTime.replace(":", ""), 10);
-
-        // get current time
-        const nowHours = now.getHours().toString().padStart(2, '0');
-        const nowMinutes = now.getMinutes().toString().padStart(2, '0');
-        const nowTime = parseInt(`${nowHours}${nowMinutes}`, 10);
-
-        // TODO: HELP!!! theres problem w/ the date lmfao
-        if (todayDate === reservationDate && nowTime >= startTime && nowTime < endTime) {
-            statusText = "Ongoing";
-        } else {
-            statusText = "Upcoming";
-        }
-
         return {
             lab: reservation.laboratoryRoom,
             date: reservation.reservationDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }),
             time: reservation.startTime + " - " + reservation.endTime,
             seat: reservation.seatNumber,
-            status: statusText
+            status: getStatus(reservation)
         };
     });
 
@@ -1006,33 +986,12 @@ app.get("/labtech-profile", isAuth, async (req, res) => {
 
     // format data passed for display
     const formattedReservations = reservations.map(reservation => {
-        const reservationDate = new Date(reservation.reservationDate).toISOString().split('T')[0];
-        const now = new Date();
-        const todayDate = now.toISOString().split('T')[0];
-        var statusText = "";
-
-        // get reservation start and end times
-        const startTime = parseInt(reservation.startTime.replace(":", ""), 10);
-        const endTime = parseInt(reservation.endTime.replace(":", ""), 10);
-
-        // get current time
-        const nowHours = now.getHours().toString().padStart(2, '0');
-        const nowMinutes = now.getMinutes().toString().padStart(2, '0');
-        const nowTime = parseInt(`${nowHours}${nowMinutes}`, 10);
-
-        // TODO: HELP!!! theres problem w/ the date lmfao
-        if (todayDate === reservationDate && nowTime >= startTime && nowTime < endTime) {
-            statusText = "Ongoing";
-        } else {
-            statusText = "Upcoming";
-        }
-
         return {
             lab: reservation.laboratoryRoom,
             date: reservation.reservationDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }),
             time: reservation.startTime + " - " + reservation.endTime,
             seat: reservation.seatNumber,
-            status: statusText
+            status: getStatus(reservation)
         };
     });
     
@@ -1380,6 +1339,52 @@ function runAtNextHalfHour() {
 }
 
 runAtNextHalfHour();
+
+function convertToHour(time12h) {
+    const [time, modifier] = time12h.split(" ");
+    let [hours, minutes] = time.split(":");
+ 
+    if (modifier === "P.M." && hours !== "12") {
+        hours = String(parseInt(hours, 10) + 12);
+    } else if (modifier === "A.M." && hours === "12") {
+        hours = "00";
+    }
+ 
+    return `${hours}:${minutes}`;
+}
+ 
+function timeToNumber(timeStr) {
+    return parseInt(timeStr.replace(':', ''), 10);
+}
+
+function getStatus(reservation){
+        const reserveDate = new Date(reservation.reservationDate);
+        const reservationDate = reserveDate.getFullYear() + '-' + String(reserveDate.getMonth() + 1).padStart(2, '0') + '-' +
+        String(reserveDate.getDate()).padStart(2, '0'); // replaced toISOString() since it always converts the time to UTC
+        var statusText = "";
+        const now = new Date();
+        const todayDate = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' +
+        String(now.getDate()).padStart(2, '0'); // replaced toISOString() since it always converts the time to UTC
+        var statusText = "";
+
+        // get reservation start and end times
+        const startTime = timeToNumber(convertToHour(reservation.startTime));
+        const endTime = timeToNumber(convertToHour(reservation.endTime));
+
+        // get current time
+        const nowHours = now.getHours().toString().padStart(2, '0');
+        const nowMinutes = now.getMinutes().toString().padStart(2, '0');
+        const nowTime = parseInt(`${nowHours}${nowMinutes}`, 10);
+
+        if (todayDate === reservationDate && nowTime >= startTime && nowTime < endTime) {
+            statusText = "Ongoing";
+        } else {
+            statusText = "Upcoming";
+        }
+
+        return statusText;
+    
+}
 
 
 // // Register Handlebars helpers
