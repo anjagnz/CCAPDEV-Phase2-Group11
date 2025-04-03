@@ -538,7 +538,7 @@ app.get("/labtech-reservations", isAuth, verifyType, async(req, res) => {
                 day: "2-digit"
             });;
 
-            const isWithin10Minutes = timeDiff <= 10 && timeDiff >= 0
+            const isWithin10Minutes = timeDiff >= 10;
 
             console.log(`Time Diff: ${timeDiff} Reservation Date: ${reservationDateTime} Current Date: ${currentDate}Date (GMT+8): ${currentDateGMT8}`);
 
