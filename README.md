@@ -36,8 +36,19 @@ The **Laboratories page** allows users to view available slots, given the labora
 2. A seat number and start time must be selected under the Slot Availability view
 3. A valid end time must be selected (which are already given in the dropdown)
 
-Students may also view the details of an existing reservation in the Slot Availability view by clicking the red slot, and clicking the user's profile image, if given. Students cannot view the profile of anonymous reservations, as well as reservations booked by faculty member. Faculty members however may freely view profiles tied to existing reservations, whether it is anonymous or booked by another faculty member.
+Students may also view the details of an existing reservation in the Slot Availability view by clicking the red slot, and clicking the user's profile image, if given. Students cannot view the profile of anonymous reservations, as well as reservations booked by faculty member. Faculty members however may freely view profiles tied to existing reservations, whether it is anonymous or booked by another faculty member. For logged-out users, they cannot view profiles tied to existing reservations.
 
 ## Viewing Reservations
 
+The **Reservations page** allows users to view and delete their existing reservations. For a successful creation of a reservation, a reservation must be selected. For faculty members, the delete facility is only available *10 minutes after the reservation's start time* (assuming the student does not show up after 10 minutes).
+
+Students may edit the end time of their reservations, while faculty may edit the end time of any reservations booked within the system. 
+
 ## Profile Page
+
+The **Profile page** allows users to view and edit their profile information. The Dashboard view provides a quick overview of a user's reservations (all reservations for the faculty view), such as total number of reservations and reservation status.
+
+The View Profile view allows shows the user's profile information, such as name, email address, account type, biography, department, and profile image. To customize user's profile, click the Edit Profile button. Edit Profile only allows users to edit their biography, department, and profile image.
+
+Delete Profile allows users to delete their account. This will also delete all reservations booked by the user.
+
