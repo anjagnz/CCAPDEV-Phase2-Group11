@@ -33,11 +33,12 @@
             </thead>
             <tbody>
                 {{#if reservations}}
+
                     {{#each reservations}}
                     <tr>
                         {{#isRemovable this._id ../removableReservations}}
                             <td style="text-align: right;">
-                                <input type="radio" name="select-option" class="select-btn" value="{{this._id}}">
+                                <input type="radio" name="select-option" class="select-btn" value="{{../_id}}">
                             </td>
                         {{else}}
                             <td style="text-align: right;">
@@ -223,7 +224,7 @@
         async function deleteReservation() {
             try {
                 // Get reservation id from radio selection
-                const selectedReservation = document.querySelector('input[name="select-option"]:checked');
+                const selectedReservation = document.querySelector('input[name="select-option"]:checked').value;
                 console.log(selectedReservation);
 
                 // Send DELETE request to the server
