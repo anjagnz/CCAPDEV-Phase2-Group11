@@ -61,6 +61,18 @@ td{
     background-color: #ffffff;
 }
 
+/* When there are no reservations */
+.no-reservations {
+    height: 10vh;
+    width: 60%;
+    overflow: auto;
+    border-radius: 30px;
+    outline: 1px solid var(--dark-blue);
+    justify-content: center;
+    margin: auto;
+    background-color: #ffffff;
+}
+
 .remove-btn-wrapper{
     display: flex;    
     justify-content: center;
