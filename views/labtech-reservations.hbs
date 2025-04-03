@@ -17,10 +17,11 @@
     {{> navbar}}
     
     <h1 style="padding-bottom: 10px">Student Reservations</h1>
-    <span style="display: block; text-align: center; margin: 0 100px">Deleting student reservations are only possible within 10 minutes of their time slot.</span>
+    <span style="display: block; text-align: center; margin: 0 100px; margin-bottom: 30px">Deleting student reservations are only possible within 10 minutes of their time slot.</span>
 
     <!-- Reservations  -->
-    <div class="reservations" style="margin-top: 30px;">
+    <div class="reservations {{#unless reservations}}no-reservations{{/unless}}">
+        {{#if reservations}}
         <table>
             <thead>
                 <tr>
@@ -32,12 +33,10 @@
                 </tr>
             </thead>
             <tbody>
-                {{#if reservations}}
-
-                    {{#each reservations}}
+                {{#each reservations}}
                     <tr>
                         {{#isRemovable this._id ../removableReservations}}
-                            <td style="text-align: right;">
+                            <td style="text-align: right">
                                 <input type="radio" name="select-option" class="select-btn" value="{{../_id}}">
                             </td>
                         {{else}}
@@ -52,9 +51,11 @@
                         </td>
                     </tr>
                     {{/each}}            
-                {{/if}}     
             </tbody>
         </table>
+        {{else}}
+            <p style="text-align: center; padding-top: 28px; font-size: 16px">No reservations to display.</p>
+        {{/if}}
     </div>
     
     <div class="remove-btn-wrapper">

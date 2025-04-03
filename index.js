@@ -477,7 +477,7 @@ app.get("/labtech-reservations", isAuth, verifyType, async(req, res) => {
         const removableReservations = [];
         reservations.forEach(reservation => {
             var reservationDate = reservation.reservationDate;
-            const currentDate = new Date('2025-04-03T10:01:00+08:00'); 
+            const currentDate = new Date('2025-04-03T12:35:00+08:00'); 
             const reservationDateTime = new Date(reservationDate);
 
             const startTimeStr = reservation.startTime;
