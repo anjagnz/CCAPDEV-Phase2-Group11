@@ -238,8 +238,9 @@ app.post("/signin", async (req, res) => {
         if (rememberMe) {
             // set to 3 weeks
             req.session.cookie.maxAge = 3 * 7 * 24 * 60 * 60 * 1000;
-        } 
-
+        }  else {
+            req.session.cookie.expires = false;
+        }
         // handle visit count
         req.session.visitCount = 1;
 
