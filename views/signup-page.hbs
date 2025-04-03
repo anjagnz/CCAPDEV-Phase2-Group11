@@ -114,15 +114,30 @@
             document.querySelector("form").addEventListener("submit", async (event) => {
             event.preventDefault();
 
+            const error = document.querySelector("#error");
+
             const form = event.target;
             const formData = new FormData(form);
             
-            // Convert FormData to URL-encoded format for proper submission
             const urlEncodedData = new URLSearchParams();
             for (const [key, value] of formData.entries()) {
                 urlEncodedData.append(key, value);
             }
 
+            // Form Validation
+            const firstName = formData.get('firstName');
+            const lastName = formData.get('lastName');
+            const email = formData.get('email');
+            const type = formData.get('type');
+            const newPass = formData.get('newPass');
+            const confirmPass = formData.get('confirmPass');
+            const facultyCode = formData.get('facultyCode');
+
+            if (!newPass || !confirmPass || !email || !firstName || !lastName || !type) {
+                error.textContent = 'All fields are required.';
+                return;
+            }
+            
             try {
                 const response = await fetch(form.action, {
                     method: form.method,
