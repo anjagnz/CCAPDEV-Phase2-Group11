@@ -40,7 +40,7 @@ Students may also view the details of an existing reservation in the Slot Availa
 
 ## Viewing Reservations
 
-The **Reservations page** allows users to view and delete their existing reservations. For a successful creation of a reservation, a reservation must be selected. For faculty members, the delete facility is only available *10 minutes after the reservation's start time* (assuming the student does not show up after 10 minutes).
+The **Reservations page** allows users to view and delete their existing reservations. For a successful deletion of a reservation, a reservation must be selected. For faculty members, the delete facility is only available *10 minutes after the reservation's start time* (assuming the student does not show up after 10 minutes).
 
 Students may edit the end time of their reservations, while faculty may edit the end time of any reservations booked within the system. 
 
