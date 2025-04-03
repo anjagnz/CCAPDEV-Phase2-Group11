@@ -1179,8 +1179,6 @@ app.post("/create-reservation", isAuth, async (req, res) => {
         
         // Format the reservation date
         const reservationDate = new Date(date);
-        reservationDate.setDate(reservationDate.getDate() - 1); // assuming PH date ang reservationDate
-        reservationDate.setHours(24, 0, 0, 0); // from UTC to PH (T00:00 -> T16:00)
         
         // fetch lab data
         const lab = await Laboratory.findById(labId);
@@ -1244,8 +1242,6 @@ app.post("/create-reservation-labtech", isAuth, async (req, res) => {
         
         // Format the reservation date
         const reservationDate = new Date(date);
-        reservationDate.setDate(reservationDate.getDate() - 1); // assuming PH date ang reservationDate
-        reservationDate.setHours(24, 0, 0, 0); // from UTC to PH (T00:00 -> T16:00)
         
         // fetch lab data
         const lab = await Laboratory.findById(labId);
